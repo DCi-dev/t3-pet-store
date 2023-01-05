@@ -51,15 +51,19 @@ export default {
     {
       name: 'size',
       title: 'Size',
-      type: 'string',
-      initialValue: 'small',
-      options: {
-        list: [
-          {title: 'Small', value: 'small'},
-          {title: 'Medium', value: 'medium'},
-          {title: 'Large', value: 'large'},
-        ],
-      },
+      type: 'array',
+      of: [
+        {
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Small', value: 'small'},
+              {title: 'Medium', value: 'medium'},
+              {title: 'Large', value: 'large'},
+            ],
+          },
+        },
+      ],
     },
     {
       name: 'flavor',
