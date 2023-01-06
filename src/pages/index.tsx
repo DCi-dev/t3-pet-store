@@ -4,7 +4,6 @@ import {
   type NextPage,
 } from "next";
 // import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
 
 import { FooterBanner, HeroBanner, ProductCard } from "@/components";
 
@@ -17,13 +16,7 @@ const Home: NextPage = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
-      <Head>
-        <title>Pet Store</title>
-        <meta name="description" content="Pet Food from the Future" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="">
+      <div className="">
         <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
         <div className="text-center">
           <h2 className="text-bold text-2xl text-neutral-700">
@@ -36,8 +29,9 @@ const Home: NextPage = ({
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
+        <FooterBanner footerBanner={bannerData.length && bannerData[1]} />
         Footer
-      </main>
+      </div>
     </>
   );
 };

@@ -4,7 +4,11 @@ import {
 } from "next-sanity-image";
 
 import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  HeartIcon,
+} from "@heroicons/react/20/solid";
 
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
@@ -17,6 +21,10 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     product.image[0]
   );
 
+  const wishlistClass = `h-5 w-5 fill-current ${
+    product.inWishlist ? "text-red-500" : "text-gray-500"
+  }`;
+
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
 
@@ -25,7 +33,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
       {/* Container */}
       <div className="flex flex-col rounded-3xl  bg-neutral-900 p-4 shadow-lg shadow-neutral-500">
         {/*  Image */}
-        <div>
+        <div className="relative">
           <Image
             {...productImageProps}
             style={{ width: "100%", height: "auto" }} // layout="responsive" prior to Next 13.0.0
@@ -34,7 +42,9 @@ const ProductCard = ({ product }: { product: ProductType }) => {
             className="rounded-3xl"
           />
           {/* Wishlist */}
-          <button></button>
+          <button className="absolute top-5 right-5 rounded-full bg-white p-3">
+            <HeartIcon className={wishlistClass} />
+          </button>
         </div>
 
         {/* Info */}

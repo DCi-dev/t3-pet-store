@@ -6,7 +6,7 @@ import Link from "next/link";
 const Navbar: NextComponentType = () => {
   return (
     <>
-      <div>Hero Banner</div>
+      <div>Navbar</div>
     </>
   );
 };
