@@ -6,9 +6,7 @@ import {
 // import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 
-import { type ProductType } from "@/types/product";
-
-import { FooterBanner, HeroBanner } from "@/components";
+import { FooterBanner, HeroBanner, ProductCard } from "@/components";
 
 import { client } from "@lib/client";
 // import { trpc } from "../utils/trpc";
@@ -33,13 +31,9 @@ const Home: NextPage = ({
           </h2>
           <p>Cat food of many variations</p>
         </div>
-        <div>
-          {products?.map((product: ProductType, index: Key) => (
-            <div key={index}>
-              <h3>{product.name}</h3>
-              <p>Product description</p>
-              <button>Add to Cart</button>
-            </div>
+        <div className="mx-auto mt-8 grid grid-cols-1 gap-8 bg-neutral-700 p-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:p-36">
+          {products.map((product) => (
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
         Footer

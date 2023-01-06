@@ -16,9 +16,9 @@ const config = {
 };
 export default config;
 
-module.exports = {
-  images: {
-    domains: ["cdn.sanity.io"],
-    loader: "custom",
-  },
-};
+// module.exports = {
+//   images: {
+//     domains: ["cdn.sanity.io"],
+//     loader: "custom",
+//   },
+// };

@@ -44,24 +44,31 @@ export default {
       type: 'text',
     },
     {
-      name: 'price',
-      title: 'Price',
-      type: 'number',
-    },
-    {
-      name: 'size',
-      title: 'Size',
+      name: 'sizeOptions',
+      title: 'Size Options',
       type: 'array',
       of: [
         {
-          type: 'string',
-          options: {
-            list: [
-              {title: 'Small', value: 'small'},
-              {title: 'Medium', value: 'medium'},
-              {title: 'Large', value: 'large'},
-            ],
-          },
+          type: 'object',
+          fields: [
+            {
+              name: 'size',
+              type: 'string',
+              title: 'Size',
+              options: {
+                list: [
+                  {title: 'Small', value: 'small'},
+                  {title: 'Medium', value: 'medium'},
+                  {title: 'Large', value: 'large'},
+                ],
+              },
+            },
+            {
+              name: 'price',
+              type: 'number',
+              title: 'Price',
+            },
+          ],
         },
       ],
     },
