@@ -5,7 +5,12 @@ import {
 } from "next";
 // import { signIn, signOut, useSession } from "next-auth/react";
 
-import { FooterBanner, HeroBanner, ProductCard } from "@/components";
+import {
+  FooterBanner,
+  HeroBanner,
+  Incentives,
+  ProductCard,
+} from "@/components";
 
 import { client } from "@lib/client";
 // import { trpc } from "../utils/trpc";
@@ -34,8 +39,8 @@ const Home: NextPage = ({
             </div>
           </div>
         </div>
+        <Incentives />
         <FooterBanner footerBanner={bannerData.length && bannerData[1]} />
-        Footer
       </div>
     </>
   );
