@@ -13,6 +13,7 @@ import {
 } from "@/components";
 
 import { client } from "@lib/client";
+import { type ProductType } from "@/types/product";
 // import { trpc } from "../utils/trpc";
 
 const Home: NextPage = ({
@@ -33,14 +34,14 @@ const Home: NextPage = ({
           </div>
           <div className="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:pb-24 lg:max-w-7xl lg:px-8">
             <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-              {firstFourProducts.map((product) => (
+              {firstFourProducts.map((product: ProductType) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
           </div>
         </div>
         <Incentives />
-        <FooterBanner footerBanner={bannerData.length && bannerData[1]} />
+        {/* <FooterBanner footerBanner={bannerData.length && bannerData[1]} /> */}
       </div>
     </>
   );

@@ -33,7 +33,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     <>
       <div key={product._id}>
         <div className="relative">
-          <button className="absolute top-3 right-3 z-40 rounded-full bg-white p-2">
+          <button className="absolute top-3 right-3 z-10 rounded-full bg-white p-2">
             <HeartIcon className={wishlistClass} />
           </button>
 

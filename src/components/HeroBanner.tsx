@@ -33,7 +33,7 @@ const HeroBanner = ({ heroBanner }: { heroBanner: Banner }) => {
                 <div className="mt-10 max-w-fit sm:mt-12">
                   <Link
                     className="mt-3 sm:mt-0 sm:ml-3"
-                    href={`/${heroBanner.product}`}
+                    href={`/shop/${heroBanner.product}`}
                   >
                     <button
                       type="submit"

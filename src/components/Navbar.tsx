@@ -7,7 +7,7 @@ import {
   HeartIcon,
   ShoppingCartIcon,
   UserCircleIcon,
-  XMarkIcon,
+  XMarkIcon
 } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 
@@ -34,7 +34,7 @@ export default function NavBar() {
                 </Disclosure.Button>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
+                <Link href="/" className="flex flex-shrink-0 items-center">
                   <Image
                     className="block h-12 w-auto lg:hidden"
                     src="/assets/pet-store-logo.png"
@@ -49,33 +49,32 @@ export default function NavBar() {
                     width={30}
                     height={30}
                   />
-                </div>
+                </Link>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  {/* Current: "border-yellow-500 text-neutral-900", Default: "border-transparent text-neutral-500 hover:border-neutral-300 hover:text-neutral-700" */}
-                  <a
-                    href="#"
+                  <Link
+                    href="/"
                     className="inline-flex items-center border-b-2 border-yellow-500 px-1 pt-1 text-sm font-medium text-neutral-100"
                   >
                     Home
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    href="/shop"
                     className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-neutral-200 hover:border-neutral-300 hover:text-neutral-300"
                   >
                     Shop
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-neutral-200 hover:border-neutral-300 hover:text-neutral-300"
                   >
                     About
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-neutral-200 hover:border-neutral-300 hover:text-neutral-300"
                   >
                     Contact
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -118,7 +117,7 @@ export default function NavBar() {
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-neutral-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
                         {({ active }) => (
-                          <a
+                          <Link
                             href="#"
                             className={classNames(
                               active ? "bg-neutral-700" : "",
@@ -126,12 +125,12 @@ export default function NavBar() {
                             )}
                           >
                             Your Profile
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a
+                          <Link
                             href="#"
                             className={classNames(
                               active ? "bg-neutral-700" : "",
@@ -139,12 +138,12 @@ export default function NavBar() {
                             )}
                           >
                             Orders
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a
+                          <Link
                             href="#"
                             className={classNames(
                               active ? "bg-neutral-700" : "",
@@ -152,7 +151,7 @@ export default function NavBar() {
                             )}
                           >
                             Sign out
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                     </Menu.Items>
