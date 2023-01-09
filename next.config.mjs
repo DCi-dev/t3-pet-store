@@ -13,12 +13,8 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["cdn.sanity.io"],
+  },
 };
 export default config;
-
-// module.exports = {
-//   images: {
-//     domains: ["cdn.sanity.io"],
-//     loader: "custom",
-//   },
-// };
