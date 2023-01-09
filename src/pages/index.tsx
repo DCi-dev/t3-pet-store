@@ -14,20 +14,21 @@ const Home: NextPage = ({
   products,
   bannerData,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const firstFourProducts = products.slice(0, 4);
+
   return (
     <>
       <div className="">
         <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
-        <div className="text-center">
-          <h2 className="text-bold text-2xl text-neutral-700">
-            Best Selling Products
-          </h2>
-          <p>Cat food of many variations</p>
-        </div>
-        <div className="bg-white">
-          <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
-            <div className="grid max-w-7xl grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-              {products.map((product) => (
+        <div className="bg-neutral-800">
+          <div className="mx-auto max-w-2xl py-16 px-4 text-center sm:py-24 sm:px-6 lg:max-w-7xl lg:py-6 lg:px-8">
+            <h2 className="text-2xl font-bold tracking-tight text-white sm:mt-5 sm:text-6xl  xl:text-4xl">
+              Best Selling Products
+            </h2>
+          </div>
+          <div className="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:pb-24 lg:max-w-7xl lg:px-8">
+            <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+              {firstFourProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>

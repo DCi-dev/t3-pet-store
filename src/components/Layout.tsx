@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header>
         <Navbar />
       </header>
-      <main>{children}</main>
+      <main className="bg-neutral-900">{children}</main>
       <footer>
         <Footer />
       </footer>
