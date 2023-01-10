@@ -1,6 +1,6 @@
 import { type NextComponentType } from "next";
 import Link from "next/link";
-import { SVGProps } from "react";
+import type { SVGProps } from "react";
 
 // import { trpc } from "../utils/trpc";
 
@@ -58,7 +58,7 @@ const Footer: NextComponentType = () => {
             <a
               key={item.name}
               href={item.href}
-              className="text-neutral-100 hover:text-neutral-300"
+              className="text-neutral-100 hover:text-yellow-400"
             >
               <span className="sr-only">{item.name}</span>
               <item.icon className="h-6 w-6" aria-hidden="true" />
@@ -67,7 +67,11 @@ const Footer: NextComponentType = () => {
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
           <p className="text-center text-base text-neutral-300">
-            &copy; 2023 CDi, Inc. All rights reserved.
+            &copy; 2023{" "}
+            <a href="https://cdi.dev" className="text-yellow-400">
+              CDi
+            </a>
+            , Inc. All rights reserved.
           </p>
         </div>
       </div>
