@@ -47,7 +47,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           </div>
 
           <div className="relative mt-4">
-            <Link href={product.slug.current}>
+            <Link href={`/shop/${product.slug.current}`}>
               <h3 className="mb-2 text-lg font-medium text-neutral-100">
                 {product.name}
               </h3>

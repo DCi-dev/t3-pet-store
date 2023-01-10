@@ -19,7 +19,8 @@ export type ProductType = {
   _updatedAt: string;
 };
 
-type sizeOption = {
+export type sizeOption = {
   size: number;
   price: number;
+  _key: string;
 };
