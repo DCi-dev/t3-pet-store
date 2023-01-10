@@ -7,8 +7,9 @@ import {
   HeartIcon,
   ShoppingCartIcon,
   UserCircleIcon,
-  XMarkIcon
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { Fragment } from "react";
 
 function classNames(...classes: string[]) {
@@ -16,6 +17,8 @@ function classNames(...classes: string[]) {
 }
 
 export default function NavBar() {
+  const { data: sessionData } = useSession();
+
   return (
     <Disclosure as="nav" className="bg-neutral-900 shadow">
       {({ open }) => (
@@ -115,45 +118,64 @@ export default function NavBar() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-neutral-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="#"
-                            className={classNames(
-                              active ? "bg-neutral-700" : "",
-                              "block px-4 py-2 text-sm text-neutral-100"
+                      {sessionData && (
+                        <>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                href="#"
+                                className={classNames(
+                                  active ? "bg-neutral-700" : "",
+                                  "block px-4 py-2 text-sm text-neutral-100"
+                                )}
+                              >
+                                Your Profile
+                              </Link>
                             )}
-                          >
-                            Your Profile
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="#"
-                            className={classNames(
-                              active ? "bg-neutral-700" : "",
-                              "block px-4 py-2 text-sm text-neutral-100"
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                href="#"
+                                className={classNames(
+                                  active ? "bg-neutral-700" : "",
+                                  "block px-4 py-2 text-sm text-neutral-100"
+                                )}
+                              >
+                                Orders
+                              </Link>
                             )}
-                          >
-                            Orders
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="#"
-                            className={classNames(
-                              active ? "bg-neutral-700" : "",
-                              "block px-4 py-2 text-sm text-neutral-100"
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className={classNames(
+                                  active ? "bg-neutral-700" : "",
+                                  "block cursor-pointer px-4 py-2 text-sm text-neutral-100"
+                                )}
+                                onClick={() => signOut()}
+                              >
+                                Sign out
+                              </div>
                             )}
-                          >
-                            Sign out
-                          </Link>
-                        )}
-                      </Menu.Item>
+                          </Menu.Item>
+                        </>
+                      )}
+                      {!sessionData && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className={classNames(
+                                active ? "bg-neutral-700" : "",
+                                "block cursor-pointer px-4 py-2 text-sm text-neutral-100"
+                              )}
+                              onClick={() => signIn()}
+                            >
+                              Sign in
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
                     </Menu.Items>
                   </Transition>
                 </Menu>
