@@ -19,6 +19,8 @@ function classNames(...classes: string[]) {
 export default function NavBar() {
   const { data: sessionData } = useSession();
 
+  const userProfileImageUrl = sessionData?.user?.image as string;
+
   return (
     <Disclosure as="nav" className="bg-neutral-900 shadow">
       {({ open }) => (
@@ -102,10 +104,22 @@ export default function NavBar() {
                   <div>
                     <Menu.Button className="flex rounded-full text-sm text-neutral-100 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
-                      <UserCircleIcon
-                        className="h-8 w-8 rounded-full"
-                        aria-hidden="true"
-                      />
+                      {sessionData && (
+                        <Image
+                          src={userProfileImageUrl}
+                          className="h-8 w-8 rounded-full"
+                          aria-hidden="true"
+                          alt="profile image"
+                          width={30}
+                          height={30}
+                        />
+                      )}
+                      {!sessionData && (
+                        <UserCircleIcon
+                          className="h-8 w-8 rounded-full"
+                          aria-hidden="true"
+                        />
+                      )}
                     </Menu.Button>
                   </div>
                   <Transition
