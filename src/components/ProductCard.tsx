@@ -54,21 +54,12 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const { data: sessionData } = useSession();
 
   function addItemToSessionStorage(productId: string) {
-    const productListStorage = sessionStorage.getItem("productList");
-    if (productListStorage === null) {
-      const productList = [];
-      productList.push({ _id: productId });
-      sessionStorage.setItem("productList", JSON.stringify(productList));
-    } else {
-      const storageArray = JSON.parse(productListStorage);
-      if (
-        !storageArray.find((productStorage: { _id: string }) => {
-          return productStorage._id === productId;
-        })
-      ) {
-        storageArray.push({ _id: productId });
-        sessionStorage.setItem("productList", JSON.stringify(storageArray));
-      }
+    const productIds = JSON.parse(
+      sessionStorage.getItem("productList") || "[]"
+    );
+    if (!productIds.includes(productId)) {
+      productIds.push(productId);
+      sessionStorage.setItem("productList", JSON.stringify(productIds));
     }
   }
 
