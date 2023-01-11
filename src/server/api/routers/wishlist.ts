@@ -50,8 +50,8 @@ export const wishlistRouter = createTRPCRouter({
   getItems: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user?.id;
     if (!userId) {
-      // If user is not authenticated, return items from local storage
-      return getItemsFromSessionStorage();
+      // If user is not authenticated, return empty array
+      return [];
     }
     // If user is authenticated, return items from the server
     const items = await ctx.prisma.wishlistItem.findMany({
@@ -62,18 +62,17 @@ export const wishlistRouter = createTRPCRouter({
     return items;
   }),
 
-  synchronizeWishlist: protectedProcedure.mutation(async ({ ctx }) => {
-    const userId = ctx.session?.user?.id;
-    if (!userId) {
-      throw new Error("User is not authenticated.");
-    }
-    // Fetch items from local storage
-    const localItems = getItemsFromSessionStorage();
-    // Add each item to the server
-    for (const item of localItems) {
-      await ctx.prisma.wishlistItem.create({
+  synchronizeWishlist: protectedProcedure
+    .input(
+      z.object({
+        _id: string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session?.user?.id;
+      const wishlist = await ctx.prisma.wishlistItem.create({
         data: {
-          productId: item._id,
+          productId: input._id,
           user: {
             connect: {
               id: userId,
@@ -81,50 +80,53 @@ export const wishlistRouter = createTRPCRouter({
           },
         },
       });
-    }
-    // Clear local storage
-    sessionStorage.removeItem("productList");
-    return;
-  }),
+      return wishlist;
+    }),
 });
 
-function addItemToSessionStorage(productId: string) {
-  const productListStorage = sessionStorage.getItem("productList");
-  if (productListStorage === null) {
-    const productList = [];
-    productList.push({ _id: productId });
-    sessionStorage.setItem("productList", JSON.stringify(productList));
-  } else {
-    const storageArray = JSON.parse(productListStorage);
-    if (
-      !storageArray.find((productStorage: { _id: string }) => {
-        return productStorage._id === productId;
-      })
-    ) {
-      storageArray.push({ _id: productId });
-      sessionStorage.setItem("productList", JSON.stringify(storageArray));
-    }
-  }
-}
+//  Add function
 
-function removeItemFromSessionStorage(productId: string) {
-  const productListStorage = sessionStorage.getItem("productList");
-  if (productListStorage === null) {
-    return;
-  } else {
-    const storageArray = JSON.parse(productListStorage);
-    const filteredArray = storageArray.filter(
-      (product: { _id: string }) => product._id !== productId
-    );
-    sessionStorage.setItem("productList", JSON.stringify(filteredArray));
-  }
-}
+// function addItemToSessionStorage(productId: string) {
+//   const productListStorage = sessionStorage.getItem("productList");
+//   if (productListStorage === null) {
+//     const productList = [];
+//     productList.push({ _id: productId });
+//     sessionStorage.setItem("productList", JSON.stringify(productList));
+//   } else {
+//     const storageArray = JSON.parse(productListStorage);
+//     if (
+//       !storageArray.find((productStorage: { _id: string }) => {
+//         return productStorage._id === productId;
+//       })
+//     ) {
+//       storageArray.push({ _id: productId });
+//       sessionStorage.setItem("productList", JSON.stringify(storageArray));
+//     }
+//   }
+// }
 
-function getItemsFromSessionStorage() {
-  const productListStorage = sessionStorage.getItem("productList");
-  if (productListStorage === null) {
-    return [];
-  } else {
-    return JSON.parse(productListStorage);
-  }
-}
+//  Remove function
+
+// function removeItemFromSessionStorage(productId: string) {
+//   const productListStorage = sessionStorage.getItem("productList");
+//   if (productListStorage === null) {
+//     return;
+//   } else {
+//     const storageArray = JSON.parse(productListStorage);
+//     const filteredArray = storageArray.filter(
+//       (product: { _id: string }) => product._id !== productId
+//     );
+//     sessionStorage.setItem("productList", JSON.stringify(filteredArray));
+//   }
+// }
+
+// Get items from the wishlist
+
+// function getItemsFromSessionStorage() {
+//   const productListStorage = sessionStorage.getItem("productList");
+//   if (productListStorage === null) {
+//     return [];
+//   } else {
+//     return JSON.parse(productListStorage);
+//   }
+// }

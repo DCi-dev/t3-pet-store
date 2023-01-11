@@ -14,23 +14,40 @@ import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
-import { contextProps } from "@trpc/react-query/shared";
 import { api } from "@utils/api";
-import { SessionStore } from "next-auth/core/lib/cookie";
 import { useSession } from "next-auth/react";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
+  // Wishlist button class
+  const [inInWishlist, setInInWishlist] = useState(false);
+
+  const wishlistClass = `h-5 w-5 fill-current ${
+    inInWishlist ? "text-red-500" : "text-neutral-500"
+  }`;
+
+  const productId = product._id;
+
+  useEffect(() => {
+    const productListStorage = sessionStorage.getItem("productList");
+
+    if (productListStorage) {
+      const productArray = JSON.parse(productListStorage);
+      const isInWishlist = productArray.some(
+        (product: { _id: string }) => product._id === productId
+      );
+      setInInWishlist(isInWishlist);
+    }
+  }, [product._id, productId, inInWishlist]);
+
+  // Images
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0]
   );
 
-  const wishlistClass = `h-5 w-5 fill-current ${
-    product.inWishlist ? "text-red-500" : "text-neutral-500"
-  }`;
-
+  // Product options
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
 
@@ -56,6 +73,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   }
 
   const addProduct = api.wishlist.addItem.useMutation();
+  const removeProduct = api.wishlist.removeItem.useMutation();
 
   const handleAddToWishlist = async (product: ProductType) => {
     // check if the user is authenticated
@@ -66,8 +84,50 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     } else {
       // if the user is authenticated, send the product id to the server
       // using TRPC call
+      addItemToSessionStorage(product._id);
+      addProduct.mutate(product);
+    }
+  };
 
-      await addProduct.mutate(product);
+  function removeItemFromStorage(productId: string) {
+    if (!sessionData?.user) {
+      const productListStorage = sessionStorage.getItem("productList");
+      if (productListStorage) {
+        const storageArray = JSON.parse(productListStorage);
+        const filteredArray = storageArray.filter(
+          (product: { _id: string }) => product._id !== productId
+        );
+        sessionStorage.setItem("productList", JSON.stringify(filteredArray));
+      }
+    } else {
+      {
+        removeProduct.mutate(product);
+        const productListStorage = sessionStorage.getItem("productList");
+        if (productListStorage) {
+          const storageArray = JSON.parse(productListStorage);
+          const filteredArray = storageArray.filter(
+            (productStorage: { _id: string }) => {
+              return productStorage._id !== productId;
+            }
+          );
+          sessionStorage.setItem("productList", JSON.stringify(filteredArray));
+        }
+      }
+    }
+  }
+
+  const handleWishButton = (
+    event:
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+      | React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    if (inInWishlist) {
+      setInInWishlist(false);
+      removeItemFromStorage(productId);
+    } else {
+      setInInWishlist(true);
+      handleAddToWishlist(product);
     }
   };
 
@@ -77,9 +137,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
         <div className="relative">
           <button
             className="absolute top-3 right-3 z-10 rounded-full bg-white p-2"
-            onClick={() => {
-              handleAddToWishlist(product);
-            }}
+            onClick={handleWishButton}
           >
             <HeartIcon className={wishlistClass} />
           </button>

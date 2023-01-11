@@ -2,36 +2,54 @@ import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
 import type { GetServerSideProps, NextPage } from "next";
 
-import { createTRPCContext } from "@/server/api/trpc";
-
-import { createProxySSGHelpers } from "@trpc/react-query/ssg";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-
-import superjson from "superjson";
-
-import { appRouter } from "@/server/api/root";
-import { contextProps } from "@trpc/react-query/shared";
+import { api } from "@/utils/api";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-const WishlistPage: NextPage = () => {
-  const [product, setProduct] = useState([]);
+const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
+  const { data: sessionData } = useSession();
+
+  const [productId, setProductId] = useState([""]);
+
+  // This filter should be realisticaly done in the getServersideProps
+  const filteredPropducstById =
+    productId.length === 0
+      ? products
+      : products.filter((product) => productId.includes(product._id));
+
+  console.log(filteredPropducstById + "filtered shit");
+
+  console.log(productId);
+
+  const wishlist = api.wishlist.getItems.useQuery();
+
+  const setProductIdState = () => {
+    const productListStorage = sessionStorage.getItem("productList");
+    const localProductIds = productListStorage
+      ? JSON.parse(productListStorage)
+      : [];
+    if (sessionData?.user && wishlist.data) {
+      const serverProductIds = wishlist.data.map((item) => item.productId);
+      setProductId([...new Set([...localProductIds, ...serverProductIds])]);
+    } else if (sessionData?.user && !wishlist.data) {
+      setProductId(localProductIds);
+    } else {
+      setProductId([]);
+    }
+  };
 
   useEffect(() => {
-    const productListStorage = localStorage.getItem("productList");
-    if (productListStorage) {
-      const productArray = JSON.parse(productListStorage);
-      setProduct(productArray);
-    }
-  }, []);
+    setProductIdState();
+  }, [sessionData?.user, wishlist.data]);
 
   return (
     <main>
       <div>
         <h1>Wishlist</h1>
-        {product.map((product: ProductType) => {
+        {filteredPropducstById.map((product: ProductType) => {
           return (
             <div key={product._id}>
-              <h2>{product.name}</h2>
+              <h2 className="text-3xl text-white">{product.name}</h2>
             </div>
           );
         })}
@@ -41,29 +59,11 @@ const WishlistPage: NextPage = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const ssg = createProxySSGHelpers({
-    router: appRouter,
-    ctx: {},
-    transformer: superjson,
-  });
-
-  const userId = await ssg.user.getCurrentUser.prefetch().then(user => {
-    if (user) {
-      return user._id;
-    }
-  });
-  
-
-  await ssg.wishlist.getItems.prefetch(userId);
-
-
-
   const query = '*[_type == "product"]';
   const products = await client.fetch(query);
-  // Make sure to return { props: { trpcState: ssg.dehydrate() } }
+
   return {
     props: {
-      trpcState: ssg.dehydrate(),
       products,
     },
   };
