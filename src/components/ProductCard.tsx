@@ -16,7 +16,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
+import { contextProps } from "@trpc/react-query/shared";
 import { api } from "@utils/api";
+import { SessionStore } from "next-auth/core/lib/cookie";
+import { useSession } from "next-auth/react";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
@@ -31,24 +34,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
 
-  function addToWishlist(product: { _id: string }) {
-    const productListStorage = localStorage.getItem("productList");
-    if (productListStorage === null) {
-      const productList = [];
-      productList.push(product);
-      localStorage.setItem("productList", JSON.stringify(productList));
-    } else {
-      const storageArray = JSON.parse(productListStorage);
-      if (
-        !storageArray.find((productStorage: { id: string }) => {
-          return productStorage.id === product._id;
-        })
-      ) {
-        storageArray.push(product);
-        localStorage.setItem("productList", JSON.stringify(storageArray));
-      }
-    }
-  }
+  const { data: sessionData } = useSession();
 
   function addItemToSessionStorage(productId: string) {
     const productListStorage = sessionStorage.getItem("productList");
@@ -69,19 +55,21 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     }
   }
 
-   const removeProduct = api.wishlist.removeItem.useMutation();
-
-  function removeFromWishlistApi() {
-    removeProduct.mutate(product);
-  }
-
   const addProduct = api.wishlist.addItem.useMutation();
 
-  function addToWishlistApi() {
-    addProduct.mutate(product);
-  }
+  const handleAddToWishlist = async (product: ProductType) => {
+    // check if the user is authenticated
+    if (!sessionData?.user) {
+      // if not, add the product to the wishlist on the client side
+      addItemToSessionStorage(product._id);
+      return;
+    } else {
+      // if the user is authenticated, send the product id to the server
+      // using TRPC call
 
-  
+      await addProduct.mutate(product);
+    }
+  };
 
   return (
     <>
@@ -90,7 +78,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           <button
             className="absolute top-3 right-3 z-10 rounded-full bg-white p-2"
             onClick={() => {
-              addToWishlistApi();
+              handleAddToWishlist(product);
             }}
           >
             <HeartIcon className={wishlistClass} />

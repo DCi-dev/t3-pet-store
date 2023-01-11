@@ -11,12 +11,6 @@ export const wishlistRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
-      if (!userId) {
-        // If user is not authenticated, add item to local storage
-        addItemToSessionStorage(input._id);
-        return;
-      }
-      // If user is authenticated, add item to the server
       const wishlist = await ctx.prisma.wishlistItem.create({
         data: {
           productId: input._id,
