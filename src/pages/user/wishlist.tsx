@@ -38,7 +38,7 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   };
 
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <main className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-bold text-white">Wishlist</h1>
