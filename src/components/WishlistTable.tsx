@@ -8,13 +8,11 @@ import Image from "next/image";
 
 interface ChildProps {
   handleRemoveProduct: (productId: string) => void;
-  filteredProducts: ProductType[] | undefined;
   product: ProductType;
 }
 
 const WishlistTable: React.FC<ChildProps> = ({
   handleRemoveProduct,
-  filteredProducts,
   product,
 }) => {
   const { data: sessionData } = useSession();

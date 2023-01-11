@@ -20,27 +20,6 @@ import { api } from "@utils/api";
 import { useSession } from "next-auth/react";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
-  // Wishlist button class
-  const [inInWishlist, setInInWishlist] = useState(false);
-
-  const wishlistClass = `h-5 w-5 fill-current ${
-    inInWishlist ? "text-red-500" : "text-neutral-500"
-  }`;
-
-  const productId = product._id;
-
-  useEffect(() => {
-    const productListStorage = sessionStorage.getItem("productList");
-
-    if (productListStorage) {
-      const productArray = JSON.parse(productListStorage);
-      const isInWishlist = productArray.some(
-        (product: { _id: string }) => product._id === productId
-      );
-      setInInWishlist(isInWishlist);
-    }
-  }, [product._id, productId, inInWishlist]);
-
   // Images
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
@@ -51,6 +30,20 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
 
+  const [inInWishlist, setInInWishlist] = useState<boolean>(false);
+
+  useEffect(() => {
+    const productListStorage = sessionStorage.getItem("productList");
+    if (productListStorage) {
+      const productArray = JSON.parse(productListStorage);
+      const isInWishlist = productArray.includes(product._id);
+      setInInWishlist(isInWishlist);
+    }
+  }, [product._id]);
+
+  const wishlistClass = `h-5 w-5 fill-current ${
+    inInWishlist ? "text-red-500" : "text-neutral-500"
+  }`;
   const { data: sessionData } = useSession();
 
   function addItemToSessionStorage(productId: string) {
@@ -81,31 +74,26 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   };
 
   function removeItemFromStorage(productId: string) {
-    if (!sessionData?.user) {
-      const productListStorage = sessionStorage.getItem("productList");
-      if (productListStorage) {
-        const storageArray = JSON.parse(productListStorage);
-        const filteredArray = storageArray.filter(
-          (product: { _id: string }) => product._id !== productId
-        );
-        sessionStorage.setItem("productList", JSON.stringify(filteredArray));
-      }
-    } else {
-      {
-        removeProduct.mutate(product);
-        const productListStorage = sessionStorage.getItem("productList");
-        if (productListStorage) {
-          const storageArray = JSON.parse(productListStorage);
-          const filteredArray = storageArray.filter(
-            (productStorage: { _id: string }) => {
-              return productStorage._id !== productId;
-            }
-          );
-          sessionStorage.setItem("productList", JSON.stringify(filteredArray));
-        }
-      }
-    }
+    const productIds = JSON.parse(
+      sessionStorage.getItem("productList") || "[]"
+    );
+    const updatedIds = productIds.filter((id: string) => id !== productId);
+    sessionStorage.setItem("productList", JSON.stringify(updatedIds));
   }
+
+  const handleRemoveFromWishlist = async (product: ProductType) => {
+    // check if the user is authenticated
+    if (!sessionData?.user) {
+      // if not, remove the product from the wishlist on the client side
+      removeItemFromStorage(product._id);
+      return;
+    } else {
+      // if the user is authenticated, send the product id to the server
+      // using TRPC call
+      removeProduct.mutate(product);
+      removeItemFromStorage(product._id);
+    }
+  };
 
   const handleWishButton = (
     event:
@@ -115,7 +103,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     event.preventDefault();
     if (inInWishlist) {
       setInInWishlist(false);
-      removeItemFromStorage(productId);
+      handleRemoveFromWishlist(product);
     } else {
       setInInWishlist(true);
       handleAddToWishlist(product);

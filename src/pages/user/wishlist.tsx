@@ -81,8 +81,6 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
                       product={product}
                       key={product._id}
                       handleRemoveProduct={handleRemoveProduct}
-                      // setFilteredProducts={setFilteredProducts}
-                      filteredProducts={filteredProducts}
                     />
                   ))}
                 </tbody>
