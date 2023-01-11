@@ -22,25 +22,30 @@ export default function NavBar() {
 
   const userProfileImageUrl = sessionData?.user?.image as string;
 
-  const handleMutation = async () => {
-    const sessionStorageWishlist = sessionStorage.getItem("productList");
-    const localProductIds = sessionStorageWishlist
-      ? JSON.parse(sessionStorageWishlist)
-      : [];
-    if (sessionData?.user) {
-      if (localProductIds.length > 0) {
-        // synchronize wishlist
-        const syncList = api.wishlist.synchronizeWishlist.useMutation();
-        syncList.mutate({ _id: localProductIds });
-        localProductIds.removeItem("productList");
-      }
-    }
-  };
-
-  async function handleSignIn() {
-    // Call the signIn function from next-auth package
-    await signIn();
+  async function handleSignOut() {
+    // Call the signOut function from next-auth package
     await handleMutation();
+    await signOut();
+  }
+  const syncList = api.wishlist.synchronizeWishlist.useMutation();
+  const existingWishlist = api.wishlist.getItems.useQuery();
+
+  async function handleMutation() {
+    const sessionStorageWishlist = sessionStorage.getItem("productList");
+    if (sessionData?.user && sessionStorageWishlist) {
+      const localProductIds = JSON.parse(sessionStorageWishlist);
+
+      const existingIds = existingWishlist.data?.map(
+        (item: { productId: string }) => item.productId
+      );
+      const itemsToAdd = localProductIds.filter(
+        (id: string) => !existingIds?.includes(id)
+      );
+      for (const productId of itemsToAdd) {
+        syncList.mutate(productId);
+      }
+      sessionStorage.removeItem("productList");
+    }
   }
 
   return (
@@ -189,7 +194,7 @@ export default function NavBar() {
                                   active ? "bg-neutral-700" : "",
                                   "block cursor-pointer px-4 py-2 text-sm text-neutral-100"
                                 )}
-                                onClick={() => signOut()}
+                                onClick={() => handleSignOut()}
                               >
                                 Sign out
                               </div>
@@ -205,7 +210,7 @@ export default function NavBar() {
                                 active ? "bg-neutral-700" : "",
                                 "block cursor-pointer px-4 py-2 text-sm text-neutral-100"
                               )}
-                              onClick={() => handleSignIn()}
+                              onClick={() => signIn()}
                             >
                               Sign in
                             </div>

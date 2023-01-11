@@ -32,11 +32,7 @@ export const wishlistRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
-      if (!userId) {
-        // If user is not authenticated, remove item from local storage
-        removeItemFromSessionStorage(input._id);
-        return;
-      }
+
       // If user is authenticated, remove item from the server
       const wishlist = await ctx.prisma.wishlistItem.deleteMany({
         where: {
@@ -63,16 +59,12 @@ export const wishlistRouter = createTRPCRouter({
   }),
 
   synchronizeWishlist: protectedProcedure
-    .input(
-      z.object({
-        _id: string(),
-      })
-    )
+    .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
       const wishlist = await ctx.prisma.wishlistItem.create({
         data: {
-          productId: input._id,
+          productId: input,
           user: {
             connect: {
               id: userId,
