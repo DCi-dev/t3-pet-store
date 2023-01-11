@@ -83,13 +83,13 @@ export default function NavBar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <button
-                  type="button"
+                <Link
+                  href="/user/wishlist"
                   className="rounded-full  p-1 text-neutral-100 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                 >
                   <span className="sr-only">Wishlist</span>
                   <HeartIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                </Link>
 
                 <button
                   type="button"

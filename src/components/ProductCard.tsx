@@ -16,6 +16,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
+import { api } from "@utils/api";
+
 const ProductCard = ({ product }: { product: ProductType }) => {
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
@@ -29,11 +31,68 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
 
+  function addToWishlist(product: { _id: string }) {
+    const productListStorage = localStorage.getItem("productList");
+    if (productListStorage === null) {
+      const productList = [];
+      productList.push(product);
+      localStorage.setItem("productList", JSON.stringify(productList));
+    } else {
+      const storageArray = JSON.parse(productListStorage);
+      if (
+        !storageArray.find((productStorage: { id: string }) => {
+          return productStorage.id === product._id;
+        })
+      ) {
+        storageArray.push(product);
+        localStorage.setItem("productList", JSON.stringify(storageArray));
+      }
+    }
+  }
+
+  function addItemToSessionStorage(productId: string) {
+    const productListStorage = sessionStorage.getItem("productList");
+    if (productListStorage === null) {
+      const productList = [];
+      productList.push({ _id: productId });
+      sessionStorage.setItem("productList", JSON.stringify(productList));
+    } else {
+      const storageArray = JSON.parse(productListStorage);
+      if (
+        !storageArray.find((productStorage: { _id: string }) => {
+          return productStorage._id === productId;
+        })
+      ) {
+        storageArray.push({ _id: productId });
+        sessionStorage.setItem("productList", JSON.stringify(storageArray));
+      }
+    }
+  }
+
+   const removeProduct = api.wishlist.removeItem.useMutation();
+
+  function removeFromWishlistApi() {
+    removeProduct.mutate(product);
+  }
+
+  const addProduct = api.wishlist.addItem.useMutation();
+
+  function addToWishlistApi() {
+    addProduct.mutate(product);
+  }
+
+  
+
   return (
     <>
       <div key={product._id}>
         <div className="relative">
-          <button className="absolute top-3 right-3 z-10 rounded-full bg-white p-2">
+          <button
+            className="absolute top-3 right-3 z-10 rounded-full bg-white p-2"
+            onClick={() => {
+              addToWishlistApi();
+            }}
+          >
             <HeartIcon className={wishlistClass} />
           </button>
 

@@ -51,12 +51,17 @@ model User {
   emailVerified DateTime?
   image         String?
 
-  role     Role       @default(USER)
+  role     Role      @default(USER)
   accounts Account[]
   sessions Session[]
-  wishlist Wishlist[]
-  Cart     Cart[]
-  Order    Order[]
+
+  Adress       Address[]
+  // Wishlist     Wishlist[]
+  Cart         Cart[]
+  Order        Order[]
+  WishlistItem WishlistItem[]
+  CartItem     CartItem[]
+  OrderItem    OrderItem[]
 }
 
 model VerificationToken {
@@ -68,141 +73,96 @@ model VerificationToken {
 }
 
 // Shop
-model Category {
-  id          String    @id @default(cuid())
-  name        String
-  description String
-  image       String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  products    Product[]
-}
-
-model Product {
-  id           String         @id @default(cuid())
-  name         String
-  description  String
-  price        Int
-  category     Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId   String
-  size         ProductSize[]
-  image        ProductImage[]
-  published    Boolean        @default(false)
-  inStock      Boolean        @default(true)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  WishlistItem WishlistItem[]
-  CartItem     CartItem[]
-  OrderItem    OrderItem[]
-
-  @@index([categoryId])
-}
-
-model ProductSize {
-  id        String   @id @default(cuid())
-  productId String
-  size      SizeType @default(S)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@index([productId])
-}
-
-enum SizeType {
-  S
-  M
-  L
-  XL
-  XXL
-}
-
-model ProductImage {
-  id        String  @id @default(cuid())
-  productId String
-  imageUrl  String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@index([productId])
-}
-
-model Wishlist {
-  id        String         @id @default(cuid())
-  productId String
-  product   WishlistItem[]
-  userId    String
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([productId])
-}
-
-model WishlistItem {
-  id         String   @id @default(cuid())
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  wishlistId String
-  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
-  quantity   Int      @default(1)
-
-  @@index([productId])
-  @@index([wishlistId])
-}
-
-model Cart {
-  id        String     @id @default(cuid())
-  productId String
-  cartItems CartItem[]
-  userId    String
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([productId])
-}
-
-model CartItem {
-  id        String  @id @default(cuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  cartId    String
-  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  quantity  Int     @default(1)
-
-  @@index([productId])
-  @@index([cartId])
-}
-
-model Order {
-  id          String       @id @default(cuid())
-  orderItems  OrderItem[]
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  OrderDetail OrderDetail?
-
-  @@index([userId])
-}
-
-model OrderItem {
-  id        String  @id @default(cuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  quantity  Int     @default(1)
-
-  @@index([productId])
-  @@index([orderId])
-}
-
-model OrderDetail {
+model Address {
   id         String  @id @default(cuid())
-  adress     String
+  address    String
   phone      String
   city       String
   country    String
   postalCode String
-  orderId    String  @unique
-  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  paid       Boolean @default(false)
-  fulfilled  Boolean @default(false)
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Order      Order[]
+
+  @@index([userId])
+}
+
+// model Wishlist {
+//   id       String         @id @default(cuid())
+//   userId   String
+//   user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   products WishlistItem[]
+
+//   @@index([userId])
+// }
+
+model WishlistItem {
+  id        String @id @default(cuid())
+  productId String
+  // wishlistId String
+  // wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // @@index([wishlistId])
+  @@index([userId])
+}
+
+model Cart {
+  id       String     @id @default(cuid())
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  productId String
+  cartId    String
+  cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([cartId])
+  @@index([userId])
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products  OrderItem[]
+  address   Address     @relation(fields: [addressId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  status    OrderState  @default(NEW)
+  total     Float
+  addressId String
+
+  @@index([addressId])
+  @@index([userId])
+}
+
+enum OrderState {
+  NEW
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  productId String
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Float
+
+  @@index([orderId])
+  @@index([userId])
 }
