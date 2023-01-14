@@ -56,6 +56,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     }
   }
 
+  const wishlist = api.wishlist.getItems.useQuery();
   const addProduct = api.wishlist.addItem.useMutation();
   const removeProduct = api.wishlist.removeItem.useMutation();
 
@@ -69,7 +70,17 @@ const ProductCard = ({ product }: { product: ProductType }) => {
       // if the user is authenticated, send the product id to the server
       // using TRPC call
       addItemToSessionStorage(product._id);
-      addProduct.mutate(product);
+      // Check if the product id is already in the database if not add it
+
+      if (!wishlist.data) {
+        addProduct.mutate(product);
+      } else {
+        const productIds = wishlist.data.map((product) => product.productId);
+        if (!productIds.includes(product._id)) {
+          // if the productIds array does not include the product id, add it
+          addProduct.mutate(product);
+        }
+      }
     }
   };
 

@@ -9,7 +9,6 @@ import {
   UserCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { api } from "@utils/api";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Fragment } from "react";
 
@@ -21,32 +20,6 @@ export default function NavBar() {
   const { data: sessionData } = useSession();
 
   const userProfileImageUrl = sessionData?.user?.image as string;
-
-  async function handleSignOut() {
-    // Call the signOut function from next-auth package
-    await handleMutation();
-    await signOut();
-  }
-  const syncList = api.wishlist.synchronizeWishlist.useMutation();
-  const existingWishlist = api.wishlist.getItems.useQuery();
-
-  async function handleMutation() {
-    const sessionStorageWishlist = sessionStorage.getItem("productList");
-    if (sessionData?.user && sessionStorageWishlist) {
-      const localProductIds = JSON.parse(sessionStorageWishlist);
-
-      const existingIds = existingWishlist.data?.map(
-        (item: { productId: string }) => item.productId
-      );
-      const itemsToAdd = localProductIds.filter(
-        (id: string) => !existingIds?.includes(id)
-      );
-      for (const productId of itemsToAdd) {
-        syncList.mutate(productId);
-      }
-      sessionStorage.removeItem("productList");
-    }
-  }
 
   return (
     <Disclosure as="nav" className="bg-neutral-900 shadow">
@@ -194,7 +167,7 @@ export default function NavBar() {
                                   active ? "bg-neutral-700" : "",
                                   "block cursor-pointer px-4 py-2 text-sm text-neutral-100"
                                 )}
-                                onClick={() => handleSignOut()}
+                                onClick={() => signOut()}
                               >
                                 Sign out
                               </div>

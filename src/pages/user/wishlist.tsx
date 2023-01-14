@@ -15,6 +15,7 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   >();
 
   const wishlist = api.wishlist.getItems.useQuery();
+  const syncItems = api.wishlist.synchronizeWishlist.useMutation();
 
   useEffect(() => {
     let productIds = JSON.parse(sessionStorage.getItem("productList") || "[]");
@@ -28,6 +29,29 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     const filteredProductsById = products.filter((product) =>
       productIds.includes(product._id)
     );
+
+    // Sync filteredProductsById with the database, checking if the product is already in the database
+    // If it is, then we don't need to add it again
+    // If it isn't, then we need to add it to the database
+    if (sessionData && wishlist.data) {
+      const serverProductIds = wishlist.data.map((item) => item.productId);
+      const filteredProductIds = filteredProductsById.map(
+        (product) => product._id
+      );
+
+      const newProductIds = filteredProductIds.filter(
+        (id) => !serverProductIds.includes(id)
+      );
+
+      if (newProductIds.length > 0) {
+        newProductIds.forEach((id) => {
+          syncItems.mutate(id);
+        });
+      }
+    }
+    
+
+
     setFilteredProducts(filteredProductsById);
   }, [sessionData, wishlist.data]);
 
