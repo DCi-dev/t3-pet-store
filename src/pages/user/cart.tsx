@@ -3,13 +3,56 @@ import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
-import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
+import { api } from "@/utils/api";
 import type { GetServerSideProps, NextPage } from "next";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
-  // Context
-  const { decreaseQuantity, increaseQuantity, qty } =
-    useShopContext() as ShopContextProps;
+  const { qty } = useShopContext() as ShopContextProps;
+
+  const { data: sessionData } = useSession();
+
+  const [filteredProducts, setFilteredProducts] = useState<ProductType[]>();
+
+  const cart = api.cart.getItems.useQuery();
+  const removeItem = api.cart.removeItem.useMutation();
+
+  useEffect(() => {
+    let storageProducts = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    if (sessionData && cart.data) {
+      const serverProductIds = cart.data.map((item) => item.productId);
+      storageProducts = [...new Set([...storageProducts, ...serverProductIds])];
+      localStorage.setItem("cart", JSON.stringify(storageProducts));
+    }
+
+    const filteredProductsById = products.filter((product) =>
+      storageProducts.includes(product._id)
+    );
+
+    setFilteredProducts(filteredProductsById);
+  }, [sessionData, cart.data]);
+
+  const handleRemoveProduct = (productId: string) => {
+    if (sessionData) {
+      removeItem.mutate({
+        _id: productId,
+      });
+    } else {
+      setFilteredProducts(
+        filteredProducts?.filter((product) => product._id !== productId)
+      );
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(
+          JSON.parse(localStorage.getItem("cart") || "[]").filter(
+            (product: ProductType) => product._id !== productId
+          )
+        )
+      );
+    }
+  };
 
   return (
     <main className="bg-neutral-800">
@@ -27,8 +70,13 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
               role="list"
               className="divide-y divide-neutral-200 border-t border-b border-neutral-700"
             >
-              {products.map((product, productIdx) => (
-                <CartItem product={product} key={product._id} />
+              {filteredProducts?.map((product) => (
+                <CartItem
+                  product={product}
+                  key={product._id}
+                  handleRemoveProduct={handleRemoveProduct}
+                  // onQuantityChange={handleQuantityChange}
+                />
               ))}
             </ul>
           </section>

@@ -2,8 +2,6 @@ import * as React from "react";
 import { createContext, useState } from "react";
 
 export interface ShopContextProps {
-  showCart: boolean;
-  setShowCart: React.Dispatch<React.SetStateAction<boolean>>;
   cartItems: string[];
   setCartItems: React.Dispatch<React.SetStateAction<string[]>>;
   totalPrice: number;
@@ -18,8 +16,6 @@ export interface ShopContextProps {
   setSelectedFlavor: React.Dispatch<React.SetStateAction<number>>;
   wishlistItems: string[];
   setWishlistItems: React.Dispatch<React.SetStateAction<string[]>>;
-  increaseQuantity: () => void;
-  decreaseQuantity: () => void;
 }
 
 export const ShopContext = createContext<ShopContextProps | undefined>(
@@ -31,7 +27,6 @@ interface Props {
 }
 
 export const ShopProvider: React.FC<Props> = ({ children }) => {
-  const [showCart, setShowCart] = useState(false);
   const [cartItems, setCartItems] = useState([""]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantities, setTotalQuantities] = useState(0);
@@ -44,22 +39,9 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
   // Wishlist items
   const [wishlistItems, setWishlistItems] = useState([""]);
 
-  // Quantity
-  const increaseQuantity = () => {
-    setQty(qty + 1);
-  };
-
-  const decreaseQuantity = () => {
-    if (qty > 1) {
-      setQty(qty - 1);
-    }
-  };
-
   return (
     <ShopContext.Provider
       value={{
-        showCart,
-        setShowCart,
         cartItems,
         setCartItems,
         totalPrice,
@@ -74,8 +56,6 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         setSelectedFlavor,
         wishlistItems,
         setWishlistItems,
-        increaseQuantity,
-        decreaseQuantity,
       }}
     >
       {children}

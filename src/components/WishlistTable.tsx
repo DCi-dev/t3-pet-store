@@ -27,11 +27,11 @@ const WishlistTable: React.FC<ChildProps> = ({
 
   const handleClick = (productId: string) => {
     handleRemoveProduct(productId);
-    const productListStorage = sessionStorage.getItem("productList");
+    const productListStorage = localStorage.getItem("productList");
     if (productListStorage) {
       let storageArray = JSON.parse(productListStorage);
       storageArray = storageArray.filter((id: string) => id !== productId);
-      sessionStorage.setItem("productList", JSON.stringify(storageArray));
+      localStorage.setItem("productList", JSON.stringify(storageArray));
       if (sessionData?.user) {
         removeProduct.mutate(product);
       }

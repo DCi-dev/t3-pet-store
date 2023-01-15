@@ -1,16 +1,47 @@
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
+import { api } from "@/utils/api";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
+import Link from "next/link";
 
-const CartItem = ({ product }: { product: ProductType }) => {
+interface ChildProps {
+  handleRemoveProduct: (productId: string) => void;
+  // handleQuantityChange: (productId: string, newQuantity: number) => void;
+  product: ProductType;
+}
+
+const CartItem: React.FC<ChildProps> = ({
+  handleRemoveProduct,
+  // handleQuantityChange,
+  product,
+}) => {
+  const { data: sessionData } = useSession();
+
   // Images
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0]
   );
+
+  const removeProduct = api.cart.removeItem.useMutation();
+
+  const handleClick = (productId: string) => {
+    handleRemoveProduct(productId);
+    const productListStorage = localStorage.getItem("productList");
+    if (productListStorage) {
+      let storageArray = JSON.parse(productListStorage);
+      storageArray = storageArray.filter((id: string) => id !== productId);
+      localStorage.setItem("productList", JSON.stringify(storageArray));
+      if (sessionData?.user) {
+        removeProduct.mutate(product);
+      }
+    }
+  };
+
   return (
     <li key={product._id} className="flex py-6 sm:py-10">
       <div className="flex-shrink-0">
@@ -29,12 +60,12 @@ const CartItem = ({ product }: { product: ProductType }) => {
           <div>
             <div className="flex justify-between">
               <h3 className="text-md">
-                <a
-                  href={product.slug.current}
+                <Link
+                  href={`/shop/${product.slug.current}`}
                   className="font-medium text-neutral-100 hover:text-neutral-300"
                 >
                   {product.name}
-                </a>
+                </Link>
               </h3>
             </div>
             <div className="mt-1 flex text-sm">
@@ -46,7 +77,7 @@ const CartItem = ({ product }: { product: ProductType }) => {
               ) : null} */}
             </div>
             <p className="mt-1 text-sm font-medium text-neutral-900">
-              {/* {product.price} */}
+              {/* {product.sizeOptions.price} */}
             </p>
           </div>
 
@@ -55,6 +86,9 @@ const CartItem = ({ product }: { product: ProductType }) => {
               Quantity, {product.name}
             </label>
             <select
+              // onChange={(e) =>
+              //   handleQuantityChange(product._id, parseInt(e.target.value))
+              // }
               id={`quantity-${product._id}`}
               name={`quantity-${product._id}`}
               className="max-w-full rounded-md border border-neutral-700 bg-neutral-700 py-1.5 text-left text-base font-medium leading-5 text-neutral-100 shadow-sm focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400 sm:text-sm"
@@ -71,6 +105,7 @@ const CartItem = ({ product }: { product: ProductType }) => {
 
             <div className="absolute top-0 right-0">
               <button
+                onClick={() => handleClick(product._id)}
                 type="button"
                 className="-m-2 inline-flex p-2 text-neutral-400 hover:text-neutral-500"
               >

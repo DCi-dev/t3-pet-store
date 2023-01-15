@@ -1,6 +1,7 @@
 import { ProductCard } from "@/components";
 import { client } from "@/lib/client";
 import type { ProductType, sizeOption } from "@/types/product";
+import { api } from "@/utils/api";
 import { Disclosure, RadioGroup } from "@headlessui/react";
 import {
   ChevronUpIcon,
@@ -13,6 +14,7 @@ import type {
   InferGetStaticPropsType,
   NextPage,
 } from "next";
+import { useSession } from "next-auth/react";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import { useState } from "react";
@@ -38,10 +40,101 @@ const ProductPage: NextPage = ({
   product,
   products,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { data: sessionData } = useSession();
+  const [qty, setQty] = useState(1);
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
-
   const productImageProps = useNextSanityImage(client, product.image[0]);
+  const cart = api.cart.getItems.useQuery();
+  const addProduct = api.cart.addItem.useMutation();
+  const updateProduct = api.cart.updateItem.useMutation();
+
+  function addItemToLocalStorage(product: {
+    _id: string;
+    sizeOption: {
+      size: string;
+      price: number;
+      _key: string;
+    };
+    flavor: string;
+    quantity: number;
+  }) {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const index = cart.findIndex((p: { _id: string }) => p._id === product._id);
+    if (index === -1) {
+      cart.push({ ...product, quantity: qty });
+    } else {
+      cart[index].quantity += qty;
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  function updateItemInLocalStorage(product: {
+    _id: string;
+    sizeOption: {
+      size: string;
+      price: number;
+      _key: string;
+    };
+    flavor: string;
+    quantity: number;
+  }) {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const index = cart.findIndex((p: { _id: string }) => p._id === product._id);
+    if (index !== -1) {
+      cart[index].quantity += qty;
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  function addItemToCart() {
+    if (sessionData) {
+      addProduct.mutate({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
+    } else {
+      addItemToLocalStorage({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
+    }
+  }
+
+  function handleAddToCart() {
+    if (sessionData) {
+      const existingItem = cart.data?.find(
+        (item) =>
+          item.productId === product._id && item.flavor === selectedFlavor
+      );
+      if (existingItem) {
+        updateProduct.mutate({
+          _id: product._id,
+          size: selectedSize,
+          flavor: selectedFlavor,
+          quantity: existingItem.quantity + 1,
+        });
+      } else {
+        addProduct.mutate({
+          _id: product._id,
+          sizeOption: selectedSize,
+          flavor: selectedFlavor,
+          quantity: 1,
+        });
+      }
+    } else {
+      addItemToLocalStorage({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
+    }
+  }
 
   return (
     <main className="bg-neutral-800">
@@ -77,7 +170,7 @@ const ProductPage: NextPage = ({
           </div>
 
           <div className="mt-8 lg:col-span-5">
-            <form>
+            <form onSubmit={handleAddToCart}>
               {/* Size picker */}
               <div className="mt-8">
                 <div className="flex items-center justify-between">
@@ -161,14 +254,13 @@ const ProductPage: NextPage = ({
                   </div>
                 </RadioGroup>
               </div>
-
-              <button
-                type="submit"
-                className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-yellow-400 py-3 px-8 text-base font-bold text-neutral-900 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
-              >
-                Add to cart
-              </button>
             </form>
+            <button
+              onClick={handleAddToCart}
+              className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-yellow-400 py-3 px-8 text-base font-bold text-neutral-900 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            >
+              Add to cart
+            </button>
 
             {/* Product details */}
             <div className="mt-10">
