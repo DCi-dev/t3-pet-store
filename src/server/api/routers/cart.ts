@@ -1,4 +1,4 @@
-import { string, z } from "zod";
+import z from "zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -6,7 +6,7 @@ export const wishlistRouter = createTRPCRouter({
   addItem: publicProcedure
     .input(
       z.object({
-        _id: string(),
+        _id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -27,7 +27,7 @@ export const wishlistRouter = createTRPCRouter({
   removeItem: publicProcedure
     .input(
       z.object({
-        _id: string(),
+        _id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -75,50 +75,3 @@ export const wishlistRouter = createTRPCRouter({
       return wishlist;
     }),
 });
-
-//  Add function
-
-// function addItemTolocalStorage(productId: string) {
-//   const productListStorage = localStorage.getItem("productList");
-//   if (productListStorage === null) {
-//     const productList = [];
-//     productList.push({ _id: productId });
-//     localStorage.setItem("productList", JSON.stringify(productList));
-//   } else {
-//     const storageArray = JSON.parse(productListStorage);
-//     if (
-//       !storageArray.find((productStorage: { _id: string }) => {
-//         return productStorage._id === productId;
-//       })
-//     ) {
-//       storageArray.push({ _id: productId });
-//       localStorage.setItem("productList", JSON.stringify(storageArray));
-//     }
-//   }
-// }
-
-//  Remove function
-
-// function removeItemFromLocalStorage(productId: string) {
-//   const productListStorage = localStorage.getItem("productList");
-//   if (productListStorage === null) {
-//     return;
-//   } else {
-//     const storageArray = JSON.parse(productListStorage);
-//     const filteredArray = storageArray.filter(
-//       (product: { _id: string }) => product._id !== productId
-//     );
-//     localStorage.setItem("productList", JSON.stringify(filteredArray));
-//   }
-// }
-
-// Get items from the wishlist
-
-// function getItemsFromLocalStorage() {
-//   const productListStorage = localStorage.getItem("productList");
-//   if (productListStorage === null) {
-//     return [];
-//   } else {
-//     return JSON.parse(productListStorage);
-//   }
-// }

@@ -18,12 +18,12 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const syncItems = api.wishlist.synchronizeWishlist.useMutation();
 
   useEffect(() => {
-    let productIds = JSON.parse(sessionStorage.getItem("productList") || "[]");
+    let productIds = JSON.parse(localStorage.getItem("productList") || "[]");
 
     if (sessionData && wishlist.data) {
       const serverProductIds = wishlist.data.map((item) => item.productId);
       productIds = [...new Set([...productIds, ...serverProductIds])];
-      sessionStorage.setItem("productList", JSON.stringify(productIds));
+      localStorage.setItem("productList", JSON.stringify(productIds));
     }
 
     const filteredProductsById = products.filter((product) =>
@@ -49,8 +49,6 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
         });
       }
     }
-    
-
 
     setFilteredProducts(filteredProductsById);
   }, [sessionData, wishlist.data]);

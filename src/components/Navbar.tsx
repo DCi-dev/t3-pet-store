@@ -91,13 +91,13 @@ export default function NavBar() {
                   <HeartIcon className="h-6 w-6" aria-hidden="true" />
                 </Link>
 
-                <button
-                  type="button"
+                <Link
+                  href="/user/cart"
                   className="ml-3 rounded-full  p-1 text-neutral-100 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                 >
                   <span className="sr-only">Shopping Cart</span>
                   <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                </Link>
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">

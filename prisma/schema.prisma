@@ -57,7 +57,7 @@ model User {
 
   Adress       Address[]
   // Wishlist     Wishlist[]
-  Cart         Cart[]
+  // Cart         Cart[]
   Order        Order[]
   WishlistItem WishlistItem[]
   CartItem     CartItem[]
@@ -108,24 +108,24 @@ model WishlistItem {
   @@index([userId])
 }
 
-model Cart {
-  id       String     @id @default(cuid())
-  userId   String
-  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  products CartItem[]
+// model Cart {
+//   id       String     @id @default(cuid())
+//   userId   String
+//   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   products CartItem[]
 
-  @@index([userId])
-}
+//   @@index([userId])
+// }
 
 model CartItem {
   id        String @id @default(cuid())
   productId String
-  cartId    String
-  cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  // cartId    String
+  // cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
   userId    String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([cartId])
+  // @@index([cartId])
   @@index([userId])
 }
 

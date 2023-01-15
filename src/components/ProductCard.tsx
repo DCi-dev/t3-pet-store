@@ -33,7 +33,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [inInWishlist, setInInWishlist] = useState<boolean>(false);
 
   useEffect(() => {
-    const productListStorage = sessionStorage.getItem("productList");
+    const productListStorage = localStorage.getItem("productList");
     if (productListStorage) {
       const productArray = JSON.parse(productListStorage);
       const isInWishlist = productArray.includes(product._id);
@@ -46,13 +46,11 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   }`;
   const { data: sessionData } = useSession();
 
-  function addItemToSessionStorage(productId: string) {
-    const productIds = JSON.parse(
-      sessionStorage.getItem("productList") || "[]"
-    );
+  function addItemToLocalStorage(productId: string) {
+    const productIds = JSON.parse(localStorage.getItem("productList") || "[]");
     if (!productIds.includes(productId)) {
       productIds.push(productId);
-      sessionStorage.setItem("productList", JSON.stringify(productIds));
+      localStorage.setItem("productList", JSON.stringify(productIds));
     }
   }
 
@@ -64,12 +62,12 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     // check if the user is authenticated
     if (!sessionData?.user) {
       // if not, add the product to the wishlist on the client side
-      addItemToSessionStorage(product._id);
+      addItemToLocalStorage(product._id);
       return;
     } else {
       // if the user is authenticated, send the product id to the server
       // using TRPC call
-      addItemToSessionStorage(product._id);
+      addItemToLocalStorage(product._id);
       // Check if the product id is already in the database if not add it
 
       if (!wishlist.data) {
@@ -85,11 +83,9 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   };
 
   function removeItemFromStorage(productId: string) {
-    const productIds = JSON.parse(
-      sessionStorage.getItem("productList") || "[]"
-    );
+    const productIds = JSON.parse(localStorage.getItem("productList") || "[]");
     const updatedIds = productIds.filter((id: string) => id !== productId);
-    sessionStorage.setItem("productList", JSON.stringify(updatedIds));
+    localStorage.setItem("productList", JSON.stringify(updatedIds));
   }
 
   const handleRemoveFromWishlist = async (product: ProductType) => {
