@@ -75,7 +75,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
             <div className="mt-6">
               <button
                 type="submit"
-                className="w-full rounded-md border border-transparent bg-yellow-400 py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-neutral-800"
+                className="w-full rounded-md border border-transparent bg-yellow-400 py-3 px-4 text-base font-medium text-neutral-900 shadow-sm hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-neutral-800"
               >
                 Checkout
               </button>
