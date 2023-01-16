@@ -62,7 +62,7 @@ const ProductPage: NextPage = ({
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
     // filter the cart by product id and selected size and flavor
-    const existingItem = cart.filter((item) => item._id === product._id);
+    const existingItem = cart.filter((item: { _id: string; }) => item._id === product._id);
     if (existingItem.length > 0) {
       // update the sizeOption and flavor of the existing item
       existingItem[0].sizeOption = selectedSize;

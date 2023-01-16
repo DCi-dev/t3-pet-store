@@ -9,6 +9,7 @@ import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
+import type { SetStateAction } from "react";
 import { useEffect, useState } from "react";
 
 interface ChildProps {
@@ -33,7 +34,34 @@ const CartItem: React.FC<ChildProps> = ({
   // handleQuantityChange,
   product,
 }) => {
-  const { qty } = useShopContext() as ShopContextProps;
+  const [qty, setQty] = useState<number>(1);
+
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    // filter the cart by product id and selected size and flavor
+    const existingItem = cart.filter(
+      (item: { _id: string }) => item._id === product._id
+    );
+    if (existingItem.length > 0) {
+      existingItem[0].quantity = qty;
+    } else {
+      //create new item with selectedSize, selectedFlavor and quantity 1
+      cart.push({
+        _id: selectedData?._id,
+        sizeOption: selectedData?.sizeOption,
+        flavor: selectedData?.flavor,
+        quantity: qty,
+      });
+    }
+
+    // Save the updated cart to local storage
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [qty]);
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setQty(Number(e.target.value));
+  };
 
   const [selectedData, setSelectedData] = useState<selectedData>();
 
@@ -45,28 +73,14 @@ const CartItem: React.FC<ChildProps> = ({
     setSelectedData(selectedData);
   }, [product._id]);
 
-  const { data: sessionData } = useSession();
-
   // Images
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0]
   );
 
-  const removeProduct = api.cart.removeItem.useMutation();
-
   const handleClick = (productId: string) => {
     handleRemoveProduct(productId);
-    const productListStorage = localStorage.getItem("cart");
-    if (productListStorage) {
-      const storageArray = JSON.parse(productListStorage);
-      console.log(storageArray);
-      //   storageArray = storageArray.filter((id: string) => id !== productId);
-      //   localStorage.setItem("productList", JSON.stringify(storageArray));
-      //   if (sessionData?.user) {
-      //     removeProduct.mutate(product);
-      //   }
-    }
   };
 
   return (
@@ -110,9 +124,7 @@ const CartItem: React.FC<ChildProps> = ({
               Quantity, {product.name}
             </label>
             <select
-              // onChange={(e) =>
-              //   handleQuantityChange(product._id, parseInt(e.target.value))
-              // }
+              onChange={handleQuantityChange}
               id={`quantity-${product._id}`}
               name={`quantity-${product._id}`}
               className="max-w-full rounded-md border border-neutral-700 bg-neutral-700 py-1.5 text-left text-base font-medium leading-5 text-neutral-100 shadow-sm focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400 sm:text-sm"

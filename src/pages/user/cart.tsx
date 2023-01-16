@@ -36,9 +36,6 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     setFilteredProducts(filteredProductsById);
   }, [sessionData, cart.data]);
 
-  console.log(products);
-  console.log(filteredProducts);
-
   const handleRemoveProduct = (productId: string) => {
     if (sessionData) {
       removeItem.mutate({
