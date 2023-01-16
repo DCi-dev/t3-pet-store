@@ -9,8 +9,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
-  const { qty } = useShopContext() as ShopContextProps;
-
   const { data: sessionData } = useSession();
 
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>();
@@ -19,20 +17,27 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const removeItem = api.cart.removeItem.useMutation();
 
   useEffect(() => {
-    let storageProducts = JSON.parse(localStorage.getItem("cart") || "[]");
+    // Get the cart from local storage
+    const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    if (sessionData && cart.data) {
-      const serverProductIds = cart.data.map((item) => item.productId);
-      storageProducts = [...new Set([...storageProducts, ...serverProductIds])];
-      localStorage.setItem("cart", JSON.stringify(storageProducts));
-    }
-
+    // Filter the products by the ids, sizeOption and flavor in the cart
     const filteredProductsById = products.filter((product) =>
-      storageProducts.includes(product._id)
+      storageCart.some(
+        (item) =>
+          item._id === product._id &&
+          product.sizeOptions.some(
+            (sizeOption) => sizeOption._key === item.sizeOption._key
+          ) &&
+          product.flavor.includes(item.flavor)
+      )
     );
 
+    // Update the state with the filtered products
     setFilteredProducts(filteredProductsById);
   }, [sessionData, cart.data]);
+
+  console.log(products);
+  console.log(filteredProducts);
 
   const handleRemoveProduct = (productId: string) => {
     if (sessionData) {

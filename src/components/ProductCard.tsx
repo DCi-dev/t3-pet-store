@@ -30,6 +30,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
 
+  // Wishlist button
   const [inInWishlist, setInInWishlist] = useState<boolean>(false);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const wishlistClass = `h-5 w-5 fill-current ${
     inInWishlist ? "text-red-500" : "text-neutral-500"
   }`;
+
   const { data: sessionData } = useSession();
 
   function addItemToLocalStorage(productId: string) {

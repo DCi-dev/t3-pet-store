@@ -60,49 +60,25 @@ const ProductPage: NextPage = ({
     quantity: number;
   }) {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const index = cart.findIndex((p: { _id: string }) => p._id === product._id);
-    if (index === -1) {
-      cart.push({ ...product, quantity: qty });
-    } else {
-      cart[index].quantity += qty;
-    }
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }
 
-  function updateItemInLocalStorage(product: {
-    _id: string;
-    sizeOption: {
-      size: string;
-      price: number;
-      _key: string;
-    };
-    flavor: string;
-    quantity: number;
-  }) {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const index = cart.findIndex((p: { _id: string }) => p._id === product._id);
-    if (index !== -1) {
-      cart[index].quantity += qty;
-    }
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }
-
-  function addItemToCart() {
-    if (sessionData) {
-      addProduct.mutate({
-        _id: product._id,
-        sizeOption: selectedSize,
-        flavor: selectedFlavor,
-        quantity: 1,
-      });
+    // filter the cart by product id and selected size and flavor
+    const existingItem = cart.filter((item) => item._id === product._id);
+    if (existingItem.length > 0) {
+      // update the sizeOption and flavor of the existing item
+      existingItem[0].sizeOption = selectedSize;
+      existingItem[0].flavor = selectedFlavor;
     } else {
-      addItemToLocalStorage({
+      //create new item with selectedSize, selectedFlavor and quantity 1
+      cart.push({
         _id: product._id,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
         quantity: 1,
       });
     }
+
+    // Save the updated cart to local storage
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
 
   function handleAddToCart() {
@@ -131,7 +107,7 @@ const ProductPage: NextPage = ({
         _id: product._id,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
-        quantity: 1,
+        quantity: qty,
       });
     }
   }
