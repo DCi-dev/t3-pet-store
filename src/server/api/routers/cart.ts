@@ -154,15 +154,15 @@ export const cartRouter = createTRPCRouter({
           userId: userId,
         },
       });
+      const sizeOptions = await ctx.prisma.sizeOption.deleteMany({
+        where: {
+          id: existingItem[0].sizeId,
+        },
+      });
       const cart = await ctx.prisma.cartItem.deleteMany({
         where: {
           productId: input._id,
           userId: userId,
-        },
-      });
-      const sizeOptions = await ctx.prisma.sizeOption.deleteMany({
-        where: {
-          id: existingItem[0].sizeId,
         },
       });
       return [cart, sizeOptions];
