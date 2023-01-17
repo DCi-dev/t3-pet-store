@@ -15,6 +15,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
 
   const cart = api.cart.getItems.useQuery();
   const removeItem = api.cart.removeItem.useMutation();
+  const removeSize = api.cart.removeSizeOption.useMutation();
 
   useEffect(() => {
     // Get the cart from local storage
@@ -23,7 +24,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     // Filter the products by the ids, sizeOption and flavor in the cart
     const filteredProductsById = products.filter((product) =>
       storageCart.some(
-        (item) =>
+        (item: { _id: string; sizeOption: { _key: string }; flavor: string }) =>
           item._id === product._id &&
           product.sizeOptions.some(
             (sizeOption) => sizeOption._key === item.sizeOption._key
@@ -41,6 +42,17 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
       removeItem.mutate({
         _id: productId,
       });
+      setFilteredProducts(
+        filteredProducts?.filter((product) => product._id !== productId)
+      );
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(
+          JSON.parse(localStorage.getItem("cart") || "[]").filter(
+            (product: ProductType) => product._id !== productId
+          )
+        )
+      );
     } else {
       setFilteredProducts(
         filteredProducts?.filter((product) => product._id !== productId)

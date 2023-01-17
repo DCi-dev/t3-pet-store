@@ -22,7 +22,6 @@ export const cartRouter = createTRPCRouter({
         // If user is not authenticated, return empty array
         return [];
       }
-      // If user is authenticated, return items from the server
       const sizeOptions = await ctx.prisma.sizeOption.create({
         data: {
           size: input.sizeOption.size,
@@ -50,35 +49,36 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-  removeItem: publicProcedure
+  updateQuantity: publicProcedure
     .input(
       z.object({
         _id: z.string(),
+        quantity: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
-
-      // If user is authenticated, remove item from the server
-      const cart = await ctx.prisma.cartItem.deleteMany({
+      if (!userId) {
+        // If user is not authenticated, return empty array
+        return [];
+      }
+      // If user is authenticated, return items from the server
+      const cart = await ctx.prisma.cartItem.updateMany({
         where: {
           productId: input._id,
           userId: userId,
+        },
+        data: {
+          quantity: input.quantity,
         },
       });
       return cart;
     }),
 
-  updateItem: publicProcedure
+  updateFlavor: publicProcedure
     .input(
       z.object({
         _id: z.string(),
-        quantity: z.number(),
-        size: z.object({
-          size: z.string(),
-          price: z.number(),
-          _key: z.string(),
-        }),
         flavor: z.string(),
       })
     )
@@ -89,25 +89,83 @@ export const cartRouter = createTRPCRouter({
         return [];
       }
       // If user is authenticated, return items from the server
-      const sizeOptions = await ctx.prisma.sizeOption.findFirst({
+      const cart = await ctx.prisma.cartItem.updateMany({
+        where: {},
+        data: {
+          flavor: input.flavor,
+        },
+      });
+      return cart;
+    }),
+
+  updateSize: publicProcedure
+    .input(
+      z.object({
+        _id: z.string(),
+        size: z.object({
+          size: z.string(),
+          price: z.number(),
+          _key: z.string(),
+        }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session?.user?.id;
+      if (!userId) {
+        // If user is not authenticated, return empty array
+        return [];
+      }
+      const existingItem = await ctx.prisma.cartItem.findMany({
         where: {
+          productId: input._id,
+          userId: userId,
+        },
+      });
+      const sizeOptions = await ctx.prisma.sizeOption.updateMany({
+        where: {
+          id: existingItem[0].sizeId,
+        },
+        data: {
           size: input.size.size,
           price: input.size.price,
           key: input.size._key,
         },
       });
-      const cart = await ctx.prisma.cartItem.updateMany({
+      return sizeOptions;
+    }),
+
+  removeItem: publicProcedure
+    .input(
+      z.object({
+        _id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session?.user?.id;
+
+      if (!userId) {
+        // If user is not authenticated, return empty array
+        return [];
+      }
+      // If user is authenticated, return items from the server
+      const existingItem = await ctx.prisma.cartItem.findMany({
         where: {
           productId: input._id,
-          sizeOptionId: sizeOptions?.id,
           userId: userId,
         },
-        data: {
-          quantity: input.quantity,
-          flavor: input.flavor,
+      });
+      const cart = await ctx.prisma.cartItem.deleteMany({
+        where: {
+          productId: input._id,
+          userId: userId,
         },
       });
-      return cart;
+      const sizeOptions = await ctx.prisma.sizeOption.deleteMany({
+        where: {
+          id: existingItem[0].sizeId,
+        },
+      });
+      return [cart, sizeOptions];
     }),
 
   getItems: publicProcedure.query(async ({ ctx }) => {

@@ -41,13 +41,13 @@ const ProductPage: NextPage = ({
   products,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data: sessionData } = useSession();
-  const [qty, setQty] = useState(1);
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
   const productImageProps = useNextSanityImage(client, product.image[0]);
   const cart = api.cart.getItems.useQuery();
   const addProduct = api.cart.addItem.useMutation();
-  const updateProduct = api.cart.updateItem.useMutation();
+  const updateSize = api.cart.updateSize.useMutation();
+  const updateFlavor = api.cart.updateFlavor.useMutation();
 
   function addItemToLocalStorage(product: {
     _id: string;
@@ -62,7 +62,9 @@ const ProductPage: NextPage = ({
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
     // filter the cart by product id and selected size and flavor
-    const existingItem = cart.filter((item: { _id: string; }) => item._id === product._id);
+    const existingItem = cart.filter(
+      (item: { _id: string }) => item._id === product._id
+    );
     if (existingItem.length > 0) {
       // update the sizeOption and flavor of the existing item
       existingItem[0].sizeOption = selectedSize;
@@ -81,33 +83,58 @@ const ProductPage: NextPage = ({
     localStorage.setItem("cart", JSON.stringify(cart));
   }
 
+  function addItemToDatabase(product: {
+    _id: string;
+    sizeOption: {
+      size: string;
+      price: number;
+      _key: string;
+    };
+    flavor: string;
+    quantity: number;
+  }) {
+    const existingItem = cart.data?.find(
+      (item: { productId: string }) => item.productId === product._id
+    );
+    if (existingItem) {
+      updateFlavor.mutate({
+        _id: product._id,
+        flavor: selectedFlavor,
+      });
+      updateSize.mutate({
+        _id: product._id,
+        size: selectedSize,
+      });
+    } else {
+      addProduct.mutate({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
+    }
+  }
+
   function handleAddToCart() {
     if (sessionData) {
-      const existingItem = cart.data?.find(
-        (item) =>
-          item.productId === product._id && item.flavor === selectedFlavor
-      );
-      if (existingItem) {
-        updateProduct.mutate({
-          _id: product._id,
-          size: selectedSize,
-          flavor: selectedFlavor,
-          quantity: existingItem.quantity + 1,
-        });
-      } else {
-        addProduct.mutate({
-          _id: product._id,
-          sizeOption: selectedSize,
-          flavor: selectedFlavor,
-          quantity: 1,
-        });
-      }
+      addItemToDatabase({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
+      addItemToLocalStorage({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
     } else {
       addItemToLocalStorage({
         _id: product._id,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
-        quantity: qty,
+        quantity: 1,
       });
     }
   }

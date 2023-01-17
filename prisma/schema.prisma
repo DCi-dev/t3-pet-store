@@ -124,7 +124,7 @@ model CartItem {
   // cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
   userId       String
   quantity     Int
-  size         SizeOption @relation(fields: [sizeOptionId], references: [id])
+  size         SizeOption @relation(fields: [sizeOptionId], references: [id], onDelete: Cascade)
   flavor       String
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   sizeOptionId String
