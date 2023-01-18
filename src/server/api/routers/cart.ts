@@ -90,7 +90,10 @@ export const cartRouter = createTRPCRouter({
       }
       // If user is authenticated, return items from the server
       const cart = await ctx.prisma.cartItem.updateMany({
-        where: {},
+        where: {
+          productId: input._id,
+          userId: userId,
+        },
         data: {
           flavor: input.flavor,
         },
@@ -123,7 +126,7 @@ export const cartRouter = createTRPCRouter({
       });
       const sizeOptions = await ctx.prisma.sizeOption.updateMany({
         where: {
-          id: existingItem[0].sizeId,
+          id: existingItem[0]?.sizeOptionId,
         },
         data: {
           size: input.size.size,
@@ -156,7 +159,7 @@ export const cartRouter = createTRPCRouter({
       });
       const sizeOptions = await ctx.prisma.sizeOption.deleteMany({
         where: {
-          id: existingItem[0].sizeId,
+          id: existingItem[0]?.sizeOptionId,
         },
       });
       const cart = await ctx.prisma.cartItem.deleteMany({
