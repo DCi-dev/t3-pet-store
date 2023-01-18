@@ -1,4 +1,4 @@
-import { string, z } from "zod";
+import z from "zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -55,46 +55,32 @@ export const wishlistRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
       if (!userId) {
-        // If user is not authenticated, return empty array
-        return [];
+        return;
       }
       // If user is authenticated, return items from the server
-      const existingItem = await ctx.prisma.wishlistItem.findMany({
+      const items = await ctx.prisma.wishlistItem.findMany({
         where: {
           userId: userId,
         },
       });
-      if (existingItem.length > 0) {
-       const wishlist = await ctx.prisma.wishlistItem.create({
-        data: {
-          productId: input,
-          user: {
-            connect: {
-              id: userId,
-            },
-          },
-        },
-      });
-        return wishlist; 
+      const itemsIds = items.map((item) => item.productId);
+      if (itemsIds.includes(input)) {
+        return;
       } else {
-        //  Check if the user already has the item in the wishlist
-        const dbItems = existingItem.map((item) => item.productId);
-
-        if (!dbItems.includes(input)) {
-          const wishlist = await ctx.prisma.wishlistItem.create({
-            data: {
-              productId: input,
-              user: {
-                connect: {
-                  id: userId,
-                },
+        const wishlist = await ctx.prisma.wishlistItem.create({
+          data: {
+            productId: input,
+            user: {
+              connect: {
+                id: userId,
               },
             },
-          });
-          return wishlist;
-        }
+          },
+        });
+        return wishlist;
       }
     }),
+});
 
 //  Add function
 

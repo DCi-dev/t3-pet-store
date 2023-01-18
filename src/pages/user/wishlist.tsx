@@ -16,35 +16,65 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
 
   const wishlist = api.wishlist.getItems.useQuery();
   const addItems = api.wishlist.addItem.useMutation();
+  const removeProduct = api.wishlist.removeItem.useMutation();
+  const syncProducts = api.wishlist.synchronizeWishlist.useMutation();
 
   useEffect(() => {
     const localIds = JSON.parse(localStorage.getItem("productList") || "[]");
 
-    if (sessionData && wishlist.data) {
-      const serverProductIds = wishlist.data.map((item) => item.productId);
+    if (sessionData?.user && wishlist.data) {
+      const serverProductIds = wishlist.data.map((item) => {
+        return item.productId;
+      });
       const productIds: string[] = [
         ...new Set([...localIds, ...serverProductIds]),
       ];
       localStorage.setItem("productList", JSON.stringify(productIds));
-      productIds.forEach((item) => {
-        addItems.mutate(item);
+      localIds.forEach((id: string) => {
+        syncProducts.mutate(id);
       });
       const filteredProductsById = products.filter((product) =>
         productIds.includes(product._id)
       );
       setFilteredProducts(filteredProductsById);
-    } else {
+    } else if (sessionData?.user && !wishlist.data) {
+      localIds.forEach((id: string) => {
+        addItems.mutate(id);
+      });
+      const filteredProductsById = products.filter((product) =>
+        localIds.includes(product._id)
+      );
+      setFilteredProducts(filteredProductsById);
+    } else if (!sessionData?.user) {
       const filteredProductsById = products.filter((product) =>
         localIds.includes(product._id)
       );
       setFilteredProducts(filteredProductsById);
     }
-  }, [sessionData, wishlist.data]);
+  }, []);
 
   const handleRemoveProduct = (productId: string) => {
-    setFilteredProducts(
-      filteredProducts?.filter((product) => product._id !== productId)
-    );
+    const productListStorage = localStorage.getItem("productList");
+    if (sessionData?.user) {
+      removeProduct.mutate(productId);
+      if (productListStorage) {
+        let storageArray = JSON.parse(productListStorage);
+        storageArray = storageArray.filter((id: string) => id !== productId);
+        localStorage.setItem("productList", JSON.stringify(storageArray));
+      }
+      setFilteredProducts(
+        filteredProducts?.filter((product) => product._id !== productId)
+      );
+    } else {
+      if (productListStorage) {
+        let storageArray = JSON.parse(productListStorage);
+        storageArray = storageArray.filter((id: string) => id !== productId);
+        localStorage.setItem("productList", JSON.stringify(storageArray));
+      }
+      setFilteredProducts(
+        filteredProducts?.filter((product) => product._id !== productId)
+      );
+    }
   };
 
   return (

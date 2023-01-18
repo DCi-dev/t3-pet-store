@@ -15,28 +15,11 @@ const WishlistTable: React.FC<ChildProps> = ({
   handleRemoveProduct,
   product,
 }) => {
-  const { data: sessionData } = useSession();
-
   // Images
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0]
   );
-
-  const removeProduct = api.wishlist.removeItem.useMutation();
-
-  const handleClick = (productId: string) => {
-    handleRemoveProduct(productId);
-    const productListStorage = localStorage.getItem("productList");
-    if (productListStorage) {
-      let storageArray = JSON.parse(productListStorage);
-      storageArray = storageArray.filter((id: string) => id !== productId);
-      localStorage.setItem("productList", JSON.stringify(storageArray));
-      if (sessionData?.user) {
-        removeProduct.mutate(product);
-      }
-    }
-  };
 
   return (
     <tr key={product._id}>
@@ -61,7 +44,7 @@ const WishlistTable: React.FC<ChildProps> = ({
 
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <button
-          onClick={() => handleClick(product._id)}
+          onClick={() => handleRemoveProduct(product._id)}
           className="text-yellow-400 hover:text-yellow-500"
         >
           Remove

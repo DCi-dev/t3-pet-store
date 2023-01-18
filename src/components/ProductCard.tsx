@@ -73,12 +73,12 @@ const ProductCard = ({ product }: { product: ProductType }) => {
       // Check if the product id is already in the database if not add it
 
       if (!wishlist.data) {
-        addProduct.mutate(product);
+        addProduct.mutate(product._id);
       } else {
         const productIds = wishlist.data.map((product) => product.productId);
         if (!productIds.includes(product._id)) {
           // if the productIds array does not include the product id, add it
-          addProduct.mutate(product);
+          addProduct.mutate(product._id);
         }
       }
     }
@@ -99,7 +99,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     } else {
       // if the user is authenticated, send the product id to the server
       // using TRPC call
-      removeProduct.mutate(product);
+      removeProduct.mutate(product._id);
       removeItemFromStorage(product._id);
     }
   };
