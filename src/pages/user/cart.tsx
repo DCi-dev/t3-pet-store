@@ -15,7 +15,6 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
 
   const cart = api.cart.getItems.useQuery();
   const removeItem = api.cart.removeItem.useMutation();
-  const removeSize = api.cart.removeSizeOption.useMutation();
 
   useEffect(() => {
     // Get the cart from local storage

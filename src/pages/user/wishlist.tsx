@@ -15,42 +15,30 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   >();
 
   const wishlist = api.wishlist.getItems.useQuery();
-  const syncItems = api.wishlist.synchronizeWishlist.useMutation();
+  const addItems = api.wishlist.addItem.useMutation();
 
   useEffect(() => {
-    let productIds = JSON.parse(localStorage.getItem("productList") || "[]");
+    const localIds = JSON.parse(localStorage.getItem("productList") || "[]");
 
     if (sessionData && wishlist.data) {
       const serverProductIds = wishlist.data.map((item) => item.productId);
-      productIds = [...new Set([...productIds, ...serverProductIds])];
+      const productIds: string[] = [
+        ...new Set([...localIds, ...serverProductIds]),
+      ];
       localStorage.setItem("productList", JSON.stringify(productIds));
-    }
-
-    const filteredProductsById = products.filter((product) =>
-      productIds.includes(product._id)
-    );
-
-    // Sync filteredProductsById with the database, checking if the product is already in the database
-    // If it is, then we don't need to add it again
-    // If it isn't, then we need to add it to the database
-    if (sessionData && wishlist.data) {
-      const serverProductIds = wishlist.data.map((item) => item.productId);
-      const filteredProductIds = filteredProductsById.map(
-        (product) => product._id
+      productIds.forEach((item) => {
+        addItems.mutate(item);
+      });
+      const filteredProductsById = products.filter((product) =>
+        productIds.includes(product._id)
       );
-
-      const newProductIds = filteredProductIds.filter(
-        (id) => !serverProductIds.includes(id)
+      setFilteredProducts(filteredProductsById);
+    } else {
+      const filteredProductsById = products.filter((product) =>
+        localIds.includes(product._id)
       );
-
-      if (newProductIds.length > 0) {
-        newProductIds.forEach((id) => {
-          syncItems.mutate(id);
-        });
-      }
+      setFilteredProducts(filteredProductsById);
     }
-
-    setFilteredProducts(filteredProductsById);
   }, [sessionData, wishlist.data]);
 
   const handleRemoveProduct = (productId: string) => {
@@ -127,3 +115,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 export default WishlistPage;
+function forEach(arg0: (item: any) => void) {
+  throw new Error("Function not implemented.");
+}

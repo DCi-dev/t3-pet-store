@@ -4,16 +4,12 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const wishlistRouter = createTRPCRouter({
   addItem: publicProcedure
-    .input(
-      z.object({
-        _id: string(),
-      })
-    )
+    .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
       const wishlist = await ctx.prisma.wishlistItem.create({
         data: {
-          productId: input._id,
+          productId: input,
           user: {
             connect: {
               id: userId,
@@ -25,18 +21,14 @@ export const wishlistRouter = createTRPCRouter({
     }),
 
   removeItem: publicProcedure
-    .input(
-      z.object({
-        _id: string(),
-      })
-    )
+    .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
 
       // If user is authenticated, remove item from the server
       const wishlist = await ctx.prisma.wishlistItem.deleteMany({
         where: {
-          productId: input._id,
+          productId: input,
           userId: userId,
         },
       });
@@ -62,7 +54,18 @@ export const wishlistRouter = createTRPCRouter({
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
-      const wishlist = await ctx.prisma.wishlistItem.create({
+      if (!userId) {
+        // If user is not authenticated, return empty array
+        return [];
+      }
+      // If user is authenticated, return items from the server
+      const existingItem = await ctx.prisma.wishlistItem.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+      if (existingItem.length > 0) {
+       const wishlist = await ctx.prisma.wishlistItem.create({
         data: {
           productId: input,
           user: {
@@ -72,9 +75,26 @@ export const wishlistRouter = createTRPCRouter({
           },
         },
       });
-      return wishlist;
+        return wishlist; 
+      } else {
+        //  Check if the user already has the item in the wishlist
+        const dbItems = existingItem.map((item) => item.productId);
+
+        if (!dbItems.includes(input)) {
+          const wishlist = await ctx.prisma.wishlistItem.create({
+            data: {
+              productId: input,
+              user: {
+                connect: {
+                  id: userId,
+                },
+              },
+            },
+          });
+          return wishlist;
+        }
+      }
     }),
-});
 
 //  Add function
 
