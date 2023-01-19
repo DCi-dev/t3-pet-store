@@ -3,7 +3,7 @@ import z from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const wishlistRouter = createTRPCRouter({
-  addItem: publicProcedure
+  addItem: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
@@ -20,7 +20,7 @@ export const wishlistRouter = createTRPCRouter({
       return wishlist;
     }),
 
-  removeItem: publicProcedure
+  removeItem: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;

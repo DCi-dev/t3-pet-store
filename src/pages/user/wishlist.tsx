@@ -18,39 +18,34 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const addItems = api.wishlist.addItem.useMutation();
   const removeProduct = api.wishlist.removeItem.useMutation();
   const syncProducts = api.wishlist.synchronizeWishlist.useMutation();
+  const processedIds = new Set();
 
   useEffect(() => {
     const localIds = JSON.parse(localStorage.getItem("productList") || "[]");
-
-    if (sessionData?.user && wishlist.data) {
-      const serverProductIds = wishlist.data.map((item) => {
-        return item.productId;
-      });
-      const productIds: string[] = [
-        ...new Set([...localIds, ...serverProductIds]),
-      ];
-      localStorage.setItem("productList", JSON.stringify(productIds));
-      localIds.forEach((id: string) => {
-        syncProducts.mutate(id);
-      });
-      const filteredProductsById = products.filter((product) =>
-        productIds.includes(product._id)
-      );
-      setFilteredProducts(filteredProductsById);
-    } else if (sessionData?.user && !wishlist.data) {
-      localIds.forEach((id: string) => {
-        addItems.mutate(id);
-      });
-      const filteredProductsById = products.filter((product) =>
-        localIds.includes(product._id)
-      );
-      setFilteredProducts(filteredProductsById);
-    } else if (!sessionData?.user) {
-      const filteredProductsById = products.filter((product) =>
-        localIds.includes(product._id)
-      );
-      setFilteredProducts(filteredProductsById);
+    if (sessionData?.user) {
+      if (wishlist.data) {
+        const serverProductIds = wishlist.data.map((item) => item.productId);
+        const productIds = [...new Set([...localIds, ...serverProductIds])];
+        localStorage.setItem("productList", JSON.stringify(productIds));
+        localIds.forEach((id: string) => {
+          if (!processedIds.has(id)) {
+            processedIds.add(id);
+            syncProducts.mutate(id);
+          }
+        });
+      } else {
+        localIds.forEach((id: string) => {
+          if (!processedIds.has(id)) {
+            processedIds.add(id);
+            addItems.mutate(id);
+          }
+        });
+      }
     }
+    const filteredProductsById = products.filter((product) =>
+      localIds.includes(product._id)
+    );
+    setFilteredProducts(filteredProductsById);
   }, []);
 
   const handleRemoveProduct = (productId: string) => {
