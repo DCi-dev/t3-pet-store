@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
+import Link from "next/link";
 
 interface ChildProps {
   handleRemoveProduct: (productId: string) => void;
@@ -34,7 +35,11 @@ const WishlistTable: React.FC<ChildProps> = ({
             />
           </div>
           <div className="ml-4">
-            <div className="font-semibold text-neutral-100">{product.name}</div>
+            <Link href={`/shop/${product.slug.current}`}>
+              <div className="font-semibold text-neutral-100">
+                {product.name}
+              </div>
+            </Link>
           </div>
         </div>
       </td>

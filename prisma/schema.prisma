@@ -118,28 +118,29 @@ model WishlistItem {
 // }
 
 model CartItem {
-  id           String     @id @default(cuid())
-  productId    String
+  id        String       @id @default(cuid())
+  productId String
   // cartId    String
   // cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  userId       String
-  quantity     Int
-  size         SizeOption @relation(fields: [sizeOptionId], references: [id], onDelete: Cascade)
-  flavor       String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sizeOptionId String
+  userId    String
+  quantity  Int
+  size      SizeOption[]
+  flavor    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // @@index([cartId])
   @@index([userId])
-  @@index([sizeOptionId])
 }
 
 model SizeOption {
-  id       String     @id @default(cuid())
-  size     String
-  price    Int
-  key      String
-  CartItem CartItem[]
+  id         String   @id @default(cuid())
+  size       String
+  price      Int
+  key        String
+  cartItemId String
+  CartItem   CartItem @relation(fields: [cartItemId], references: [id], onDelete: Cascade)
+
+  @@index([cartItemId])
 }
 
 model Order {

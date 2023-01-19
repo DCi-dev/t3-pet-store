@@ -93,25 +93,21 @@ const ProductPage: NextPage = ({
     flavor: string;
     quantity: number;
   }) {
-    const existingItem = cart.data?.find(
-      (item: { productId: string }) => item.productId === product._id
+    const existingItems = cart.data?.find(
+      (item) => item.productId === product._id
     );
-    if (existingItem) {
+    if (existingItems) {
+      updateSize.mutate({
+        productId: existingItems.productId,
+        cartItemId: existingItems.id,
+        size: selectedSize,
+      });
       updateFlavor.mutate({
         _id: product._id,
         flavor: selectedFlavor,
       });
-      updateSize.mutate({
-        _id: product._id,
-        size: selectedSize,
-      });
     } else {
-      addProduct.mutate({
-        _id: product._id,
-        sizeOption: selectedSize,
-        flavor: selectedFlavor,
-        quantity: 1,
-      });
+      addProduct.mutate(product);
     }
   }
 
