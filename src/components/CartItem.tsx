@@ -1,74 +1,40 @@
-import type { ShopContextProps } from "@/context/ShopContext";
-import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
-import { api } from "@/utils/api";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
 import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
-import type { SetStateAction } from "react";
 import { useEffect, useState } from "react";
 
 interface ChildProps {
   handleRemoveProduct: (productId: string) => void;
-  // handleQuantityChange: (productId: string, newQuantity: number) => void;
+  handleQuantityChange: (productId: string, quantity: number) => void;
   product: ProductType;
 }
 
 interface selectedData {
-  _id: string;
+  productId: string;
   sizeOption: {
     size: string;
     price: number;
+    _key: string;
   };
   flavor: string;
-  price: number;
-  qty: number;
+  quantity: number;
 }
 
 const CartItem: React.FC<ChildProps> = ({
   handleRemoveProduct,
-  // handleQuantityChange,
+  handleQuantityChange,
   product,
 }) => {
-  const [qty, setQty] = useState<number>(1);
-
-  useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    // filter the cart by product id and selected size and flavor
-    const existingItem = cart.filter(
-      (item: { _id: string }) => item._id === product._id
-    );
-    if (existingItem.length > 0) {
-      existingItem[0].quantity = qty;
-    } else {
-      //create new item with selectedSize, selectedFlavor and quantity 1
-      cart.push({
-        _id: selectedData?._id,
-        sizeOption: selectedData?.sizeOption,
-        flavor: selectedData?.flavor,
-        quantity: qty,
-      });
-    }
-
-    // Save the updated cart to local storage
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, []);
-
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setQty(Number(e.target.value));
-  };
-
   const [selectedData, setSelectedData] = useState<selectedData>();
 
   useEffect(() => {
     const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
     const selectedData = storageCart.find(
-      (item: selectedData) => item._id === product._id
+      (item: selectedData) => item.productId === product._id
     );
     setSelectedData(selectedData);
   }, [product._id]);
@@ -124,7 +90,9 @@ const CartItem: React.FC<ChildProps> = ({
               Quantity, {product.name}
             </label>
             <select
-              onChange={handleQuantityChange}
+              onChange={(e) =>
+                handleQuantityChange(product._id, Number(e.target.value))
+              }
               id={`quantity-${product._id}`}
               name={`quantity-${product._id}`}
               className="max-w-full rounded-md border border-neutral-700 bg-neutral-700 py-1.5 text-left text-base font-medium leading-5 text-neutral-100 shadow-sm focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400 sm:text-sm"

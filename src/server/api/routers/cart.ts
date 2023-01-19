@@ -48,7 +48,7 @@ export const cartRouter = createTRPCRouter({
   updateQuantity: publicProcedure
     .input(
       z.object({
-        _id: z.string(),
+        productId: z.string(),
         quantity: z.number(),
       })
     )
@@ -61,7 +61,7 @@ export const cartRouter = createTRPCRouter({
       // If user is authenticated, return items from the server
       const cart = await ctx.prisma.cartItem.updateMany({
         where: {
-          productId: input._id,
+          productId: input.productId,
           userId: userId,
         },
         data: {
@@ -74,7 +74,7 @@ export const cartRouter = createTRPCRouter({
   updateFlavor: publicProcedure
     .input(
       z.object({
-        _id: z.string(),
+        productId: z.string(),
         flavor: z.string(),
       })
     )
@@ -87,7 +87,7 @@ export const cartRouter = createTRPCRouter({
       // If user is authenticated, return items from the server
       const cart = await ctx.prisma.cartItem.updateMany({
         where: {
-          productId: input._id,
+          productId: input.productId,
           userId: userId,
         },
         data: {
@@ -131,7 +131,7 @@ export const cartRouter = createTRPCRouter({
   removeItem: protectedProcedure
     .input(
       z.object({
-        _id: z.string(),
+        productId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -144,7 +144,7 @@ export const cartRouter = createTRPCRouter({
 
       const cart = await ctx.prisma.cartItem.deleteMany({
         where: {
-          productId: input._id,
+          productId: input.productId,
           userId: userId,
         },
       });
@@ -195,7 +195,7 @@ export const cartRouter = createTRPCRouter({
         if (itemsIds.includes(input._id)) {
           const sizeOptions = await ctx.prisma.sizeOption.updateMany({
             where: {
-              id: existingItem[0]?.sizeOptionId,
+              id: existingItem[0]?.id,
             },
             data: {
               size: input.sizeOption.size,
@@ -215,21 +215,16 @@ export const cartRouter = createTRPCRouter({
           });
           return [cart, sizeOptions];
         } else {
-          const sizeOptions = await ctx.prisma.sizeOption.create({
-            data: {
-              size: input.sizeOption.size,
-              price: input.sizeOption.price,
-              key: input.sizeOption._key,
-            },
-          });
           const cart = await ctx.prisma.cartItem.create({
             data: {
               productId: input._id,
               quantity: input.quantity,
               flavor: input.flavor,
               size: {
-                connect: {
-                  id: sizeOptions.id,
+                create: {
+                  size: input.sizeOption.size,
+                  price: input.sizeOption.price,
+                  key: input.sizeOption._key,
                 },
               },
               user: {
@@ -239,7 +234,7 @@ export const cartRouter = createTRPCRouter({
               },
             },
           });
-          return [cart, sizeOptions];
+          return cart;
         }
       }
     }),

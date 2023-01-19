@@ -15,6 +15,7 @@ import type {
   NextPage,
 } from "next";
 import { useSession } from "next-auth/react";
+import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import { useState } from "react";
@@ -36,6 +37,12 @@ const policies = [
   },
 ];
 
+interface sizeOption {
+  size: string;
+  price: number;
+  _key: string;
+}
+
 const ProductPage: NextPage = ({
   product,
   products,
@@ -43,7 +50,10 @@ const ProductPage: NextPage = ({
   const { data: sessionData } = useSession();
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
-  const productImageProps = useNextSanityImage(client, product.image[0]);
+  const productImageProps: UseNextSanityImageProps = useNextSanityImage(
+    client,
+    product.image[0]
+  );
   const cart = api.cart.getItems.useQuery();
   const addProduct = api.cart.addItem.useMutation();
   const updateSize = api.cart.updateSize.useMutation();
@@ -63,7 +73,7 @@ const ProductPage: NextPage = ({
 
     // filter the cart by product id and selected size and flavor
     const existingItem = cart.filter(
-      (item: { _id: string }) => item._id === product._id
+      (item: { productId: string }) => item.productId === product._id
     );
     if (existingItem.length > 0) {
       // update the sizeOption and flavor of the existing item
@@ -72,7 +82,7 @@ const ProductPage: NextPage = ({
     } else {
       //create new item with selectedSize, selectedFlavor and quantity 1
       cart.push({
-        _id: product._id,
+        productId: product._id,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
         quantity: 1,
@@ -103,11 +113,16 @@ const ProductPage: NextPage = ({
         size: selectedSize,
       });
       updateFlavor.mutate({
-        _id: product._id,
+        productId: product._id,
         flavor: selectedFlavor,
       });
     } else {
-      addProduct.mutate(product);
+      addProduct.mutate({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
     }
   }
 

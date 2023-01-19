@@ -29,7 +29,7 @@ export type ProductType = {
     _type: "slug";
   };
   sizeOptions: Array<{
-    size: number;
+    size: string;
     price: number;
     _key: string;
   }>;

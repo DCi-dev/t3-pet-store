@@ -1,6 +1,4 @@
 import CartItem from "@/components/CartItem";
-import type { ShopContextProps } from "@/context/ShopContext";
-import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
 import { api } from "@/utils/api";
@@ -16,6 +14,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const cart = api.cart.getItems.useQuery();
   const removeItem = api.cart.removeItem.useMutation();
   const addProduct = api.cart.addItem.useMutation();
+  const updateQuantity = api.cart.updateQuantity.useMutation();
   const syncProduct = api.cart.synchronizeCart.useMutation();
   const processedProducts = new Set();
 
@@ -23,11 +22,13 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     // Get the cart from local storage
     const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
     // if (sessionData?.user) {
-    //   if(cart.data) {
-    //     const serverProducts = cart.data
-    //     const localProducts = storageCart
-    //     const processedProducts = [...new Set([...serverProducts, ...localProducts])]
-    //     localStorage.setItem("cart", JSON.stringify(processedProducts))
+    //   if (cart.data) {
+    //     const serverProducts = cart.data;
+    //     const localProducts = storageCart;
+    //     const processedProducts = [
+    //       ...new Set([...serverProducts, ...localProducts]),
+    //     ];
+    //     localStorage.setItem("cart", JSON.stringify(processedProducts));
     //     storageCart.forEach((item) => {
     //       if (!processedProducts.includes(item)) {
     //         processedProducts.push(item);
@@ -55,12 +56,18 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     //         quantity: item.quantity,
     //       });
     //     });
+    //   }
+    // }
 
     // Filter the products by the ids, sizeOption and flavor in the cart
     const filteredProductsById = products.filter((product) =>
       storageCart.some(
-        (item: { _id: string; sizeOption: { _key: string }; flavor: string }) =>
-          item._id === product._id &&
+        (item: {
+          productId: string;
+          sizeOption: { _key: string };
+          flavor: string;
+        }) =>
+          item.productId === product._id &&
           product.sizeOptions.some(
             (sizeOption) => sizeOption._key === item.sizeOption._key
           ) &&
@@ -75,7 +82,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const handleRemoveProduct = (productId: string) => {
     if (sessionData) {
       removeItem.mutate({
-        _id: productId,
+        productId: productId,
       });
       setFilteredProducts(
         filteredProducts?.filter((product) => product._id !== productId)
@@ -103,6 +110,21 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     }
   };
 
+  const handleQuantityChange = (productId: string, qty: number) => {
+    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const product = localCart.find(
+      (item: { productId: string }) => item.productId === productId
+    );
+    product.quantity = qty;
+    localStorage.setItem("cart", JSON.stringify(localCart));
+    if (sessionData) {
+      updateQuantity.mutate({
+        productId: productId,
+        quantity: qty,
+      });
+    }
+  };
+
   return (
     <main className="bg-neutral-800">
       <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -124,7 +146,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
                   product={product}
                   key={product._id}
                   handleRemoveProduct={handleRemoveProduct}
-                  // onQuantityChange={handleQuantityChange}
+                  handleQuantityChange={handleQuantityChange}
                 />
               ))}
             </ul>
