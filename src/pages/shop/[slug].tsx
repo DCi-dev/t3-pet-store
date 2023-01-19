@@ -1,6 +1,6 @@
 import { ProductCard } from "@/components";
 import { client } from "@/lib/client";
-import type { ProductType, sizeOption } from "@/types/product";
+import { type ProductType } from "@/types/product";
 import { api } from "@/utils/api";
 import { Disclosure, RadioGroup } from "@headlessui/react";
 import {
@@ -93,13 +93,13 @@ const ProductPage: NextPage = ({
     flavor: string;
     quantity: number;
   }) {
-    const existingItems = cart.data?.find(
+    const existingItem = cart.data?.find(
       (item) => item.productId === product._id
     );
-    if (existingItems) {
+    if (existingItem) {
       updateSize.mutate({
-        productId: existingItems.productId,
-        cartItemId: existingItems.id,
+        productId: existingItem.productId,
+        cartItemId: existingItem.id,
         size: selectedSize,
       });
       updateFlavor.mutate({
