@@ -16,51 +16,13 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const addProduct = api.cart.addItem.useMutation();
   const updateQuantity = api.cart.updateQuantity.useMutation();
   const syncProduct = api.cart.synchronizeCart.useMutation();
-  const processedProducts = new Set();
 
   useEffect(() => {
     // Get the cart from local storage
     const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    // if (sessionData?.user) {
-    //   if (cart.data) {
-    //     const serverProducts = cart.data;
-    //     const localProducts = storageCart;
-    //     const processedProducts = [
-    //       ...new Set([...serverProducts, ...localProducts]),
-    //     ];
-    //     localStorage.setItem("cart", JSON.stringify(processedProducts));
-    //     storageCart.forEach((item) => {
-    //       if (!processedProducts.includes(item)) {
-    //         processedProducts.push(item);
-    //         syncProduct.mutate({
-    //           _id: item._id,
-    //           sizeOption: item.sizeOption,
-    //           flavor: item.flavor,
-    //           quantity: item.quantity,
-    //         });
-    //       } else {
-    //         addProduct.mutate({
-    //           _id: item._id,
-    //           sizeOption: item.sizeOption,
-    //           flavor: item.flavor,
-    //           quantity: item.quantity,
-    //         });
-    //       }
-    //     });
-    //   } else {
-    //     storageCart.forEach((item) => {
-    //       addProduct.mutate({
-    //         _id: item._id,
-    //         sizeOption: item.sizeOption,
-    //         flavor: item.flavor,
-    //         quantity: item.quantity,
-    //       });
-    //     });
-    //   }
-    // }
 
     // Filter the products by the ids, sizeOption and flavor in the cart
-    const filteredProductsById = products.filter((product) =>
+    const filteredProducts = products.filter((product) =>
       storageCart.some(
         (item: {
           productId: string;
@@ -68,15 +30,15 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
           flavor: string;
         }) =>
           item.productId === product._id &&
-          product.sizeOptions.some(
-            (sizeOption) => sizeOption._key === item.sizeOption._key
-          ) &&
+          // product.sizeOptions.some(
+          //   (sizeOption) => sizeOption._key === item.sizeOption._key
+          // ) &&
           product.flavor.includes(item.flavor)
       )
     );
 
-    // Update the state with the filtered products
-    setFilteredProducts(filteredProductsById);
+    // Set the filtered products
+    setFilteredProducts(filteredProducts);
   }, []);
 
   const handleRemoveProduct = (productId: string) => {

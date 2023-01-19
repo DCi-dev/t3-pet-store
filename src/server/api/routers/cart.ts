@@ -163,7 +163,27 @@ export const cartRouter = createTRPCRouter({
         userId: userId,
       },
     });
-    return items;
+    if (items.length === 0) {
+      return items;
+    } else if (items.length > 0) {
+      const sizes = await ctx.prisma.sizeOption.findMany({
+        where: {
+          cartItemId: {
+            in: items.map((item) => item.id),
+          },
+        },
+      });
+
+      const itemsWithSizes = items.map((item) => {
+        const sizeOption = sizes.find((size) => size.cartItemId === item.id);
+        return {
+          ...item,
+          sizeOption,
+        };
+      });
+
+      return itemsWithSizes;
+    }
   }),
 
   synchronizeCart: protectedProcedure
