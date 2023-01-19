@@ -57,7 +57,7 @@ const CartItem: React.FC<ChildProps> = ({
 
     // Save the updated cart to local storage
     localStorage.setItem("cart", JSON.stringify(cart));
-  }, [qty]);
+  }, []);
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setQty(Number(e.target.value));

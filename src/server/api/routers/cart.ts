@@ -203,33 +203,64 @@ export const cartRouter = createTRPCRouter({
       const userId = ctx.session?.user?.id;
       if (!userId) {
         // If user is not authenticated, return empty array
-        return [];
+        return;
+      } else {
+        const existingItem = await ctx.prisma.cartItem.findMany({
+          where: {
+            productId: input._id,
+            userId: userId,
+          },
+        });
+        const itemsIds = existingItem.map((item) => item.productId);
+        if (itemsIds.includes(input._id)) {
+          const sizeOptions = await ctx.prisma.sizeOption.updateMany({
+            where: {
+              id: existingItem[0]?.sizeOptionId,
+            },
+            data: {
+              size: input.sizeOption.size,
+              price: input.sizeOption.price,
+              key: input.sizeOption._key,
+            },
+          });
+          const cart = await ctx.prisma.cartItem.updateMany({
+            where: {
+              productId: input._id,
+              userId: userId,
+            },
+            data: {
+              quantity: input.quantity,
+              flavor: input.flavor,
+            },
+          });
+          return [cart, sizeOptions];
+        } else {
+          const sizeOptions = await ctx.prisma.sizeOption.create({
+            data: {
+              size: input.sizeOption.size,
+              price: input.sizeOption.price,
+              key: input.sizeOption._key,
+            },
+          });
+          const cart = await ctx.prisma.cartItem.create({
+            data: {
+              productId: input._id,
+              quantity: input.quantity,
+              flavor: input.flavor,
+              size: {
+                connect: {
+                  id: sizeOptions.id,
+                },
+              },
+              user: {
+                connect: {
+                  id: userId,
+                },
+              },
+            },
+          });
+          return [cart, sizeOptions];
+        }
       }
-      // If user is authenticated, return items from the server
-      const sizeOptions = await ctx.prisma.sizeOption.create({
-        data: {
-          size: input.sizeOption.size,
-          price: input.sizeOption.price,
-          key: input.sizeOption._key,
-        },
-      });
-      const cart = await ctx.prisma.cartItem.create({
-        data: {
-          productId: input._id,
-          quantity: input.quantity,
-          flavor: input.flavor,
-          size: {
-            connect: {
-              id: sizeOptions.id,
-            },
-          },
-          user: {
-            connect: {
-              id: userId,
-            },
-          },
-        },
-      });
-      return cart;
     }),
 });
