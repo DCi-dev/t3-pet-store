@@ -119,6 +119,7 @@ export const cartRouter = createTRPCRouter({
         where: {
           cartItemId: input.cartItemId,
         },
+
         data: {
           size: input.size.size,
           price: input.size.price,
@@ -156,33 +157,36 @@ export const cartRouter = createTRPCRouter({
     if (!userId) {
       // If user is not authenticated, return empty array
       return [];
-    }
-    // If user is authenticated, return items from the server
-    const items = await ctx.prisma.cartItem.findMany({
-      where: {
-        userId: userId,
-      },
-    });
-    if (items.length === 0) {
-      return items;
-    } else if (items.length > 0) {
-      const sizes = await ctx.prisma.sizeOption.findMany({
+    } else {
+      // If user is authenticated, return items from the server
+      const items = await ctx.prisma.cartItem.findMany({
         where: {
-          cartItemId: {
-            in: items.map((item) => item.id),
-          },
+          userId: userId,
         },
       });
+      if (items.length === 0) {
+        return items;
+      } else if (items.length > 0) {
+        const sizes = await ctx.prisma.sizeOption.findMany({
+          where: {
+            CartItem: {
+              is: {
+                userId: userId,
+              },
+            },
+          },
+        });
 
-      const itemsWithSizes = items.map((item) => {
-        const sizeOption = sizes.find((size) => size.cartItemId === item.id);
-        return {
-          ...item,
-          sizeOption,
-        };
-      });
+        const itemsWithSizes = items.map((item) => {
+          const sizeOption = sizes.find((size) => size.cartItemId === item.id);
+          return {
+            ...item,
+            sizeOption,
+          };
+        });
 
-      return itemsWithSizes;
+        return itemsWithSizes;
+      }
     }
   }),
 
