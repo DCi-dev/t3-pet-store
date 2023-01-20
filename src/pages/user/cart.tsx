@@ -16,10 +16,63 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const addProduct = api.cart.addItem.useMutation();
   const updateQuantity = api.cart.updateQuantity.useMutation();
   const syncProduct = api.cart.synchronizeCart.useMutation();
+  const processedProducts = new Set();
 
   useEffect(() => {
     // Get the cart from local storage
     const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    if (sessionData?.user) {
+      if (cart.data) {
+        //  Sync the local storage cart with the server cart
+        const serverCart = cart.data.map((item) => ({
+          productId: item.productId,
+          sizeOption: {
+            _key: item.sizeOption.key,
+            price: item.sizeOption.price,
+            size: item.sizeOption.size,
+          },
+          flavor: item.flavor,
+          quantity: item.quantity,
+        }));
+
+        const cartItems = [
+          ...new Set(
+            [...storageCart, ...serverCart].filter(
+              (item, index, self) =>
+                self.findIndex((i) => i.productId === item.productId) === index
+            )
+          ),
+        ];
+
+        console.log(cartItems);
+
+        localStorage.setItem("cart", JSON.stringify(cartItems));
+        storageCart.forEach((item) => {
+          if (!processedProducts.has(item.productId)) {
+            processedProducts.add(item);
+            syncProduct.mutate({
+              _id: item.productId,
+              sizeOption: item.sizeOption,
+              flavor: item.flavor,
+              quantity: item.quantity,
+            });
+          }
+        });
+      } else {
+        storageCart.forEach((item) => {
+          if (!processedProducts.has(item)) {
+            processedProducts.add(item);
+            addProduct.mutate({
+              _id: item.productId,
+              sizeOption: item.sizeOption,
+              flavor: item.flavor,
+              quantity: item.quantity,
+            });
+          }
+        });
+      }
+    }
 
     // Filter the products by the ids, sizeOption and flavor in the cart
     const filteredProducts = products.filter((product) =>
