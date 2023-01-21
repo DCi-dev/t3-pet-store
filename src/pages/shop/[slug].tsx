@@ -2,9 +2,8 @@ import { ProductCard } from "@/components";
 import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
-import type { ProductPageProps, sizeOption } from "@/types/product";
+import type { ProductPageProps, SizeOption } from "@/types/product";
 import { type ProductType } from "@/types/product";
-import { api } from "@/utils/api";
 import { Disclosure, RadioGroup } from "@headlessui/react";
 import {
   ChevronUpIcon,
@@ -37,10 +36,11 @@ const policies = [
 
 const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   const { data: sessionData } = useSession();
-  const { syncWishlist } = useShopContext() as ShopContextProps;
+  const { syncWishlist, handleAddToCart } =
+    useShopContext() as ShopContextProps;
 
-  const [selectedSize, setSelectedSize] = useState<sizeOption>(
-    product.sizeOptions[0] as sizeOption
+  const [selectedSize, setSelectedSize] = useState<SizeOption>(
+    product.sizeOptions[0] as SizeOption
   );
   const [selectedFlavor, setSelectedFlavor] = useState<string>(
     product.flavor[0] as string
@@ -54,119 +54,6 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
     client,
     product.image[0]
   );
-  const cart = api.cart.getItems.useQuery();
-  const addProduct = api.cart.addItem.useMutation();
-  const updateSize = api.cart.updateSize.useMutation();
-  const updateFlavor = api.cart.updateFlavor.useMutation();
-  const removeProduct = api.cart.removeItem.useMutation();
-
-  async function addItemToLocalStorage(product: {
-    _id: string;
-    sizeOption: {
-      size: string;
-      price: number;
-      _key: string;
-    };
-    flavor: string;
-    quantity: number;
-  }) {
-    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    // filter the cart by product id and selected size and flavor
-    const existingItem = localCart.filter(
-      (item: { productId: string }) => item.productId === product._id
-    );
-    if (existingItem.length > 0) {
-      // update the sizeOption and flavor of the existing item
-      existingItem[0].sizeOption = selectedSize;
-      existingItem[0].flavor = selectedFlavor;
-    } else {
-      //create new item with selectedSize, selectedFlavor and quantity 1
-      localCart.push({
-        productId: product._id,
-        sizeOption: selectedSize,
-        flavor: selectedFlavor,
-        quantity: 1,
-      });
-    }
-
-    // Save the updated cart to local storage
-    localStorage.setItem("cart", JSON.stringify(localCart));
-  }
-
-  async function addItemToDatabase(product: {
-    _id: string;
-    sizeOption: {
-      size: string;
-      price: number;
-      _key: string;
-    };
-    flavor: string;
-    quantity: number;
-  }) {
-    // Wait for server cart data to be fetched
-    await cart.refetch();
-
-    // Update the product if it exists
-    const serverItems = cart.data?.find(
-      (item: { productId: string }) => item.productId === product._id
-    );
-    if (serverItems) {
-      updateSize.mutate({
-        productId: serverItems.productId,
-        cartItemId: serverItems.id,
-        size: selectedSize,
-      });
-      updateFlavor.mutate({
-        productId: product._id,
-        flavor: selectedFlavor,
-      });
-    } else {
-      // Make sure that the product isn't already in the database
-      removeProduct.mutate({
-        productId: product._id,
-      });
-      //  Add product to the database
-      addProduct.mutate({
-        _id: product._id,
-        sizeOption: selectedSize,
-        flavor: selectedFlavor,
-        quantity: 1,
-      });
-      await cart.refetch();
-    }
-  }
-
-  async function handleAddToCart() {
-    const [serverPromise, localPromise] = sessionData
-      ? [
-          addItemToDatabase({
-            _id: product._id,
-            sizeOption: selectedSize,
-            flavor: selectedFlavor,
-            quantity: 1,
-          }),
-          addItemToLocalStorage({
-            _id: product._id,
-            sizeOption: selectedSize,
-            flavor: selectedFlavor,
-            quantity: 1,
-          }),
-        ]
-      : [
-          null,
-          addItemToLocalStorage({
-            _id: product._id,
-            sizeOption: selectedSize,
-            flavor: selectedFlavor,
-            quantity: 1,
-          }),
-        ];
-
-    await Promise.all([serverPromise, localPromise]).catch((err) => {
-      console.log(err);
-    });
-  }
 
   return (
     <main className="bg-neutral-800">
@@ -181,7 +68,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                 $
                 {
                   product.sizeOptions.find(
-                    (option: sizeOption) => option.size === selectedSize?.size
+                    (option: SizeOption) => option.size === selectedSize?.size
                   )?.price
                 }
               </p>
@@ -219,7 +106,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                     Choose a size{" "}
                   </RadioGroup.Label>
                   <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-                    {product.sizeOptions.map((opt: sizeOption) => (
+                    {product.sizeOptions.map((opt: SizeOption) => (
                       <RadioGroup.Option
                         key={opt._key}
                         value={opt}
@@ -288,7 +175,9 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
               </div>
             </form>
             <button
-              onClick={handleAddToCart}
+              onClick={() =>
+                handleAddToCart(product, selectedFlavor, selectedSize)
+              }
               className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-yellow-400 py-3 px-8 text-base font-bold text-neutral-900 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
             >
               Add to cart

@@ -35,7 +35,7 @@ export type ProductType = {
   }>;
 };
 
-export interface sizeOption {
+export interface SizeOption {
   size: string;
   price: number;
   _key: string;
@@ -44,4 +44,15 @@ export interface sizeOption {
 export interface ProductPageProps {
   product: ProductType;
   products: ProductType[];
+}
+
+export interface CartProduct {
+  productId: string;
+  sizeOption: {
+    size: string;
+    price: number;
+    _key: string;
+  };
+  flavor: string;
+  quantity: number;
 }

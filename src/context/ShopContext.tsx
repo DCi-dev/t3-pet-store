@@ -1,4 +1,4 @@
-import type { ProductType } from "@/types/product";
+import type { ProductType, SizeOption } from "@/types/product";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import * as React from "react";
@@ -13,15 +13,16 @@ export interface ShopContextProps {
   setTotalQuantities: React.Dispatch<React.SetStateAction<number>>;
   qty: number;
   setQty: React.Dispatch<React.SetStateAction<number>>;
-  selectedSize: number;
-  setSelectedSize: React.Dispatch<React.SetStateAction<number>>;
-  selectedFlavor: number;
-  setSelectedFlavor: React.Dispatch<React.SetStateAction<number>>;
   filteredWishlist: ProductType[];
   setFilteredWishlist: React.Dispatch<React.SetStateAction<ProductType[]>>;
   addToWishlist: (productId: string) => void;
   removeFromWishlist: (productId: string) => void;
   syncWishlist: (products: ProductType[]) => void;
+  handleAddToCart: (
+    product: ProductType,
+    selectedFlavor: string,
+    selectedSize: SizeOption
+  ) => void;
 }
 
 export const ShopContext = createContext<ShopContextProps | undefined>(
@@ -38,10 +39,6 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantities, setTotalQuantities] = useState(0);
   const [qty, setQty] = useState(1);
-
-  // Product options
-  const [selectedSize, setSelectedSize] = useState(0);
-  const [selectedFlavor, setSelectedFlavor] = useState(0);
 
   // Wishlist
   const [filteredWishlist, setFilteredWishlist] = useState<ProductType[]>([]);
@@ -144,6 +141,95 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
   };
 
   // Cart
+  const cart = api.cart.getItems.useQuery();
+  const addCartProduct = api.cart.addItem.useMutation();
+  const updateCartProductSize = api.cart.updateSize.useMutation();
+  const updateCartProductFlavor = api.cart.updateFlavor.useMutation();
+  const removeCartProduct = api.cart.removeItem.useMutation();
+
+  async function addToLocalStorageCart(
+    product: ProductType,
+    selectedFlavor: string,
+    selectedSize: SizeOption
+  ) {
+    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    // filter the cart by product id and selected size and flavor
+    const existingItem = localCart.filter(
+      (item: { productId: string }) => item.productId === product._id
+    );
+    if (existingItem.length > 0) {
+      // update the sizeOption and flavor of the existing item
+      existingItem[0].sizeOption = selectedSize;
+      existingItem[0].flavor = selectedFlavor;
+    } else {
+      //create new item with selectedSize, selectedFlavor and quantity 1
+      localCart.push({
+        productId: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
+    }
+
+    // Save the updated cart to local storage
+    localStorage.setItem("cart", JSON.stringify(localCart));
+  }
+
+  async function addToDatabaseCart(
+    product: ProductType,
+    selectedFlavor: string,
+    selectedSize: SizeOption
+  ) {
+    // Wait for server cart data to be fetched
+    await cart.refetch();
+
+    // Update the product if it exists
+    const serverItems = cart.data?.find(
+      (item: { productId: string }) => item.productId === product._id
+    );
+    if (serverItems) {
+      updateCartProductSize.mutate({
+        productId: serverItems.productId,
+        cartItemId: serverItems.id,
+        size: selectedSize,
+      });
+      updateCartProductFlavor.mutate({
+        productId: product._id,
+        flavor: selectedFlavor,
+      });
+    } else {
+      // Make sure that the product isn't already in the database
+      removeCartProduct.mutate({
+        productId: product._id,
+      });
+      //  Add product to the database
+      addCartProduct.mutate({
+        _id: product._id,
+        sizeOption: selectedSize,
+        flavor: selectedFlavor,
+        quantity: 1,
+      });
+      await cart.refetch();
+    }
+  }
+
+  async function handleAddToCart(
+    product: ProductType,
+    selectedFlavor: string,
+    selectedSize: SizeOption
+  ) {
+    const [serverPromise, localPromise] = sessionData
+      ? [
+          addToDatabaseCart(product, selectedFlavor, selectedSize),
+          addToLocalStorageCart(product, selectedFlavor, selectedSize),
+        ]
+      : [null, addToLocalStorageCart(product, selectedFlavor, selectedSize)];
+
+    await Promise.all([serverPromise, localPromise]).catch((err) => {
+      console.log(err);
+    });
+  }
 
   return (
     <ShopContext.Provider
@@ -156,15 +242,12 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         setTotalQuantities,
         qty,
         setQty,
-        selectedSize,
-        setSelectedSize,
-        selectedFlavor,
-        setSelectedFlavor,
         filteredWishlist,
         setFilteredWishlist,
         addToWishlist,
         removeFromWishlist,
         syncWishlist,
+        handleAddToCart,
       }}
     >
       {children}

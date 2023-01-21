@@ -1,7 +1,7 @@
 import CartItem from "@/components/CartItem";
-import { useShopContext, ShopContextProps } from "@/context/ShopContext";
+import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
 import { client } from "@/lib/client";
-import type { ProductType } from "@/types/product";
+import type { CartProduct, ProductType } from "@/types/product";
 import { api } from "@/utils/api";
 import type { GetServerSideProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
@@ -57,7 +57,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
 
     localStorage.setItem("cart", JSON.stringify(cartItems));
     const syncFunc = async () => {
-      await storageCart.forEach((item) => {
+      await storageCart.forEach((item: CartProduct) => {
         if (!processedProducts.has(item.productId)) {
           processedProducts.add(item);
           syncProduct.mutate({
