@@ -1,3 +1,5 @@
+import type { ShopContextProps } from "@/context/ShopContext";
+import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -8,8 +10,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface ChildProps {
-  handleRemoveProduct: (productId: string) => void;
-  handleQuantityChange: (productId: string, quantity: number) => void;
   product: ProductType;
 }
 
@@ -24,11 +24,10 @@ interface selectedData {
   quantity: number;
 }
 
-const CartItem: React.FC<ChildProps> = ({
-  handleRemoveProduct,
-  handleQuantityChange,
-  product,
-}) => {
+const CartItem: React.FC<ChildProps> = ({ product }) => {
+  const { handleRemoveFromCart, handleQuantityChange } =
+    useShopContext() as ShopContextProps;
+
   const [selectedData, setSelectedData] = useState<selectedData>();
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
 
@@ -46,10 +45,6 @@ const CartItem: React.FC<ChildProps> = ({
     client,
     product.image[0]
   );
-
-  const handleClick = (productId: string) => {
-    handleRemoveProduct(productId);
-  };
 
   return (
     <li key={product._id} className="flex py-6 sm:py-10">
@@ -113,7 +108,7 @@ const CartItem: React.FC<ChildProps> = ({
 
             <div className="absolute top-0 right-0">
               <button
-                onClick={() => handleClick(product._id)}
+                onClick={() => handleRemoveFromCart(product._id)}
                 type="button"
                 className="-m-2 inline-flex p-2 text-neutral-400 hover:text-neutral-500"
               >

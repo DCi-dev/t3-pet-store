@@ -1,18 +1,10 @@
-import type { ProductType, SizeOption } from "@/types/product";
+import type { CartProduct, ProductType, SizeOption } from "@/types/product";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import * as React from "react";
 import { createContext, useState } from "react";
 
 export interface ShopContextProps {
-  cartItems: string[];
-  setCartItems: React.Dispatch<React.SetStateAction<string[]>>;
-  totalPrice: number;
-  setTotalPrice: React.Dispatch<React.SetStateAction<number>>;
-  totalQuantities: number;
-  setTotalQuantities: React.Dispatch<React.SetStateAction<number>>;
-  qty: number;
-  setQty: React.Dispatch<React.SetStateAction<number>>;
   filteredWishlist: ProductType[];
   setFilteredWishlist: React.Dispatch<React.SetStateAction<ProductType[]>>;
   addToWishlist: (productId: string) => void;
@@ -23,6 +15,16 @@ export interface ShopContextProps {
     selectedFlavor: string,
     selectedSize: SizeOption
   ) => void;
+  filteredCart: ProductType[];
+  handleRemoveFromCart: (productId: string) => void;
+  handleCartSync: (products: ProductType[]) => void;
+  handleQuantityChange: (productId: string, quantity: number) => void;
+  totalPrice: number;
+  totalTaxes: number;
+  totalQuantity: number;
+  totalShipping: number;
+  orderTotal: number;
+  handleCartDetails: () => void;
 }
 
 export const ShopContext = createContext<ShopContextProps | undefined>(
@@ -35,10 +37,6 @@ interface Props {
 
 export const ShopProvider: React.FC<Props> = ({ children }) => {
   const { data: sessionData } = useSession();
-  const [cartItems, setCartItems] = useState([""]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [totalQuantities, setTotalQuantities] = useState(0);
-  const [qty, setQty] = useState(1);
 
   // Wishlist
   const [filteredWishlist, setFilteredWishlist] = useState<ProductType[]>([]);
@@ -141,11 +139,15 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
   };
 
   // Cart
+  const [filteredCart, setFilteredCart] = useState<ProductType[]>([]);
+
   const cart = api.cart.getItems.useQuery();
   const addCartProduct = api.cart.addItem.useMutation();
   const updateCartProductSize = api.cart.updateSize.useMutation();
   const updateCartProductFlavor = api.cart.updateFlavor.useMutation();
+  const updateCartProductQuantity = api.cart.updateQuantity.useMutation();
   const removeCartProduct = api.cart.removeItem.useMutation();
+  const syncCart = api.cart.synchronizeCart.useMutation();
 
   async function addToLocalStorageCart(
     product: ProductType,
@@ -214,6 +216,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
     }
   }
 
+  // Add to cart
   async function handleAddToCart(
     product: ProductType,
     selectedFlavor: string,
@@ -231,23 +234,170 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
     });
   }
 
+  // Remove from cart
+  const handleRemoveFromCart = (productId: string) => {
+    if (sessionData && cart.data) {
+      removeCartProduct.mutate({
+        productId: productId,
+      });
+      setFilteredCart(
+        filteredCart?.filter((product) => product._id !== productId)
+      );
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(
+          JSON.parse(localStorage.getItem("cart") || "[]").filter(
+            (product: CartProduct) => product.productId !== productId
+          )
+        )
+      );
+    } else {
+      setFilteredCart(
+        filteredCart?.filter((product) => product._id !== productId)
+      );
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(
+          JSON.parse(localStorage.getItem("cart") || "[]").filter(
+            (product: ProductType) => product._id !== productId
+          )
+        )
+      );
+    }
+  };
+
+  // Sync cart
+
+  const processedCart = new Set();
+
+  const mergeCart = async () => {
+    // Get the cart from local storage
+    const storageCart: CartProduct[] = JSON.parse(
+      localStorage.getItem("cart") || "[]"
+    );
+    //  Sync the local storage cart with the server cart
+    const serverCart = cart.data?.map((item) => ({
+      productId: item.productId,
+      sizeOption: {
+        _key: item.sizeOption?.key,
+        price: item.sizeOption?.price,
+        size: item.sizeOption?.size,
+      },
+      flavor: item.flavor,
+      quantity: item.quantity,
+    })) as CartProduct[];
+
+    const cartItems = [
+      ...new Set(
+        [...storageCart, ...serverCart].filter(
+          (item, index, self) =>
+            self.findIndex((i) => i.productId === item.productId) === index
+        )
+      ),
+    ];
+
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+    const syncFunc = async () => {
+      storageCart.forEach((item: CartProduct) => {
+        if (!processedCart.has(item.productId)) {
+          processedCart.add(item);
+          syncCart.mutate({
+            _id: item.productId,
+            sizeOption: item.sizeOption,
+            flavor: item.flavor,
+            quantity: item.quantity,
+          });
+        }
+      });
+    };
+    await syncFunc();
+  };
+
+  const handleCartSync = async (products: ProductType[]) => {
+    // Get the cart from local storage
+    const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    if (sessionData?.user && cart.data) {
+      mergeCart();
+    }
+
+    // Filter the products by the ids, sizeOption and flavor in the cart
+    const filteredProducts = products.filter((product) =>
+      storageCart.some(
+        (item: { productId: string; flavor: string }) =>
+          item.productId === product._id && product.flavor.includes(item.flavor)
+      )
+    );
+
+    // Set the filtered products
+    setFilteredCart(filteredProducts);
+  };
+
+  // Quantity change
+  const handleQuantityChange = (productId: string, qty: number) => {
+    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const product = localCart.find(
+      (item: { productId: string }) => item.productId === productId
+    );
+    product.quantity = qty;
+    localStorage.setItem("cart", JSON.stringify(localCart));
+    if (sessionData) {
+      updateCartProductQuantity.mutate({
+        productId: productId,
+        quantity: qty,
+      });
+    }
+    // Set the total quantity
+    setTotalQuantity(
+      localCart.reduce((acc: number, item: CartProduct) => {
+        return acc + item.quantity;
+      }, 0)
+    );
+  };
+
+  // Cart Details
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalShipping, setTotalShipping] = useState(0);
+  const [totalTaxes, setTotalTaxes] = useState(0);
+  const [orderTotal, setOrderTotal] = useState(0);
+  const [totalQuantity, setTotalQuantity] = useState(1);
+
+  const handleCartDetails = async () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cartTotal = cart.reduce((acc: number, item: CartProduct) => {
+      return acc + item.sizeOption.price * item.quantity;
+    }, 0);
+    setTotalPrice(cartTotal);
+
+    // Set totalShipping to 0 if the total price is 0 or over 100, otherwise set it to 5
+    setTotalShipping(cartTotal > 100 ? 0 : cartTotal === 0 ? 0 : 5);
+
+    // Set totalTax to 19% of the total price
+    setTotalTaxes(cartTotal * 0.19);
+
+    // Set orderTotal to the total price + total shipping + total taxes
+    setOrderTotal(cartTotal + totalShipping + totalTaxes);
+  };
+
   return (
     <ShopContext.Provider
       value={{
-        cartItems,
-        setCartItems,
-        totalPrice,
-        setTotalPrice,
-        totalQuantities,
-        setTotalQuantities,
-        qty,
-        setQty,
         filteredWishlist,
         setFilteredWishlist,
         addToWishlist,
         removeFromWishlist,
         syncWishlist,
         handleAddToCart,
+        filteredCart,
+        handleRemoveFromCart,
+        handleCartSync,
+        handleQuantityChange,
+        totalPrice,
+        totalShipping,
+        totalTaxes,
+        orderTotal,
+        totalQuantity,
+        handleCartDetails,
       }}
     >
       {children}
