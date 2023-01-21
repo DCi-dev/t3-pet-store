@@ -30,6 +30,7 @@ const CartItem: React.FC<ChildProps> = ({
   product,
 }) => {
   const [selectedData, setSelectedData] = useState<selectedData>();
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
 
   useEffect(() => {
     const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -37,6 +38,7 @@ const CartItem: React.FC<ChildProps> = ({
       (item: selectedData) => item.productId === product._id
     );
     setSelectedData(selectedData);
+    setSelectedQuantity(selectedData?.quantity || 1);
   }, [product._id]);
 
   // Images
@@ -90,9 +92,11 @@ const CartItem: React.FC<ChildProps> = ({
               Quantity, {product.name}
             </label>
             <select
-              onChange={(e) =>
-                handleQuantityChange(product._id, Number(e.target.value))
-              }
+              onChange={(e) => {
+                handleQuantityChange(product._id, Number(e.target.value));
+                setSelectedQuantity(Number(e.target.value));
+              }}
+              value={selectedQuantity}
               id={`quantity-${product._id}`}
               name={`quantity-${product._id}`}
               className="max-w-full rounded-md border border-neutral-700 bg-neutral-700 py-1.5 text-left text-base font-medium leading-5 text-neutral-100 shadow-sm focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400 sm:text-sm"

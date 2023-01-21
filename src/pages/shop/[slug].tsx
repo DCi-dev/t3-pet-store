@@ -18,7 +18,7 @@ import { useSession } from "next-auth/react";
 import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -43,13 +43,19 @@ interface sizeOption {
   _key: string;
 }
 
-const ProductPage: NextPage = ({
-  product,
-  products,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+interface ProductPageProps {
+  product: ProductType;
+  products: ProductType[];
+}
+
+const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   const { data: sessionData } = useSession();
-  const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
-  const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
+  const [selectedSize, setSelectedSize] = useState<sizeOption>(
+    product.sizeOptions[0] as sizeOption
+  );
+  const [selectedFlavor, setSelectedFlavor] = useState<string>(
+    product.flavor[0] as string
+  );
 
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
