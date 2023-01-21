@@ -18,7 +18,7 @@ import { useSession } from "next-auth/react";
 import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -50,6 +50,7 @@ const ProductPage: NextPage = ({
   const { data: sessionData } = useSession();
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
+
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0]
@@ -58,8 +59,9 @@ const ProductPage: NextPage = ({
   const addProduct = api.cart.addItem.useMutation();
   const updateSize = api.cart.updateSize.useMutation();
   const updateFlavor = api.cart.updateFlavor.useMutation();
+  const removeProduct = api.cart.removeItem.useMutation();
 
-  function addItemToLocalStorage(product: {
+  async function addItemToLocalStorage(product: {
     _id: string;
     sizeOption: {
       size: string;
@@ -69,10 +71,10 @@ const ProductPage: NextPage = ({
     flavor: string;
     quantity: number;
   }) {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
     // filter the cart by product id and selected size and flavor
-    const existingItem = cart.filter(
+    const existingItem = localCart.filter(
       (item: { productId: string }) => item.productId === product._id
     );
     if (existingItem.length > 0) {
@@ -81,7 +83,7 @@ const ProductPage: NextPage = ({
       existingItem[0].flavor = selectedFlavor;
     } else {
       //create new item with selectedSize, selectedFlavor and quantity 1
-      cart.push({
+      localCart.push({
         productId: product._id,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
@@ -90,10 +92,10 @@ const ProductPage: NextPage = ({
     }
 
     // Save the updated cart to local storage
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(localCart));
   }
 
-  function addItemToDatabase(product: {
+  async function addItemToDatabase(product: {
     _id: string;
     sizeOption: {
       size: string;
@@ -103,13 +105,17 @@ const ProductPage: NextPage = ({
     flavor: string;
     quantity: number;
   }) {
-    const existingItem = cart.data?.find(
-      (item) => item.productId === product._id
+    // Wait for server cart data to be fetched
+    await cart.refetch();
+
+    // Update the product if it exists
+    const serverItems = cart.data?.find(
+      (item: { productId: string }) => item.productId === product._id
     );
-    if (existingItem) {
+    if (serverItems) {
       updateSize.mutate({
-        productId: existingItem.productId,
-        cartItemId: existingItem.id,
+        productId: serverItems.productId,
+        cartItemId: serverItems.id,
         size: selectedSize,
       });
       updateFlavor.mutate({
@@ -117,37 +123,50 @@ const ProductPage: NextPage = ({
         flavor: selectedFlavor,
       });
     } else {
+      // Make sure that the product isn't already in the database
+      removeProduct.mutate({
+        productId: product._id,
+      });
+      //  Add product to the database
       addProduct.mutate({
         _id: product._id,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
         quantity: 1,
       });
+      await cart.refetch();
     }
   }
 
-  function handleAddToCart() {
-    if (sessionData) {
-      addItemToDatabase({
-        _id: product._id,
-        sizeOption: selectedSize,
-        flavor: selectedFlavor,
-        quantity: 1,
-      });
-      addItemToLocalStorage({
-        _id: product._id,
-        sizeOption: selectedSize,
-        flavor: selectedFlavor,
-        quantity: 1,
-      });
-    } else {
-      addItemToLocalStorage({
-        _id: product._id,
-        sizeOption: selectedSize,
-        flavor: selectedFlavor,
-        quantity: 1,
-      });
-    }
+  async function handleAddToCart() {
+    const [serverPromise, localPromise] = sessionData
+      ? [
+          addItemToDatabase({
+            _id: product._id,
+            sizeOption: selectedSize,
+            flavor: selectedFlavor,
+            quantity: 1,
+          }),
+          addItemToLocalStorage({
+            _id: product._id,
+            sizeOption: selectedSize,
+            flavor: selectedFlavor,
+            quantity: 1,
+          }),
+        ]
+      : [
+          null,
+          addItemToLocalStorage({
+            _id: product._id,
+            sizeOption: selectedSize,
+            flavor: selectedFlavor,
+            quantity: 1,
+          }),
+        ];
+
+    await Promise.all([serverPromise, localPromise]).catch((err) => {
+      console.log(err);
+    });
   }
 
   return (
@@ -184,7 +203,7 @@ const ProductPage: NextPage = ({
           </div>
 
           <div className="mt-8 lg:col-span-5">
-            <form onSubmit={handleAddToCart}>
+            <form>
               {/* Size picker */}
               <div className="mt-8">
                 <div className="flex items-center justify-between">

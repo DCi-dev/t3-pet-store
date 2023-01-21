@@ -3,7 +3,7 @@ import z from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const cartRouter = createTRPCRouter({
-  addItem: publicProcedure
+  addItem: protectedProcedure
     .input(
       z.object({
         _id: z.string(),
@@ -18,10 +18,7 @@ export const cartRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
-      if (!userId) {
-        // If user is not authenticated, return empty array
-        return [];
-      }
+
       const cart = await ctx.prisma.cartItem.create({
         data: {
           productId: input._id,
@@ -45,7 +42,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-  updateQuantity: publicProcedure
+  updateQuantity: protectedProcedure
     .input(
       z.object({
         productId: z.string(),
@@ -71,7 +68,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-  updateFlavor: publicProcedure
+  updateFlavor: protectedProcedure
     .input(
       z.object({
         productId: z.string(),
@@ -97,7 +94,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-  updateSize: publicProcedure
+  updateSize: protectedProcedure
     .input(
       z.object({
         productId: z.string(),
@@ -154,39 +151,35 @@ export const cartRouter = createTRPCRouter({
 
   getItems: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user?.id;
-    if (!userId) {
-      // If user is not authenticated, return empty array
-      return [];
-    } else {
-      // If user is authenticated, return items from the server
-      const items = await ctx.prisma.cartItem.findMany({
+
+    // If user is authenticated, return items from the server
+    const items = await ctx.prisma.cartItem.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    if (items.length > 0) {
+      const sizes = await ctx.prisma.sizeOption.findMany({
         where: {
-          userId: userId,
-        },
-      });
-      if (items.length === 0) {
-        return items;
-      } else if (items.length > 0) {
-        const sizes = await ctx.prisma.sizeOption.findMany({
-          where: {
-            CartItem: {
-              is: {
-                userId: userId,
-              },
+          CartItem: {
+            is: {
+              userId: userId,
             },
           },
-        });
+        },
+      });
 
-        const itemsWithSizes = items.map((item) => {
-          const sizeOption = sizes.find((size) => size.cartItemId === item.id);
-          return {
-            ...item,
-            sizeOption,
-          };
-        });
+      const itemsWithSizes = items.map((item) => {
+        const sizeOption = sizes.find((size) => size.cartItemId === item.id);
+        return {
+          ...item,
+          sizeOption,
+        };
+      });
 
-        return itemsWithSizes;
-      }
+      return itemsWithSizes;
+    } else {
+      return [];
     }
   }),
 
