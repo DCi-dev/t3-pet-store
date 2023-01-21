@@ -10,10 +10,14 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const { data: sessionData } = useSession();
 
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>();
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalShipping, setTotalShipping] = useState(0);
+  const [totalTaxes, setTotalTaxes] = useState(0);
+  const [orderTotal, setOrderTotal] = useState(0);
+  const [totalQuantity, setTotalQuantity] = useState(1);
 
   const cart = api.cart.getItems.useQuery();
   const removeItem = api.cart.removeItem.useMutation();
-  const addProduct = api.cart.addItem.useMutation();
   const updateQuantity = api.cart.updateQuantity.useMutation();
   const syncProduct = api.cart.synchronizeCart.useMutation();
   const processedProducts = new Set();
@@ -26,9 +30,9 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     const serverCart = cart.data?.map((item) => ({
       productId: item.productId,
       sizeOption: {
-        _key: item.sizeOption.key,
-        price: item.sizeOption.price,
-        size: item.sizeOption.size,
+        _key: item.sizeOption?.key,
+        price: item.sizeOption?.price,
+        size: item.sizeOption?.size,
       },
       flavor: item.flavor,
       quantity: item.quantity,
@@ -42,8 +46,6 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
         )
       ),
     ];
-
-    console.log(cartItems);
 
     localStorage.setItem("cart", JSON.stringify(cartItems));
     const syncFunc = async () => {
@@ -73,16 +75,8 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
     // Filter the products by the ids, sizeOption and flavor in the cart
     const filteredProducts = products.filter((product) =>
       storageCart.some(
-        (item: {
-          productId: string;
-          sizeOption: { _key: string };
-          flavor: string;
-        }) =>
-          item.productId === product._id &&
-          // product.sizeOptions.some(
-          //   (sizeOption) => sizeOption._key === item.sizeOption._key
-          // ) &&
-          product.flavor.includes(item.flavor)
+        (item: { productId: string; flavor: string }) =>
+          item.productId === product._id && product.flavor.includes(item.flavor)
       )
     );
 
@@ -134,7 +128,32 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
         quantity: qty,
       });
     }
+    // Set the total quantity
+    setTotalQuantity(
+      localCart.reduce((acc: number, item: any) => {
+        return acc + item.quantity;
+      }, 0)
+    );
   };
+
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cartTotal = cart.reduce((acc: number, item: any) => {
+      return acc + item.sizeOption.price * item.quantity;
+    }, 0);
+    setTotalPrice(cartTotal);
+
+    // Set totalShipping to 0 if the total price is 0 or over 100, otherwise set it to 5
+    setTotalShipping(
+      cartTotal > 100 ? 0 : cartTotal === 0 ? 0 : 5
+    );
+
+    // Set totalTax to 19% of the total price
+    setTotalTaxes(cartTotal * 0.19);
+
+    // Set orderTotal to the total price + total shipping + total taxes
+    setOrderTotal(cartTotal + totalShipping + totalTaxes);
+  }, [totalQuantity, totalShipping, totalTaxes, filteredProducts]);
 
   return (
     <main className="bg-neutral-800">
@@ -178,26 +197,32 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
             <dl className="mt-6 space-y-4">
               <div className="flex items-center justify-between">
                 <dt className="text-sm text-neutral-300">Subtotal</dt>
-                <dd className="text-sm font-medium text-neutral-100">$99.00</dd>
+                <dd className="text-sm font-medium text-neutral-100">
+                  ${totalPrice}
+                </dd>
               </div>
               <div className="flex items-center justify-between border-t border-neutral-600 pt-4">
                 <dt className="flex items-center text-sm text-neutral-300">
                   <span>Shipping estimate</span>
                 </dt>
-                <dd className="text-sm font-medium text-neutral-100">$5.00</dd>
+                <dd className="text-sm font-medium text-neutral-100">
+                  ${totalShipping}
+                </dd>
               </div>
               <div className="flex items-center justify-between border-t border-neutral-600 pt-4">
                 <dt className="flex text-sm text-neutral-300">
                   <span>Tax estimate</span>
                 </dt>
-                <dd className="text-sm font-medium text-neutral-100">$8.32</dd>
+                <dd className="text-sm font-medium text-neutral-100">
+                  ${totalTaxes}
+                </dd>
               </div>
               <div className="flex items-center justify-between border-t border-neutral-600 pt-4">
                 <dt className="text-base font-medium text-neutral-100">
                   Order total
                 </dt>
                 <dd className="text-base font-medium text-neutral-100">
-                  $112.32
+                  ${orderTotal}
                 </dd>
               </div>
             </dl>
