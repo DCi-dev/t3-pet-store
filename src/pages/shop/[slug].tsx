@@ -36,9 +36,16 @@ const policies = [
 
 const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   const { data: sessionData } = useSession();
-  const { syncWishlist, handleAddToCart } =
+  const { syncWishlist, handleAddToCart, handleCartSync } =
     useShopContext() as ShopContextProps;
 
+  // Product Image
+  const productImageProps: UseNextSanityImageProps = useNextSanityImage(
+    client,
+    product.image[0]
+  );
+
+  // Product Options
   const [selectedSize, setSelectedSize] = useState<SizeOption>(
     product.sizeOptions[0] as SizeOption
   );
@@ -48,12 +55,8 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
 
   useEffect(() => {
     syncWishlist(products);
+    handleCartSync(products);
   }, [sessionData?.user]);
-
-  const productImageProps: UseNextSanityImageProps = useNextSanityImage(
-    client,
-    product.image[0]
-  );
 
   return (
     <main className="bg-neutral-800">

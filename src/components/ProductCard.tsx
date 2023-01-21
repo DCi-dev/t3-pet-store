@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/20/solid";
 
 import { client } from "@/lib/client";
-import type { ProductType } from "@/types/product";
+import type { ProductType, SizeOption } from "@/types/product";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
@@ -19,18 +19,22 @@ import { Fragment, useEffect, useState } from "react";
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
-  const { removeFromWishlist, addToWishlist } =
+  const { removeFromWishlist, addToWishlist, handleAddToCart } =
     useShopContext() as ShopContextProps;
 
-  // Images
+  // Product Image
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0]
   );
 
-  // Product options
-  const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
-  const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
+  // Product Options
+  const [selectedSize, setSelectedSize] = useState<SizeOption>(
+    product.sizeOptions[0] as SizeOption
+  );
+  const [selectedFlavor, setSelectedFlavor] = useState<string>(
+    product.flavor[0] as string
+  );
 
   // Wishlist button
   const [isInWishlist, setIsInWishlist] = useState<boolean>(false);
@@ -240,12 +244,15 @@ const ProductCard = ({ product }: { product: ProductType }) => {
         </div>
 
         <div className="mt-1">
-          <a
-            href=""
+          <button
+            type="button"
+            onClick={() =>
+              handleAddToCart(product, selectedFlavor, selectedSize)
+            }
             className="text-md relative flex items-center justify-center rounded-md border border-transparent bg-yellow-500 py-2 px-8 font-medium text-neutral-900 hover:bg-yellow-400"
           >
             Add to bag<span className="sr-only">, {product.name}</span>
-          </a>
+          </button>
         </div>
       </div>
     </>
