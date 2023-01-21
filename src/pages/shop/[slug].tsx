@@ -1,5 +1,8 @@
 import { ProductCard } from "@/components";
+import type { ShopContextProps } from "@/context/ShopContext";
+import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
+import type { ProductPageProps, sizeOption } from "@/types/product";
 import { type ProductType } from "@/types/product";
 import { api } from "@/utils/api";
 import { Disclosure, RadioGroup } from "@headlessui/react";
@@ -13,7 +16,7 @@ import { useSession } from "next-auth/react";
 import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -32,25 +35,20 @@ const policies = [
   },
 ];
 
-interface sizeOption {
-  size: string;
-  price: number;
-  _key: string;
-}
-
-interface ProductPageProps {
-  product: ProductType;
-  products: ProductType[];
-}
-
 const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   const { data: sessionData } = useSession();
+  const { syncWishlist } = useShopContext() as ShopContextProps;
+
   const [selectedSize, setSelectedSize] = useState<sizeOption>(
     product.sizeOptions[0] as sizeOption
   );
   const [selectedFlavor, setSelectedFlavor] = useState<string>(
     product.flavor[0] as string
   );
+
+  useEffect(() => {
+    syncWishlist(products);
+  }, [sessionData?.user]);
 
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,

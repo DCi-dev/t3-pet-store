@@ -34,3 +34,14 @@ export type ProductType = {
     _key: string;
   }>;
 };
+
+export interface sizeOption {
+  size: string;
+  price: number;
+  _key: string;
+}
+
+export interface ProductPageProps {
+  product: ProductType;
+  products: ProductType[];
+}

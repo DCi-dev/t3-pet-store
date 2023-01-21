@@ -1,4 +1,6 @@
 import { ProductCard } from "@/components";
+import type { ShopContextProps } from "@/context/ShopContext";
+import { useShopContext } from "@/context/ShopContext";
 import { type ProductType } from "@/types/product";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 
@@ -14,7 +16,8 @@ import type {
   InferGetServerSidePropsType,
   NextPage,
 } from "next";
-import { Fragment, useState } from "react";
+import { useSession } from "next-auth/react";
+import { Fragment, useEffect, useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -38,6 +41,13 @@ const Shop: NextPage = ({
   const [selectedCategoryOptions, setSelectedCategoryOptions] = useState<
     string[]
   >([]);
+
+  const { data: sessionData } = useSession();
+  const { syncWishlist } = useShopContext() as ShopContextProps;
+
+  useEffect(() => {
+    syncWishlist(products);
+  }, [sessionData?.user]);
 
   // Add event handler to update the selected category options state variable when the input is changed
   const handleCategoryOptionChange = (

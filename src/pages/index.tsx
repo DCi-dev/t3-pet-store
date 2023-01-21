@@ -12,14 +12,25 @@ import {
   ProductCard,
 } from "@/components";
 
+import type { ShopContextProps } from "@/context/ShopContext";
+import { useShopContext } from "@/context/ShopContext";
 import { type ProductType } from "@/types/product";
 import { client } from "@lib/client";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 const Home: NextPage = ({
   products,
   bannerData,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { data: sessionData } = useSession();
+  const { syncWishlist } = useShopContext() as ShopContextProps;
+
   const firstFourProducts = products.slice(0, 4);
+
+  useEffect(() => {
+    syncWishlist(products);
+  }, [sessionData?.user]);
 
   return (
     <>

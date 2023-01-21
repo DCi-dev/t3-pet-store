@@ -1,4 +1,5 @@
 import CartItem from "@/components/CartItem";
+import { useShopContext, ShopContextProps } from "@/context/ShopContext";
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
 import { api } from "@/utils/api";
@@ -8,6 +9,13 @@ import { useEffect, useState } from "react";
 
 const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const { data: sessionData } = useSession();
+   const { syncWishlist } = useShopContext() as ShopContextProps;
+
+   useEffect(() => {
+     syncWishlist(products);
+   }, [sessionData?.user]);
+
+
 
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>();
   const [totalPrice, setTotalPrice] = useState(0);

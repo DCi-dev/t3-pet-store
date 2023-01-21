@@ -132,7 +132,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         localIds.forEach((id: string) => {
           if (!processedWishlistIds.has(id)) {
             processedWishlistIds.add(id);
-            addWishlistProduct.mutate(id);
+            syncWishlistProducts.mutate(id);
           }
         });
       }
@@ -142,6 +142,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
     );
     setFilteredWishlist(filteredProductsById);
   };
+
+  // Cart
 
   return (
     <ShopContext.Provider

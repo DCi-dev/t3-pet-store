@@ -4,8 +4,8 @@ import type { GetServerSideProps, NextPage } from "next";
 
 import WishlistTable from "@/components/WishlistTable";
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
-import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   const { data: sessionData } = useSession();
