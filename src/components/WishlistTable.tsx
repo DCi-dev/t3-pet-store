@@ -1,19 +1,17 @@
 import { client } from "@/lib/client";
 import { type ProductType } from "@/types/product";
-import { api } from "@/utils/api";
-import { useSession } from "next-auth/react";
 import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
 
 interface ChildProps {
-  handleRemoveProduct: (productId: string) => void;
+  removeFromWishlist: (productId: string) => void;
   product: ProductType;
 }
 
 const WishlistTable: React.FC<ChildProps> = ({
-  handleRemoveProduct,
+  removeFromWishlist,
   product,
 }) => {
   // Images
@@ -49,7 +47,7 @@ const WishlistTable: React.FC<ChildProps> = ({
 
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <button
-          onClick={() => handleRemoveProduct(product._id)}
+          onClick={() => removeFromWishlist(product._id)}
           className="text-yellow-400 hover:text-yellow-500"
         >
           Remove

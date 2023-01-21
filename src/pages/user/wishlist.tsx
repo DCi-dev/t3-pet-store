@@ -3,74 +3,16 @@ import type { ProductType } from "@/types/product";
 import type { GetServerSideProps, NextPage } from "next";
 
 import WishlistTable from "@/components/WishlistTable";
-import { api } from "@/utils/api";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
+import { useEffect } from "react";
 
 const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
-  const { data: sessionData } = useSession();
-
-  const [filteredProducts, setFilteredProducts] = useState<
-    ProductType[] | undefined
-  >();
-
-  const wishlist = api.wishlist.getItems.useQuery();
-  const addItems = api.wishlist.addItem.useMutation();
-  const removeProduct = api.wishlist.removeItem.useMutation();
-  const syncProducts = api.wishlist.synchronizeWishlist.useMutation();
-  const processedIds = new Set();
+  const { syncWishlist, removeFromWishlist, filteredWishlist } =
+    useShopContext() as ShopContextProps;
 
   useEffect(() => {
-    const localIds = JSON.parse(localStorage.getItem("productList") || "[]");
-    if (sessionData?.user) {
-      if (wishlist.data) {
-        const serverProductIds = wishlist.data.map((item) => item.productId);
-        const productIds = [...new Set([...localIds, ...serverProductIds])];
-        localStorage.setItem("productList", JSON.stringify(productIds));
-        localIds.forEach((id: string) => {
-          if (!processedIds.has(id)) {
-            processedIds.add(id);
-            syncProducts.mutate(id);
-          }
-        });
-      } else {
-        localIds.forEach((id: string) => {
-          if (!processedIds.has(id)) {
-            processedIds.add(id);
-            addItems.mutate(id);
-          }
-        });
-      }
-    }
-    const filteredProductsById = products.filter((product) =>
-      localIds.includes(product._id)
-    );
-    setFilteredProducts(filteredProductsById);
+    syncWishlist(products);
   }, []);
-
-  const handleRemoveProduct = (productId: string) => {
-    const productListStorage = localStorage.getItem("productList");
-    if (sessionData?.user) {
-      removeProduct.mutate(productId);
-      if (productListStorage) {
-        let storageArray = JSON.parse(productListStorage);
-        storageArray = storageArray.filter((id: string) => id !== productId);
-        localStorage.setItem("productList", JSON.stringify(storageArray));
-      }
-      setFilteredProducts(
-        filteredProducts?.filter((product) => product._id !== productId)
-      );
-    } else {
-      if (productListStorage) {
-        let storageArray = JSON.parse(productListStorage);
-        storageArray = storageArray.filter((id: string) => id !== productId);
-        localStorage.setItem("productList", JSON.stringify(storageArray));
-      }
-      setFilteredProducts(
-        filteredProducts?.filter((product) => product._id !== productId)
-      );
-    }
-  };
 
   return (
     <main className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
@@ -111,11 +53,11 @@ const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-900 bg-neutral-700">
-                  {filteredProducts?.map((product) => (
+                  {filteredWishlist?.map((product: ProductType) => (
                     <WishlistTable
                       product={product}
                       key={product._id}
-                      handleRemoveProduct={handleRemoveProduct}
+                      removeFromWishlist={removeFromWishlist}
                     />
                   ))}
                 </tbody>
@@ -140,6 +82,3 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 export default WishlistPage;
-function forEach(arg0: (item: any) => void) {
-  throw new Error("Function not implemented.");
-}

@@ -16,10 +16,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 
-import { api } from "@utils/api";
-import { useSession } from "next-auth/react";
+import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
+  const { removeFromWishlist, addToWishlist } =
+    useShopContext() as ShopContextProps;
+
   // Images
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
@@ -31,78 +33,24 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [selectedFlavor, setSelectedFlavor] = useState(product.flavor[0]);
 
   // Wishlist button
-  const [inInWishlist, setInInWishlist] = useState<boolean>(false);
+  const [isInWishlist, setIsInWishlist] = useState<boolean>(false);
 
-  useEffect(() => {
+  const isInWishlistHandler = (product: ProductType) => {
     const productListStorage = localStorage.getItem("productList");
     if (productListStorage) {
       const productArray = JSON.parse(productListStorage);
       const isInWishlist = productArray.includes(product._id);
-      setInInWishlist(isInWishlist);
+      setIsInWishlist(isInWishlist);
     }
-  }, [product._id]);
+  };
+
+  useEffect(() => {
+    isInWishlistHandler(product);
+  }, [product]);
 
   const wishlistClass = `h-5 w-5 fill-current ${
-    inInWishlist ? "text-red-500" : "text-neutral-500"
+    isInWishlist ? "text-red-500" : "text-neutral-500"
   }`;
-
-  const { data: sessionData } = useSession();
-
-  function addItemToLocalStorage(productId: string) {
-    const productIds = JSON.parse(localStorage.getItem("productList") || "[]");
-    if (!productIds.includes(productId)) {
-      productIds.push(productId);
-      localStorage.setItem("productList", JSON.stringify(productIds));
-    }
-  }
-
-  const wishlist = api.wishlist.getItems.useQuery();
-  const addProduct = api.wishlist.addItem.useMutation();
-  const removeProduct = api.wishlist.removeItem.useMutation();
-
-  const handleAddToWishlist = async (product: ProductType) => {
-    // check if the user is authenticated
-    if (!sessionData?.user) {
-      // if not, add the product to the wishlist on the client side
-      addItemToLocalStorage(product._id);
-      return;
-    } else {
-      // if the user is authenticated, send the product id to the server
-      // using TRPC call
-      addItemToLocalStorage(product._id);
-      // Check if the product id is already in the database if not add it
-
-      if (!wishlist.data) {
-        addProduct.mutate(product._id);
-      } else {
-        const productIds = wishlist.data.map((product) => product.productId);
-        if (!productIds.includes(product._id)) {
-          // if the productIds array does not include the product id, add it
-          addProduct.mutate(product._id);
-        }
-      }
-    }
-  };
-
-  function removeItemFromStorage(productId: string) {
-    const productIds = JSON.parse(localStorage.getItem("productList") || "[]");
-    const updatedIds = productIds.filter((id: string) => id !== productId);
-    localStorage.setItem("productList", JSON.stringify(updatedIds));
-  }
-
-  const handleRemoveFromWishlist = async (product: ProductType) => {
-    // check if the user is authenticated
-    if (!sessionData?.user) {
-      // if not, remove the product from the wishlist on the client side
-      removeItemFromStorage(product._id);
-      return;
-    } else {
-      // if the user is authenticated, send the product id to the server
-      // using TRPC call
-      removeProduct.mutate(product._id);
-      removeItemFromStorage(product._id);
-    }
-  };
 
   const handleWishButton = (
     event:
@@ -110,12 +58,12 @@ const ProductCard = ({ product }: { product: ProductType }) => {
       | React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     event.preventDefault();
-    if (inInWishlist) {
-      setInInWishlist(false);
-      handleRemoveFromWishlist(product);
+    if (isInWishlist) {
+      setIsInWishlist(false);
+      removeFromWishlist(product._id);
     } else {
-      setInInWishlist(true);
-      handleAddToWishlist(product);
+      setIsInWishlist(true);
+      addToWishlist(product._id);
     }
   };
 
