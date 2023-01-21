@@ -5,14 +5,17 @@ import type { GetServerSideProps, NextPage } from "next";
 import WishlistTable from "@/components/WishlistTable";
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 const WishlistPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
+  const { data: sessionData } = useSession();
+
   const { syncWishlist, removeFromWishlist, filteredWishlist } =
     useShopContext() as ShopContextProps;
 
   useEffect(() => {
     syncWishlist(products);
-  }, []);
+  }, [sessionData?.user]);
 
   return (
     <main className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
