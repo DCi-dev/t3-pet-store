@@ -3,6 +3,7 @@ import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import * as React from "react";
 import { createContext, useState } from "react";
+import toast from "react-hot-toast";
 
 export interface ShopContextProps {
   filteredWishlist: ProductType[];
@@ -80,6 +81,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         }
       }
     }
+    toast.success("Product added to wishlist");
   };
 
   const removeFromWishlist = (productId: string) => {
@@ -108,6 +110,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         )
       );
     }
+    toast.success("Product removed from wishlist");
   };
 
   const syncWishlist = async (products: ProductType[]) => {
@@ -232,6 +235,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
     await Promise.all([serverPromise, localPromise]).catch((err) => {
       console.log(err);
     });
+
+    await toast.success("Product added to cart");
   }
 
   // Remove from cart
@@ -264,6 +269,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         )
       );
     }
+    toast.success(`Product removed from cart`);
   };
 
   // Sync cart

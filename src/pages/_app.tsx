@@ -20,7 +20,7 @@ const MyApp: AppType<{
     <SessionProvider session={session}>
       <ShopProvider>
         <Layout>
-          <Toaster />
+          <Toaster position="bottom-center" />
           <Component {...pageProps} />
         </Layout>
       </ShopProvider>

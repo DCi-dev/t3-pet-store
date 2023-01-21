@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
-  const { data: sessionData } = useSession();
   const {
     syncWishlist,
     handleCartSync,
@@ -23,11 +22,11 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   useEffect(() => {
     syncWishlist(products);
     handleCartSync(products);
-  }, [sessionData?.user]);
+  }, []);
 
   useEffect(() => {
     handleCartDetails();
-  }, [totalQuantity]);
+  }, [totalQuantity, filteredCart]);
 
   return (
     <main className="bg-neutral-800">
