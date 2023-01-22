@@ -6,11 +6,11 @@ import { createContext, useState } from "react";
 import toast from "react-hot-toast";
 
 export interface ShopContextProps {
-  filteredWishlist: ProductType[];
-  setFilteredWishlist: React.Dispatch<React.SetStateAction<ProductType[]>>;
+  localWishIds: string[];
+  setWishIds: React.Dispatch<React.SetStateAction<string[]>>;
   addToWishlist: (productId: string) => void;
   removeFromWishlist: (productId: string) => void;
-  syncWishlist: (products: ProductType[]) => void;
+  syncWishlist: () => void;
   handleAddToCart: (
     product: ProductType,
     selectedFlavor: string,
@@ -40,7 +40,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
   const { data: sessionData } = useSession();
 
   // Wishlist
-  const [filteredWishlist, setFilteredWishlist] = useState<ProductType[]>([]);
+  const [localWishIds, setWishIds] = useState<string[]>([""]);
 
   const wishlist = api.wishlist.getItems.useQuery();
   const addWishlistProduct = api.wishlist.addItem.useMutation();
@@ -59,12 +59,14 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         productIds.push(productId);
         localStorage.setItem("productList", JSON.stringify(productIds));
       }
+      setWishIds([...localWishIds, productId]);
     } else {
       // if the user is authenticated, send the product id to the server
       // using TRPC call
       const productIds = JSON.parse(
         localStorage.getItem("productList") || "[]"
       );
+      setWishIds([...localWishIds, productId]);
       if (!productIds.includes(productId)) {
         productIds.push(productId);
         localStorage.setItem("productList", JSON.stringify(productIds));
@@ -81,6 +83,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         }
       }
     }
+
     toast.success("Product added to wishlist");
   };
 
@@ -93,27 +96,21 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         storageArray = storageArray.filter((id: string) => id !== productId);
         localStorage.setItem("productList", JSON.stringify(storageArray));
       }
-      setFilteredWishlist(
-        filteredWishlist?.filter(
-          (product: ProductType) => product._id !== productId
-        )
-      );
+
+      setWishIds(localWishIds.filter((id: string) => id !== productId));
     } else {
       if (productListStorage) {
         let storageArray = JSON.parse(productListStorage);
         storageArray = storageArray.filter((id: string) => id !== productId);
         localStorage.setItem("productList", JSON.stringify(storageArray));
       }
-      setFilteredWishlist(
-        filteredWishlist?.filter(
-          (product: ProductType) => product._id !== productId
-        )
-      );
+
+      setWishIds(localWishIds.filter((id: string) => id !== productId));
     }
     toast.success("Product removed from wishlist");
   };
 
-  const syncWishlist = async (products: ProductType[]) => {
+  const syncWishlist = async () => {
     const localIds = JSON.parse(localStorage.getItem("productList") || "[]");
     if (sessionData?.user) {
       if (wishlist.data) {
@@ -135,10 +132,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         });
       }
     }
-    const filteredProductsById = products.filter((product) =>
-      localIds.includes(product._id)
-    );
-    setFilteredWishlist(filteredProductsById);
+    setWishIds(localIds);
   };
 
   // Cart
@@ -388,8 +382,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
   return (
     <ShopContext.Provider
       value={{
-        filteredWishlist,
-        setFilteredWishlist,
+        localWishIds,
+        setWishIds,
         addToWishlist,
         removeFromWishlist,
         syncWishlist,

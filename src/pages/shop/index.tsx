@@ -46,7 +46,7 @@ const Shop: NextPage = ({
   const { syncWishlist } = useShopContext() as ShopContextProps;
 
   useEffect(() => {
-    syncWishlist(products);
+    syncWishlist();
   }, [sessionData?.user]);
 
   // Add event handler to update the selected category options state variable when the input is changed

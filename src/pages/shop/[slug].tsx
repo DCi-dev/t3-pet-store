@@ -54,7 +54,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   );
 
   useEffect(() => {
-    syncWishlist(products);
+    syncWishlist();
     handleCartSync(products);
   }, [sessionData?.user]);
 
