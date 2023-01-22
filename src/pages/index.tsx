@@ -29,7 +29,7 @@ const Home: NextPage = ({
   const firstFourProducts = products.slice(0, 4);
 
   useEffect(() => {
-    syncWishlist(products);
+    syncWishlist();
   }, [sessionData?.user]);
 
   return (

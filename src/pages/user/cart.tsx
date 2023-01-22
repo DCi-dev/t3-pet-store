@@ -1,16 +1,15 @@
-import CartItem from "@/components/CartItem";
+import CartList from "@/components/cart/CartList";
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
-import { client } from "@/lib/client";
-import type { ProductType } from "@/types/product";
-import type { GetServerSideProps, NextPage } from "next";
-import { useSession } from "next-auth/react";
+import type { CartProduct } from "@/types/product";
+import { type NextPage } from "next";
 import { useEffect } from "react";
 
-const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
+const CartPage: NextPage = () => {
   const {
     syncWishlist,
     handleCartSync,
-    filteredCart,
+    cartIds,
+    setCartIds,
     totalPrice,
     totalShipping,
     totalTaxes,
@@ -20,13 +19,17 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
   } = useShopContext() as ShopContextProps;
 
   useEffect(() => {
-    syncWishlist(products);
-    handleCartSync(products);
+    const localCart = JSON.parse(localStorage.getItem("cart") as string);
+    const localCartIds = localCart.map((item: CartProduct) => item.productId);
+    setCartIds(localCartIds);
+
+    syncWishlist();
+    handleCartSync();
   }, []);
 
   useEffect(() => {
     handleCartDetails();
-  }, [totalQuantity, filteredCart]);
+  }, [totalQuantity, cartIds, orderTotal]);
 
   return (
     <main className="bg-neutral-800">
@@ -44,9 +47,7 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
               role="list"
               className="divide-y divide-neutral-200 border-t border-b border-neutral-700"
             >
-              {filteredCart?.map((product) => (
-                <CartItem product={product} key={product._id} />
-              ))}
+              <CartList />
             </ul>
           </section>
 
@@ -108,17 +109,6 @@ const CartPage: NextPage<{ products: ProductType[] }> = ({ products }) => {
       </div>
     </main>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const query = '*[_type == "product"]';
-  const products = await client.fetch(query);
-
-  return {
-    props: {
-      products,
-    },
-  };
 };
 
 export default CartPage;

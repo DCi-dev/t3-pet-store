@@ -16,9 +16,10 @@ export interface ShopContextProps {
     selectedFlavor: string,
     selectedSize: SizeOption
   ) => void;
-  filteredCart: ProductType[];
+  cartIds: string[];
+  setCartIds: React.Dispatch<React.SetStateAction<string[]>>;
   handleRemoveFromCart: (productId: string) => void;
-  handleCartSync: (products: ProductType[]) => void;
+  handleCartSync: () => void;
   handleQuantityChange: (productId: string, quantity: number) => void;
   totalPrice: number;
   totalTaxes: number;
@@ -136,7 +137,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
   };
 
   // Cart
-  const [filteredCart, setFilteredCart] = useState<ProductType[]>([]);
+  const [cartIds, setCartIds] = useState<string[]>([""]);
 
   const cart = api.cart.getItems.useQuery();
   const addCartProduct = api.cart.addItem.useMutation();
@@ -239,9 +240,6 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
       removeCartProduct.mutate({
         productId: productId,
       });
-      setFilteredCart(
-        filteredCart?.filter((product) => product._id !== productId)
-      );
       localStorage.setItem(
         "cart",
         JSON.stringify(
@@ -250,18 +248,18 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
           )
         )
       );
+
+      setCartIds(cartIds.filter((id) => id !== productId));
     } else {
-      setFilteredCart(
-        filteredCart?.filter((product) => product._id !== productId)
-      );
       localStorage.setItem(
         "cart",
         JSON.stringify(
           JSON.parse(localStorage.getItem("cart") || "[]").filter(
-            (product: ProductType) => product._id !== productId
+            (product: CartProduct) => product.productId !== productId
           )
         )
       );
+      setCartIds(cartIds.filter((id) => id !== productId));
     }
     toast.success(`Product removed from cart`);
   };
@@ -313,24 +311,18 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
     await syncFunc();
   };
 
-  const handleCartSync = async (products: ProductType[]) => {
+  const handleCartSync = async () => {
     // Get the cart from local storage
     const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
     if (sessionData?.user && cart.data) {
       mergeCart();
     }
-
-    // Filter the products by the ids, sizeOption and flavor in the cart
-    const filteredProducts = products.filter((product) =>
-      storageCart.some(
-        (item: { productId: string; flavor: string }) =>
-          item.productId === product._id && product.flavor.includes(item.flavor)
-      )
+    setCartIds(
+      storageCart.map((item: CartProduct) => {
+        return item.productId;
+      })
     );
-
-    // Set the filtered products
-    setFilteredCart(filteredProducts);
   };
 
   // Quantity change
@@ -388,7 +380,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         removeFromWishlist,
         syncWishlist,
         handleAddToCart,
-        filteredCart,
+        cartIds,
+        setCartIds,
         handleRemoveFromCart,
         handleCartSync,
         handleQuantityChange,

@@ -6,9 +6,10 @@ import { useShopContext } from "@/context/ShopContext";
 import { useEffect } from "react";
 
 const WishlistPage: NextPage = () => {
-  const { setWishIds } = useShopContext() as ShopContextProps;
+  const { setWishIds, syncWishlist } = useShopContext() as ShopContextProps;
   useEffect(() => {
     setWishIds(JSON.parse(localStorage.getItem("productList") || "[]"));
+    syncWishlist();
   }, []);
   return (
     <main className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
