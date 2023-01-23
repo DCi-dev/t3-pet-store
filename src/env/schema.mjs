@@ -23,6 +23,8 @@ export const serverSchema = z.object({
   GITHUB_SECRET: z.string(),
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
+  STRIPE_SK: z.string(),
+  STRIPE_WEBHOOK_SECRET: z.string(),
 });
 
 /**
@@ -37,6 +39,7 @@ export const clientSchema = z.object({
   NEXT_PUBLIC_SANITY_TOKEN: z.string(),
   NEXT_PUBLIC_SANITY_API_VERSION: z.string(),
   NEXT_PUBLIC_SANITY_DATASET: z.string(),
+  NEXT_PUBLIC_STRIPE_PK: z.string(),
 });
 
 /**
@@ -53,4 +56,5 @@ export const clientEnv = {
   NEXT_PUBLIC_SANITY_TOKEN: process.env.NEXT_PUBLIC_SANITY_TOKEN,
   NEXT_PUBLIC_SANITY_API_VERSION: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
   NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK,
 };

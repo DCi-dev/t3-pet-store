@@ -166,6 +166,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
       //create new item with selectedSize, selectedFlavor and quantity 1
       localCart.push({
         productId: product._id,
+        productName: product.name,
+        image: product.image[0]?.asset?._ref,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
         quantity: 1,
@@ -206,6 +208,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
       //  Add product to the database
       addCartProduct.mutate({
         _id: product._id,
+        name: product.name,
+        image: product.image[0]?.asset?._ref,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
         quantity: 1,
@@ -276,6 +280,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
     //  Sync the local storage cart with the server cart
     const serverCart = cart.data?.map((item) => ({
       productId: item.productId,
+      productName: item.productName,
+      image: item.image,
       sizeOption: {
         _key: item.sizeOption?.key,
         price: item.sizeOption?.price,
@@ -301,6 +307,8 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
           processedCart.add(item);
           syncCart.mutate({
             _id: item.productId,
+            name: item.productName,
+            image: item.image,
             sizeOption: item.sizeOption,
             flavor: item.flavor,
             quantity: item.quantity,

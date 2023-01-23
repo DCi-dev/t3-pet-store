@@ -7,6 +7,8 @@ export const cartRouter = createTRPCRouter({
     .input(
       z.object({
         _id: z.string(),
+        name: z.string(),
+        image: z.string().or(z.undefined()),
         quantity: z.number(),
         sizeOption: z.object({
           size: z.string(),
@@ -22,6 +24,8 @@ export const cartRouter = createTRPCRouter({
       const cart = await ctx.prisma.cartItem.create({
         data: {
           productId: input._id,
+          productName: input.name,
+          image: input.image,
           quantity: input.quantity,
           flavor: input.flavor,
           size: {
@@ -187,6 +191,8 @@ export const cartRouter = createTRPCRouter({
     .input(
       z.object({
         _id: z.string(),
+        name: z.string(),
+        image: z.string(),
         quantity: z.number(),
         sizeOption: z.object({
           size: z.string(),
@@ -235,6 +241,8 @@ export const cartRouter = createTRPCRouter({
           const cart = await ctx.prisma.cartItem.create({
             data: {
               productId: input._id,
+              productName: input.name,
+              image: input.image,
               quantity: input.quantity,
               flavor: input.flavor,
               size: {

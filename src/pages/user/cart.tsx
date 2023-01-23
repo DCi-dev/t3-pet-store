@@ -1,8 +1,10 @@
 import CartList from "@/components/cart/CartList";
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
+import getStripe from "@/lib/getStripe";
 import type { CartProduct } from "@/types/product";
 import { type NextPage } from "next";
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 const CartPage: NextPage = () => {
   const {
@@ -19,17 +21,40 @@ const CartPage: NextPage = () => {
   } = useShopContext() as ShopContextProps;
 
   useEffect(() => {
+    syncWishlist();
+    handleCartSync();
     const localCart = JSON.parse(localStorage.getItem("cart") as string);
     const localCartIds = localCart.map((item: CartProduct) => item.productId);
     setCartIds(localCartIds);
-
-    syncWishlist();
-    handleCartSync();
   }, []);
 
   useEffect(() => {
     handleCartDetails();
   }, [totalQuantity, cartIds, orderTotal]);
+
+  const handleCheckout = async () => {
+    // Ger orderItems from local storage key "order"
+    const orderItems = JSON.parse(localStorage.getItem("order") as string);
+    const stripe = await getStripe();
+    const response = await fetch("/api/stripe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Cors policy
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(orderItems),
+    });
+    if (response.status === 500) {
+      console.log("Error");
+      return;
+    }
+    const data = await response.json();
+    toast.loading("Redirecting to checkout...");
+    stripe?.redirectToCheckout({
+      sessionId: data.id,
+    });
+  };
 
   return (
     <main className="bg-neutral-800">
@@ -98,7 +123,8 @@ const CartPage: NextPage = () => {
 
             <div className="mt-6">
               <button
-                type="submit"
+                type="button"
+                onClick={handleCheckout}
                 className="w-full rounded-md border border-transparent bg-yellow-400 py-3 px-4 text-base font-medium text-neutral-900 shadow-sm hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-neutral-800"
               >
                 Checkout

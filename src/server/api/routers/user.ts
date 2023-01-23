@@ -53,32 +53,4 @@ export const userRouter = createTRPCRouter({
     });
     return orders;
   }),
-  getWishlist: protectedProcedure.query(async ({ ctx }) => {
-    const userId = await ctx.session.user.id;
-    const wishlist = await ctx.prisma.wishlist.findMany({
-      where: {
-        userId: userId,
-      },
-    });
-    return wishlist;
-  }),
-  getWishListItem: protectedProcedure.query(async ({ ctx }) => {
-    const userId = await ctx.session.user.id;
-    const wishlist = await ctx.prisma.wishlistItem.findMany({
-      where: {
-        userId: userId,
-      },
-    });
-    return wishlist;
-  }),
-
-  getCart: protectedProcedure.query(async ({ ctx }) => {
-    const userId = await ctx.session.user.id;
-    const cart = await ctx.prisma.cart.findMany({
-      where: {
-        userId: userId,
-      },
-    });
-    return cart;
-  }),
 });

@@ -48,6 +48,8 @@ export interface ProductPageProps {
 
 export interface CartProduct {
   productId: string;
+  productName: string;
+  image: string;
   sizeOption: {
     size: string;
     price: number;

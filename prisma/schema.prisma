@@ -55,13 +55,12 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  Adress       Address[]
-  // Wishlist     Wishlist[]
-  // Cart         Cart[]
-  Order        Order[]
-  WishlistItem WishlistItem[]
-  CartItem     CartItem[]
-  OrderItem    OrderItem[]
+  Adress           Address[]
+  stripeCustomerId String? // link to Stripe customer object in Stripe's system
+  Order            Order[]
+  WishlistItem     WishlistItem[]
+  CartItem         CartItem[]
+  OrderItem        OrderItem[]
 }
 
 model VerificationToken {
@@ -87,48 +86,26 @@ model Address {
   @@index([userId])
 }
 
-// model Wishlist {
-//   id       String         @id @default(cuid())
-//   userId   String
-//   user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   products WishlistItem[]
-
-//   @@index([userId])
-// }
-
 model WishlistItem {
   id        String @id @default(cuid())
   productId String
-  // wishlistId String
-  // wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
   userId    String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // @@index([wishlistId])
   @@index([userId])
 }
 
-// model Cart {
-//   id       String     @id @default(cuid())
-//   userId   String
-//   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   products CartItem[]
-
-//   @@index([userId])
-// }
-
 model CartItem {
-  id        String       @id @default(cuid())
-  productId String
-  // cartId    String
-  // cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  userId    String
-  quantity  Int
-  size      SizeOption[]
-  flavor    String
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String       @id @default(cuid())
+  productId   String
+  userId      String
+  productName String
+  image       String?
+  quantity    Int
+  size        SizeOption[]
+  flavor      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // @@index([cartId])
   @@index([userId])
 }
 
@@ -144,16 +121,17 @@ model SizeOption {
 }
 
 model Order {
-  id        String      @id @default(cuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  products  OrderItem[]
-  address   Address     @relation(fields: [addressId], references: [id])
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  status    OrderState  @default(NEW)
-  total     Float
-  addressId String
+  id              String           @id @default(cuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products        OrderItem[]
+  address         Address          @relation(fields: [addressId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  status          OrderState       @default(NEW)
+  total           Float
+  addressId       String
+  checkoutSession CheckoutSession?
 
   @@index([addressId])
   @@index([userId])
@@ -168,15 +146,62 @@ enum OrderState {
 }
 
 model OrderItem {
-  id        String @id @default(cuid())
-  productId String
-  orderId   String
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quantity  Int
-  price     Float
+  id           String                @id @default(cuid())
+  productId    String
+  orderId      String
+  order        Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quantity     Int
+  productImage OrderItemImage[]
+  productName  String
+  flavor       String
+  size         OrderItemSizeOption[]
 
   @@index([orderId])
   @@index([userId])
+}
+
+model OrderItemImage {
+  id          String    @id @default(cuid())
+  ref         String
+  orderItemId String
+  OrderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  @@index([orderItemId])
+}
+
+model OrderItemSizeOption {
+  id          String    @id @default(cuid())
+  size        String
+  price       Int
+  key         String
+  orderItemId String
+  OrderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  @@index([orderItemId])
+}
+
+// Stripe Checkout
+model CheckoutSession {
+  id                String @id @default(cuid())
+  checkoutSessionId String @unique
+  status            String
+  amount            Int
+  currency          String
+  orderId           String @unique
+  order             Order  @relation(references: [id], fields: [orderId], onDelete: Cascade)
+}
+
+model StripeEvent {
+  id              String   @id @default(cuid())
+  apiVersion      String?
+  data            Json
+  request         Json?
+  type            String
+  object          String
+  account         String?
+  created         DateTime
+  livemode        Boolean
+  pendingWebhooks Int
 }

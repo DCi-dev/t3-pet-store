@@ -32,13 +32,15 @@ const CartItem: React.FC<ChildProps> = ({ product }) => {
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
 
   useEffect(() => {
-    const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const storageCart = JSON.parse(localStorage.getItem("cart") || "[]"); // Put storageCartWithImages in local storage under Order key
+    localStorage.setItem("order", JSON.stringify(storageCart));
+
     const selectedData = storageCart.find(
       (item: selectedData) => item.productId === product._id
     );
     setSelectedData(selectedData);
     setSelectedQuantity(selectedData?.quantity || 1);
-  }, [product._id]);
+  }, [product._id, handleQuantityChange]);
 
   // Images
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
