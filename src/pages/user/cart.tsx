@@ -24,6 +24,7 @@ const CartPage: NextPage = () => {
     syncWishlist();
     handleCartSync();
     const localCart = JSON.parse(localStorage.getItem("cart") as string);
+    if (!localCart) return;
     const localCartIds = localCart.map((item: CartProduct) => item.productId);
     setCartIds(localCartIds);
   }, []);

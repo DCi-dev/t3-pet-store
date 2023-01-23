@@ -13,19 +13,22 @@ interface Props {
 const CheckoutSuccess: NextPage<Props> = ({ products }) => {
   const [orderProducts, setOrderProducts] = useState<ProductType[]>([]);
 
-  const getOrderProducts = async () => {
+  const getOrderProducts = () => {
     const localCart = JSON.parse(localStorage.getItem("order") as string);
     // filter products by id
     const orderProducts = products.filter((product: ProductType) =>
       localCart.some((item: CartProduct) => item.productId === product._id)
     );
     setOrderProducts(orderProducts);
+    localStorage.removeItem("cart");
+    setTimeout(() => {
+      localStorage.removeItem("order");
+    }, 1000);
   };
 
   useEffect(() => {
     getOrderProducts();
     // clear local storage
-    localStorage.removeItem("cart");
   }, []);
 
   return (
