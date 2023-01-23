@@ -1,19 +1,43 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import Stripe from "stripe";
-import { env } from "../../env/server.mjs";
+import z from "zod";
+import { env } from "../../../env/server.mjs";
+import { getOrCreateStripeCustomerIdForUser } from "../../stripe/stripe-webhook-handlers";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
-const stripe = new Stripe(env.STRIPE_SK, {
-  apiVersion: "2022-11-15",
-  typescript: true,
-});
+export const stripeRouter = createTRPCRouter({
+  createCheckoutSession: protectedProcedure
+    .input(
+      z.array(
+        z.object({
+          productId: z.string(),
+          productName: z.string(),
+          image: z.string(),
+          sizeOption: z.object({
+            _key: z.string(),
+            price: z.number(),
+            size: z.string(),
+          }),
+          flavor: z.string(),
+          quantity: z.number(),
+        })
+      )
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { stripe, session, prisma } = ctx;
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method === "POST") {
-    try {
-      const params = {
+      const customerId = await getOrCreateStripeCustomerIdForUser({
+        prisma,
+        stripe,
+        userId: session?.user?.id || "",
+      });
+
+      if (!customerId) {
+        throw new Error("Could not create customer");
+      }
+
+      const baseUrl = "http://localhost:3000";
+
+      const checkoutSession = await stripe.checkout.sessions.create({
+        customer: customerId,
         submit_type: "pay",
         mode: "payment",
         payment_method_types: ["card"],
@@ -41,7 +65,7 @@ export default async function handler(
           { shipping_rate: "shr_1MT9wBKCrXdpqyy8aZlwsD0y" },
           { shipping_rate: "shr_1MTPdHKCrXdpqyy8qsNcTqIM" },
         ],
-        line_items: req.body.map(
+        line_items: input.map(
           (item: {
             image: string;
             productName: string;
@@ -73,18 +97,14 @@ export default async function handler(
             };
           }
         ),
-        success_url: `${req.headers.origin}/user/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/?canceled=true`,
-      };
-      // Create Checkout Sessions from body params.
-      const stripeSession = await stripe.checkout.sessions.create(params);
+        success_url: `${baseUrl}/user/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/user/cart`,
+      });
 
-      res.status(200).json(stripeSession);
-    } catch (err) {
-      res.status((err as any).statusCode || 500).json((err as any).message);
-    }
-  } else {
-    res.setHeader("Allow", "POST");
-    res.status(405).end("Method Not Allowed");
-  }
-}
+      if (!checkoutSession) {
+        throw new Error("Could not create checkout session");
+      }
+
+      return { checkoutUrl: checkoutSession.url };
+    }),
+});

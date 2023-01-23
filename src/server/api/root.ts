@@ -1,4 +1,5 @@
 import { cartRouter } from "./routers/cart";
+import { stripeRouter } from "./routers/stripe";
 import { userRouter } from "./routers/user";
 import { wishlistRouter } from "./routers/wishlist";
 import { createTRPCRouter } from "./trpc";
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   cart: cartRouter,
   wishlist: wishlistRouter,
   user: userRouter,
+  stripe: stripeRouter,
 });
 
 // export type definition of API

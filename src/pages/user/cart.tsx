@@ -2,11 +2,15 @@ import CartList from "@/components/cart/CartList";
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
 import getStripe from "@/lib/getStripe";
 import type { CartProduct } from "@/types/product";
+import { api } from "@/utils/api";
 import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 
 const CartPage: NextPage = () => {
+  const { data: session } = useSession();
   const {
     syncWishlist,
     handleCartSync,
@@ -33,28 +37,39 @@ const CartPage: NextPage = () => {
     handleCartDetails();
   }, [totalQuantity, cartIds, orderTotal]);
 
+  const { mutateAsync: createCheckoutSession } =
+    api.stripe.createCheckoutSession.useMutation();
+  const { push } = useRouter();
+
   const handleCheckout = async () => {
     // Ger orderItems from local storage key "order"
     const orderItems = JSON.parse(localStorage.getItem("order") as string);
-    const stripe = await getStripe();
-    const response = await fetch("/api/stripe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // Cors policy
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify(orderItems),
-    });
-    if (response.status === 500) {
-      console.log("Error");
-      return;
+    if (!session?.user) {
+      const stripe = await getStripe();
+      const response = await fetch("/api/stripe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Cors policy
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(orderItems),
+      });
+      if (response.status === 500) {
+        console.log("Error");
+        return;
+      }
+      const data = await response.json();
+      toast.loading("Redirecting to checkout...");
+      stripe?.redirectToCheckout({
+        sessionId: data.id,
+      });
+    } else {
+      const { checkoutUrl } = await createCheckoutSession(orderItems);
+      if (checkoutUrl) {
+        push(checkoutUrl);
+      }
     }
-    const data = await response.json();
-    toast.loading("Redirecting to checkout...");
-    stripe?.redirectToCheckout({
-      sessionId: data.id,
-    });
   };
 
   return (

@@ -128,21 +128,31 @@ model Order {
   address         Address          @relation(fields: [addressId], references: [id])
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  status          OrderState       @default(NEW)
+  status          String?
   total           Float
   addressId       String
   checkoutSession CheckoutSession?
+  stripeChargeId  String?
+  shippingMethod  String?
+  trackingNumber  String?
+  shippingCost    Int?
+  paymentMethod   String?
+  cardDetails     cardDetails?
 
   @@index([addressId])
   @@index([userId])
 }
 
-enum OrderState {
-  NEW
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
+model cardDetails {
+  id           String @id @default(cuid())
+  cardBrand    String
+  cardLast4    String
+  cardExpYear  String
+  cardExpMonth String
+  orderId      String @unique
+  Order        Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
 }
 
 model OrderItem {
@@ -184,24 +194,20 @@ model OrderItemSizeOption {
 
 // Stripe Checkout
 model CheckoutSession {
-  id                String @id @default(cuid())
-  checkoutSessionId String @unique
-  status            String
-  amount            Int
+  id                String   @id @default(cuid())
+  checkoutSessionId String   @unique
+  apiVersion        String?
+  data              Json
+  request           Json?
+  type              String
+  object            String
+  account           String?
+  created           DateTime
+  status            String?
+  amount            Int?
   currency          String
-  orderId           String @unique
-  order             Order  @relation(references: [id], fields: [orderId], onDelete: Cascade)
-}
-
-model StripeEvent {
-  id              String   @id @default(cuid())
-  apiVersion      String?
-  data            Json
-  request         Json?
-  type            String
-  object          String
-  account         String?
-  created         DateTime
-  livemode        Boolean
-  pendingWebhooks Int
+  livemode          Boolean?
+  pendingWebhooks   Int?
+  orderId           String   @unique
+  order             Order    @relation(references: [id], fields: [orderId], onDelete: Cascade)
 }
