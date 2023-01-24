@@ -110,7 +110,8 @@ export const createStripeCheckoutSession = async ({
       (item: {
         image: string;
         productName: string;
-        sizeOption: { price: number };
+        sizeOption: { price: number; size: string };
+        flavor: string;
         quantity: number;
       }) => {
         const img = item.image;
@@ -126,6 +127,10 @@ export const createStripeCheckoutSession = async ({
             product_data: {
               name: item.productName,
               images: [newImage],
+              metadata: {
+                size: item.sizeOption.size,
+                flavor: item.flavor,
+              },
             },
             unit_amount: item.sizeOption.price * 100,
           },
@@ -143,4 +148,28 @@ export const createStripeCheckoutSession = async ({
   });
 
   return stripeSession;
+};
+
+export const getStripeSession = async ({
+  stripe,
+  sessionId,
+}: {
+  stripe: Stripe;
+  sessionId: string;
+}) => {
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  return session;
+};
+
+export const getStripeSessionItems = async ({
+  stripe,
+  sessionId,
+}: {
+  stripe: Stripe;
+  sessionId: string;
+}) => {
+  const sessionItems = await stripe.checkout.sessions.listLineItems(sessionId, {
+    limit: 8,
+  });
+  return sessionItems;
 };

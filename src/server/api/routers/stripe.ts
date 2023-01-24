@@ -1,7 +1,7 @@
 import z from "zod";
 import { env } from "../../../env/server.mjs";
 import { getOrCreateStripeCustomerIdForUser } from "../../stripe/stripe-webhook-handlers";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const stripeRouter = createTRPCRouter({
   createCheckoutSession: protectedProcedure
@@ -69,7 +69,8 @@ export const stripeRouter = createTRPCRouter({
           (item: {
             image: string;
             productName: string;
-            sizeOption: { price: number };
+            sizeOption: { price: number; size: string };
+            flavor: string;
             quantity: number;
           }) => {
             const img = item.image;
@@ -85,6 +86,10 @@ export const stripeRouter = createTRPCRouter({
                 product_data: {
                   name: item.productName,
                   images: [newImage],
+                  metadata: {
+                    flavor: item.flavor,
+                    size: item.sizeOption.size,
+                  },
                 },
                 unit_amount: item.sizeOption.price * 100,
               },
@@ -105,6 +110,43 @@ export const stripeRouter = createTRPCRouter({
         throw new Error("Could not create checkout session");
       }
 
-      return { checkoutUrl: checkoutSession.url };
+      return {
+        checkoutUrl: checkoutSession.url,
+        sessionId: checkoutSession.id,
+      };
+    }),
+
+  getCheckoutSession: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const { stripe } = ctx;
+
+      const session = await stripe.checkout.sessions.retrieve(input);
+
+      if (!session) {
+        throw new Error("Could not retrieve checkout session");
+      }
+
+      return session;
+    }),
+
+  getCheckoutSessionItems: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const { stripe } = ctx;
+
+      const session = await stripe.checkout.sessions.retrieve(input);
+
+      if (!session) {
+        throw new Error("Could not retrieve checkout session");
+      }
+
+      const lineItems = await stripe.checkout.sessions.listLineItems(input);
+
+      if (!lineItems) {
+        throw new Error("Could not retrieve line items");
+      }
+
+      return lineItems;
     }),
 });

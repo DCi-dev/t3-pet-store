@@ -67,6 +67,8 @@ const CartPage: NextPage = () => {
     } else {
       const { checkoutUrl } = await createCheckoutSession(orderItems);
       if (checkoutUrl) {
+        toast.loading("Redirecting to checkout...");
+
         push(checkoutUrl);
       }
     }

@@ -1,5 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createStripeCheckoutSession } from "../../server/stripe/stripe-webhook-handlers";
+import {
+  createStripeCheckoutSession,
+  getStripeSession,
+  getStripeSessionItems,
+} from "../../server/stripe/stripe-webhook-handlers";
 
 // Stripe requires the raw body to construct the event.
 export const config = {
@@ -23,5 +27,15 @@ export default async function handler(
   } else {
     res.setHeader("Allow", "POST");
     res.status(405).end("Method Not Allowed");
+  }
+  if (req.method === "GET") {
+    try {
+      await getStripeSession(req.body);
+      await getStripeSessionItems(req.body);
+      res.json({ received: true });
+    } catch (err) {
+      res.status(400).send(`Webhook Error: ${(err as any).message}`);
+      return;
+    }
   }
 }
