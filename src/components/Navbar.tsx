@@ -189,14 +189,14 @@ export default function NavBar() {
               {/* Current: "bg-yellow-50 border-yellow-500 text-yellow-700", Default: "border-transparent text-neutral-500 hover:bg-neutral-50 hover:border-neutral-300 hover:text-neutral-700" */}
               <Disclosure.Button
                 as="a"
-                href="#"
+                href="/"
                 className="block border-l-4 border-yellow-500 bg-neutral-900 py-2 pl-3 pr-4 text-base font-medium text-neutral-100"
               >
                 Home
               </Disclosure.Button>
               <Disclosure.Button
                 as="a"
-                href="#"
+                href="/shop"
                 className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-neutral-100 hover:border-neutral-800 hover:bg-neutral-800 hover:text-neutral-300"
               >
                 Shop
