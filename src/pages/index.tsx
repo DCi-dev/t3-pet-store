@@ -3,14 +3,8 @@ import {
   type InferGetServerSidePropsType,
   type NextPage,
 } from "next";
-// import { signIn, signOut, useSession } from "next-auth/react";
 
-import {
-  FooterBanner,
-  HeroBanner,
-  Incentives,
-  ProductCard,
-} from "@/components";
+import { HeroBanner, Incentives, ProductCard } from "@/components";
 
 import Promo from "@/components/common/Promo";
 import type { ShopContextProps } from "@/context/ShopContext";
@@ -53,7 +47,6 @@ const Home: NextPage = ({
         </div>
         <Incentives />
         <Promo />
-        {/* <FooterBanner footerBanner={bannerData.length && bannerData[1]} /> */}
       </div>
     </>
   );
