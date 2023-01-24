@@ -284,6 +284,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
       productId: item.productId,
       productName: item.productName,
       image: item.image,
+      slug: item.slug,
       sizeOption: {
         _key: item.sizeOption?.key,
         price: item.sizeOption?.price,
