@@ -35,7 +35,7 @@ export const stripeRouter = createTRPCRouter({
         throw new Error("Could not create customer");
       }
 
-      const baseUrl = "http://localhost:3000";
+      const baseUrl = env.BASE_URL;
 
       const checkoutSession = await stripe.checkout.sessions.create({
         customer: customerId,
@@ -154,7 +154,7 @@ export const stripeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { stripe } = ctx;
 
-      const baseUrl = "http://localhost:3000";
+      const baseUrl = env.BASE_URL;
 
       const checkoutSession = await stripe.checkout.sessions.create({
         submit_type: "pay",
