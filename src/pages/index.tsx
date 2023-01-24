@@ -12,6 +12,7 @@ import {
   ProductCard,
 } from "@/components";
 
+import Promo from "@/components/common/Promo";
 import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { type ProductType } from "@/types/product";
@@ -51,6 +52,7 @@ const Home: NextPage = ({
           </div>
         </div>
         <Incentives />
+        <Promo />
         {/* <FooterBanner footerBanner={bannerData.length && bannerData[1]} /> */}
       </div>
     </>
