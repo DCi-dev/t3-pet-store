@@ -1,4 +1,6 @@
-import { ProductCard } from "@/components";
+import { Incentives, ProductCard } from "@/components";
+import Promo from "@/components/common/Promo";
+import ProductFeatures from "@/components/ProductFeatures";
 import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
@@ -9,6 +11,7 @@ import {
   ChevronUpIcon,
   CurrencyDollarIcon,
   GlobeAmericasIcon,
+  HeartIcon,
 } from "@heroicons/react/24/outline";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
@@ -36,8 +39,42 @@ const policies = [
 
 const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   const { data: sessionData } = useSession();
-  const { syncWishlist, handleAddToCart, handleCartSync } =
+  const { syncWishlist, handleAddToCart, addToWishlist, removeFromWishlist } =
     useShopContext() as ShopContextProps;
+
+  const [isInWishlist, setIsInWishlist] = useState<boolean>(false);
+
+  const isInWishlistHandler = (product: ProductType) => {
+    const productListStorage = localStorage.getItem("productList");
+    if (productListStorage) {
+      const productArray = JSON.parse(productListStorage);
+      const isInWishlist = productArray.includes(product._id);
+      setIsInWishlist(isInWishlist);
+    }
+  };
+
+  const wishlistClass = `h-12 w-12 fill-current ${
+    isInWishlist ? "text-red-500" : "text-neutral-500"
+  }`;
+
+  useEffect(() => {
+    isInWishlistHandler(product);
+  }, [product]);
+
+  const handleWishButton = (
+    event:
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+      | React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    if (isInWishlist) {
+      setIsInWishlist(false);
+      removeFromWishlist(product._id);
+    } else {
+      setIsInWishlist(true);
+      addToWishlist(product._id);
+    }
+  };
 
   // Product Image
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
@@ -59,7 +96,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
 
   return (
     <main className="bg-neutral-800">
-      <div className="mx-auto max-w-2xl   px-4 pt-8 pb-16 sm:px-6 sm:pb-24 lg:max-w-7xl lg:px-8">
+      <div className="max-w-2x mx-auto px-4 pt-8 pb-16 sm:px-6 sm:pb-24 lg:min-h-screen lg:max-w-7xl lg:px-8 lg:pt-16">
         <div className="lg:grid lg:auto-rows-min lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-5 lg:col-start-8">
             <div className="flex justify-between">
@@ -176,15 +213,22 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                 </RadioGroup>
               </div>
             </form>
-            <button
-              onClick={() =>
-                handleAddToCart(product, selectedFlavor, selectedSize)
-              }
-              className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-yellow-400 py-3 px-8 text-base font-bold text-neutral-900 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
-            >
-              Add to cart
-            </button>
-
+            <div className="justify-left flex w-full  items-center gap-8">
+              <button
+                onClick={() =>
+                  handleAddToCart(product, selectedFlavor, selectedSize)
+                }
+                className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-yellow-400 py-3 px-8 text-base font-bold text-neutral-900 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+              >
+                Add to cart
+              </button>
+              <button
+                onClick={handleWishButton}
+                className="mt-8 flex items-center justify-center rounded-md  text-base font-bold text-neutral-900 "
+              >
+                <HeartIcon className={wishlistClass} />
+              </button>
+            </div>
             {/* Product details */}
             <div className="mt-10">
               <Disclosure>
@@ -243,7 +287,10 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
             </section>
           </div>
         </div>
-        <section aria-labelledby="related-heading" className="mt-16 sm:mt-24">
+      </div>
+      <ProductFeatures />
+      <section aria-labelledby="related-heading" className="mt-16 sm:mt-24">
+        <div className="max-w-2x mx-auto px-4 pt-8 pb-16 sm:px-6 sm:pb-24 lg:max-w-7xl  lg:px-8">
           <h2
             id="related-heading"
             className="text-lg font-medium text-neutral-100"
@@ -256,8 +303,10 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
               <ProductCard key={relatedProduct._id} product={relatedProduct} />
             ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+      <Incentives />
+      <Promo />
     </main>
   );
 };
