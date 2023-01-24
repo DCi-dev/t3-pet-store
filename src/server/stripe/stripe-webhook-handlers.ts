@@ -153,6 +153,99 @@ export const createStripeCheckoutSession = async ({
   return stripeSession;
 };
 
+export const createGuestCheckoutSession = async ({
+  stripe,
+  items,
+}: {
+  stripe: Stripe;
+  items: {
+    productId: string;
+    productName: string;
+    image: string;
+    sizeOption: {
+      _key: string;
+      price: number;
+      size: string;
+    };
+    slug: string;
+    flavor: string;
+    quantity: number;
+  }[];
+}) => {
+  const stripeSession = await stripe.checkout.sessions.create({
+    submit_type: "pay",
+    mode: "payment",
+    payment_method_types: ["card"],
+    billing_address_collection: "auto",
+    shipping_address_collection: {
+      allowed_countries: [
+        "US",
+        "CA",
+        "GB",
+        "AU",
+        "NZ",
+        "IE",
+        "FR",
+        "DE",
+        "RO",
+        "IT",
+        "ES",
+        "NL",
+        "BE",
+        "AT",
+        "DK",
+      ],
+    },
+    shipping_options: [
+      { shipping_rate: "shr_1MT9wBKCrXdpqyy8aZlwsD0y" },
+      { shipping_rate: "shr_1MTPdHKCrXdpqyy8qsNcTqIM" },
+    ],
+    line_items: items.map(
+      (item: {
+        image: string;
+        productName: string;
+        sizeOption: { price: number; size: string };
+        flavor: string;
+        slug: string;
+        quantity: number;
+      }) => {
+        const img = item.image;
+        const newImage = img
+          .replace(
+            "image-",
+            `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`
+          )
+          .replace("-jpg", ".jpg");
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.productName,
+              images: [newImage],
+              metadata: {
+                size: item.sizeOption.size,
+                flavor: item.flavor,
+                slug: item.slug,
+              },
+            },
+            unit_amount: item.sizeOption.price * 100,
+          },
+          adjustable_quantity: {
+            enabled: true,
+            minimum: 1,
+            maximum: 8,
+          },
+          quantity: item.quantity,
+        };
+      }
+    ),
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/user/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
+  });
+
+  return stripeSession;
+};
+
 export const getStripeSession = async ({
   stripe,
   sessionId,

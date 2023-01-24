@@ -29,6 +29,8 @@ const Content = ({ sessionId }: { sessionId: string }) => {
     sessionId as string
   );
 
+  console.log(session);
+
   return (
     <main className="relative min-h-screen bg-neutral-800 lg:min-h-screen">
       <div className="h-80 overflow-hidden lg:absolute lg:h-full lg:w-1/2 lg:pr-4 xl:pr-12">

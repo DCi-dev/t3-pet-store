@@ -1,6 +1,5 @@
 import CartList from "@/components/cart/CartList";
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
-import getStripe from "@/lib/getStripe";
 import type { CartProduct } from "@/types/product";
 import { api } from "@/utils/api";
 import { type NextPage } from "next";
@@ -39,31 +38,19 @@ const CartPage: NextPage = () => {
 
   const { mutateAsync: createCheckoutSession } =
     api.stripe.createCheckoutSession.useMutation();
+  const { mutateAsync: createGuestCheckoutSession } =
+    api.stripe.createGuestCheckoutSession.useMutation();
   const { push } = useRouter();
 
   const handleCheckout = async () => {
     // Ger orderItems from local storage key "order"
     const orderItems = JSON.parse(localStorage.getItem("order") as string);
     if (!session?.user) {
-      const stripe = await getStripe();
-      const response = await fetch("/api/stripe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Cors policy
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify(orderItems),
-      });
-      if (response.status === 500) {
-        console.log("Error");
-        return;
+      const { checkoutUrl } = await createGuestCheckoutSession(orderItems);
+      if (checkoutUrl) {
+        toast.loading("Redirecting to checkout...");
+        push(checkoutUrl);
       }
-      const data = await response.json();
-      toast.loading("Redirecting to checkout...");
-      stripe?.redirectToCheckout({
-        sessionId: data.id,
-      });
     } else {
       const { checkoutUrl } = await createCheckoutSession(orderItems);
       if (checkoutUrl) {

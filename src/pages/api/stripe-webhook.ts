@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
+  createGuestCheckoutSession,
   createStripeCheckoutSession,
   getProductMetadata,
   getStripePaymentMethod,
@@ -21,6 +22,7 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       await createStripeCheckoutSession(req.body);
+      await createGuestCheckoutSession(req.body);
       res.json({ received: true });
     } catch (err) {
       res.status(400).send(`Webhook Error: ${(err as any).message}`);
