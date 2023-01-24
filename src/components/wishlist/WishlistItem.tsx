@@ -1,6 +1,5 @@
 import { client } from "@/lib/client";
 import { type ProductType } from "@/types/product";
-import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,10 +14,7 @@ const WishlistItem: React.FC<ChildProps> = ({
   product,
 }) => {
   // Images
-  const productImageProps: UseNextSanityImageProps = useNextSanityImage(
-    client,
-    product.image[0]
-  );
+  const productImageProps = useNextSanityImage(client, product.image[0] as any);
 
   return (
     <>
@@ -27,7 +23,7 @@ const WishlistItem: React.FC<ChildProps> = ({
           <div className="flex items-center">
             <div className="h-16 w-16 flex-shrink-0">
               <Image
-                {...productImageProps}
+                {...(productImageProps as any)}
                 style={{ width: "100%", height: "100%" }} // layout="responsive" prior to Next 13.0.0
                 alt={product.name}
                 className="object-cover object-center"
