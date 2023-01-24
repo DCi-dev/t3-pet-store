@@ -164,4 +164,23 @@ export const stripeRouter = createTRPCRouter({
 
       return product;
     }),
+  getStripePaymentMethod: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const { stripe } = ctx;
+
+      const paymentIntent = await stripe.paymentIntents.retrieve(input);
+      if (!paymentIntent) {
+        throw new Error("Could not retrieve payment method");
+      }
+      const paymentMethod = await stripe.paymentMethods.retrieve(
+        paymentIntent.payment_method as string
+      );
+
+      if (!paymentMethod) {
+        throw new Error("Could not retrieve payment method");
+      }
+
+      return paymentMethod;
+    }),
 });

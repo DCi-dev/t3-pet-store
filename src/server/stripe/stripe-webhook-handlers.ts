@@ -187,3 +187,17 @@ export const getProductMetadata = async ({
   const product = await stripe.products.retrieve(productId);
   return product.metadata;
 };
+
+export const getStripePaymentMethod = async ({
+  stripe,
+  paymentIntentId,
+}: {
+  stripe: Stripe;
+  paymentIntentId: string;
+}) => {
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  const paymentMethod = await stripe.paymentMethods.retrieve(
+    paymentIntent.payment_method as string
+  );
+  return paymentMethod;
+};

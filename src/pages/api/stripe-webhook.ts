@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import {
   createStripeCheckoutSession,
   getProductMetadata,
+  getStripePaymentMethod,
   getStripeSession,
   getStripeSessionItems,
 } from "../../server/stripe/stripe-webhook-handlers";
@@ -34,6 +35,7 @@ export default async function handler(
       await getStripeSession(req.body);
       await getStripeSessionItems(req.body);
       await getProductMetadata(req.body);
+      await getStripePaymentMethod(req.body);
       res.json({ received: true });
     } catch (err) {
       res.status(400).send(`Webhook Error: ${(err as any).message}`);
