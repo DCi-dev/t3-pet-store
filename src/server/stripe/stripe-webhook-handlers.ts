@@ -67,6 +67,7 @@ export const createStripeCheckoutSession = async ({
       price: number;
       size: string;
     };
+    slug: string;
     flavor: string;
     quantity: number;
   }[];
@@ -112,6 +113,7 @@ export const createStripeCheckoutSession = async ({
         productName: string;
         sizeOption: { price: number; size: string };
         flavor: string;
+        slug: string;
         quantity: number;
       }) => {
         const img = item.image;
@@ -130,6 +132,7 @@ export const createStripeCheckoutSession = async ({
               metadata: {
                 size: item.sizeOption.size,
                 flavor: item.flavor,
+                slug: item.slug,
               },
             },
             unit_amount: item.sizeOption.price * 100,
@@ -172,4 +175,15 @@ export const getStripeSessionItems = async ({
     limit: 8,
   });
   return sessionItems;
+};
+
+export const getProductMetadata = async ({
+  stripe,
+  productId,
+}: {
+  stripe: Stripe;
+  productId: string;
+}) => {
+  const product = await stripe.products.retrieve(productId);
+  return product.metadata;
 };

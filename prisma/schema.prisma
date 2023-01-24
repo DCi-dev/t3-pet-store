@@ -102,6 +102,7 @@ model CartItem {
   productName String
   image       String?
   quantity    Int
+  slug        String
   size        SizeOption[]
   flavor      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -4,17 +4,23 @@ import type { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const CheckoutSuccess: NextPage = () => {
   const router = useRouter();
-
   const sessionId = router.query.session_id as string;
+
+  useEffect(() => {
+    // clear local storage
+    localStorage.removeItem("cart");
+    localStorage.removeItem("order");
+  }, []);
 
   const { data: session } = api.stripe.getCheckoutSession.useQuery(sessionId);
   const { data: lineItems } =
     api.stripe.getCheckoutSessionItems.useQuery(sessionId);
-  console.log(lineItems);
+
+  // console.log(lineItems);
 
   return (
     <main className="relative min-h-screen bg-neutral-800 lg:min-h-screen">
@@ -46,12 +52,7 @@ const CheckoutSuccess: NextPage = () => {
               <dt className="text-neutral-100">Tracking number</dt>
               <dd className="mt-2 text-yellow-400">51547878755545848512</dd>
             </dl>
-            {!session && (
-              <>
-                <p>Loading... </p>
-              </>
-            )}
-            {session && lineItems && (
+            {lineItems && (
               <>
                 <ul
                   role="list"
@@ -60,10 +61,10 @@ const CheckoutSuccess: NextPage = () => {
                   {lineItems?.data ? (
                     lineItems.data.map((product) => (
                       <OrderItem
-                        key={product.id}
-                        productName={product.description}
+                        key={product.price.product}
                         quantity={product.quantity}
                         price={product.amount_total / 100}
+                        productId={product.price.product}
                       />
                     ))
                   ) : (
@@ -82,7 +83,7 @@ const CheckoutSuccess: NextPage = () => {
                   <div className="flex justify-between">
                     <dt className="text-neutral-100">Shipping</dt>
                     <dd className="text-neutral-100">
-                      ${session.shipping_cost.amount_total}
+                      ${session.shipping_cost.amount_total / 100}
                     </dd>
                   </div>
 

@@ -170,6 +170,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         image: product.image[0]?.asset?._ref,
         sizeOption: selectedSize,
         flavor: selectedFlavor,
+        slug: product.slug.current,
         quantity: 1,
       });
     }
@@ -211,6 +212,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
         name: product.name,
         image: product.image[0]?.asset?._ref,
         sizeOption: selectedSize,
+        slug: product.slug.current,
         flavor: selectedFlavor,
         quantity: 1,
       });
@@ -312,6 +314,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
             sizeOption: item.sizeOption,
             flavor: item.flavor,
             quantity: item.quantity,
+            slug: item.slug,
           });
         }
       });

@@ -10,6 +10,7 @@ export const cartRouter = createTRPCRouter({
         name: z.string(),
         image: z.string().or(z.undefined()),
         quantity: z.number(),
+        slug: z.string(),
         sizeOption: z.object({
           size: z.string(),
           price: z.number(),
@@ -28,6 +29,7 @@ export const cartRouter = createTRPCRouter({
           image: input.image,
           quantity: input.quantity,
           flavor: input.flavor,
+          slug: input.slug,
           size: {
             create: {
               size: input.sizeOption.size,
@@ -194,6 +196,7 @@ export const cartRouter = createTRPCRouter({
         name: z.string(),
         image: z.string(),
         quantity: z.number(),
+        slug: z.string(),
         sizeOption: z.object({
           size: z.string(),
           price: z.number(),
@@ -245,6 +248,7 @@ export const cartRouter = createTRPCRouter({
               image: input.image,
               quantity: input.quantity,
               flavor: input.flavor,
+              slug: input.slug,
               size: {
                 create: {
                   size: input.sizeOption.size,

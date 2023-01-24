@@ -18,6 +18,7 @@ export const stripeRouter = createTRPCRouter({
           }),
           flavor: z.string(),
           quantity: z.number(),
+          slug: z.string(),
         })
       )
     )
@@ -72,6 +73,7 @@ export const stripeRouter = createTRPCRouter({
             sizeOption: { price: number; size: string };
             flavor: string;
             quantity: number;
+            slug: string;
           }) => {
             const img = item.image;
             const newImage = img
@@ -89,6 +91,7 @@ export const stripeRouter = createTRPCRouter({
                   metadata: {
                     flavor: item.flavor,
                     size: item.sizeOption.size,
+                    slug: item.slug,
                   },
                 },
                 unit_amount: item.sizeOption.price * 100,
@@ -112,7 +115,6 @@ export const stripeRouter = createTRPCRouter({
 
       return {
         checkoutUrl: checkoutSession.url,
-        sessionId: checkoutSession.id,
       };
     }),
 
@@ -148,5 +150,18 @@ export const stripeRouter = createTRPCRouter({
       }
 
       return lineItems;
+    }),
+  getProductMetadata: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const { stripe } = ctx;
+
+      const product = await stripe.products.retrieve(input);
+
+      if (!product) {
+        throw new Error("Could not retrieve product");
+      }
+
+      return product;
     }),
 });
