@@ -1,14 +1,13 @@
 import OrderItem from "@/components/order/OrderItem";
 import { api } from "@/utils/api";
-import type { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-const CheckoutSuccess: NextPage = () => {
+const CheckoutSuccess = () => {
   const router = useRouter();
-  const sessionId = router.query.session_id as string;
+  const sessionID = router.query.session_id;
 
   useEffect(() => {
     // clear local storage
@@ -16,11 +15,19 @@ const CheckoutSuccess: NextPage = () => {
     localStorage.removeItem("order");
   }, []);
 
-  const { data: session } = api.stripe.getCheckoutSession.useQuery(sessionId);
-  const { data: lineItems } =
-    api.stripe.getCheckoutSessionItems.useQuery(sessionId);
+  // If sessionID is not undefinded
+  if (sessionID !== undefined) {
+    return <Content sessionId={sessionID as string} />;
+  }
+};
 
-  // console.log(lineItems);
+const Content = ({ sessionId }: { sessionId: string }) => {
+  const { data: session } = api.stripe.getCheckoutSession.useQuery(
+    sessionId as string
+  );
+  const { data: lineItems } = api.stripe.getCheckoutSessionItems.useQuery(
+    sessionId as string
+  );
 
   return (
     <main className="relative min-h-screen bg-neutral-800 lg:min-h-screen">
@@ -48,12 +55,14 @@ const CheckoutSuccess: NextPage = () => {
               tight and we’ll send you confirmation very soon!
             </p>
 
-            <dl className="mt-16 text-sm font-medium">
-              <dt className="text-neutral-100">Tracking number</dt>
-              <dd className="mt-2 text-yellow-400">51547878755545848512</dd>
-            </dl>
-            {lineItems && (
+            {session && lineItems && (
               <>
+                <dl className="mt-16 text-sm font-medium">
+                  <dt className="text-neutral-100">Tracking</dt>
+                  <dd className="mt-2 text-yellow-400">
+                    {sessionId.replace("cs_test_", "")}
+                  </dd>
+                </dl>
                 <ul
                   role="list"
                   className="mt-6 divide-y divide-neutral-700 border-t border-neutral-700 text-sm font-medium text-neutral-400"
@@ -61,10 +70,10 @@ const CheckoutSuccess: NextPage = () => {
                   {lineItems?.data ? (
                     lineItems.data.map((product) => (
                       <OrderItem
-                        key={product.price.product}
-                        quantity={product.quantity}
+                        key={product?.price?.product as string}
+                        quantity={product?.quantity as number}
                         price={product.amount_total / 100}
-                        productId={product.price.product}
+                        productId={product?.price?.product as string}
                       />
                     ))
                   ) : (
@@ -76,14 +85,20 @@ const CheckoutSuccess: NextPage = () => {
                   <div className="flex justify-between">
                     <dt className="text-neutral-100">Subtotal</dt>
                     <dd className="text-neutral-100">
-                      ${session.amount_subtotal / 100}
+                      $
+                      {session?.amount_subtotal
+                        ? session.amount_subtotal / 100
+                        : 0}
                     </dd>
                   </div>
 
                   <div className="flex justify-between">
                     <dt className="text-neutral-100">Shipping</dt>
                     <dd className="text-neutral-100">
-                      ${session.shipping_cost.amount_total / 100}
+                      $
+                      {session?.shipping_cost?.amount_total
+                        ? session.shipping_cost.amount_total / 100
+                        : 0}
                     </dd>
                   </div>
 
@@ -95,7 +110,7 @@ const CheckoutSuccess: NextPage = () => {
                   <div className="flex items-center justify-between border-t border-neutral-700 pt-6 text-neutral-100">
                     <dt className="text-base text-neutral-200">Total</dt>
                     <dd className="text-base text-neutral-200">
-                      ${session.amount_total / 100}
+                      ${session?.amount_total ? session.amount_total / 100 : 0}
                     </dd>
                   </div>
                 </dl>
@@ -108,17 +123,17 @@ const CheckoutSuccess: NextPage = () => {
                     <dd className="mt-2">
                       <address className="not-italic text-neutral-200">
                         <span className="block">
-                          {session.customer_details.name}
+                          {session?.shipping_details?.name}
                         </span>
                         <span className="block">
-                          {session.customer_details.address.line1}
+                          {session?.shipping_details?.address?.line1}
                         </span>
                         <span className="block">
-                          {session.customer_details.address.city}
+                          {session?.shipping_details?.address?.city}
                         </span>
                         <span className="block">
-                          {session.customer_details.address.country},{" "}
-                          {session.customer_details.address.postal_code}
+                          {session?.shipping_details?.address?.country},{" "}
+                          {session?.shipping_details?.address?.postal_code}
                         </span>
                       </address>
                     </dd>
