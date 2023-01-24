@@ -15,7 +15,6 @@ import {
 } from "@heroicons/react/24/outline";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
-import type { UseNextSanityImageProps } from "next-sanity-image";
 import { useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -76,11 +75,9 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
     }
   };
 
+  /* eslint-enable @typescript-eslint/no-unused-vars */
   // Product Image
-  const productImageProps: UseNextSanityImageProps = useNextSanityImage(
-    client,
-    product.image[0]
-  );
+  const productImageProps = useNextSanityImage(client, product.image[0] as any);
 
   // Product Options
   const [selectedSize, setSelectedSize] = useState<SizeOption>(
@@ -120,7 +117,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
 
             <div>
               <Image
-                {...productImageProps}
+                {...(productImageProps as any)}
                 alt={product.name}
                 className="rounded-lg lg:col-span-2 lg:row-span-2 "
               />
