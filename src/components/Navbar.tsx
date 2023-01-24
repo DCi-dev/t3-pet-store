@@ -137,20 +137,7 @@ export default function NavBar() {
                           <Menu.Item>
                             {({ active }) => (
                               <Link
-                                href="#"
-                                className={classNames(
-                                  active ? "bg-neutral-700" : "",
-                                  "block px-4 py-2 text-sm text-neutral-100"
-                                )}
-                              >
-                                Your Profile
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                href="#"
+                                href="/user/orders"
                                 className={classNames(
                                   active ? "bg-neutral-700" : "",
                                   "block px-4 py-2 text-sm text-neutral-100"

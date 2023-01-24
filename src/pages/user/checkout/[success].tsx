@@ -1,4 +1,4 @@
-import OrderItem from "@/components/order/OrderItem";
+import CheckoutItem from "@/components/checkout/CheckoutItem";
 import { api } from "@/utils/api";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,10 +29,8 @@ const Content = ({ sessionId }: { sessionId: string }) => {
     sessionId as string
   );
 
-  console.log(session);
-
   return (
-    <main className="relative min-h-screen bg-neutral-800 lg:min-h-screen">
+    <main className="relative min-h-screen bg-neutral-800">
       <div className="h-80 overflow-hidden lg:absolute lg:h-full lg:w-1/2 lg:pr-4 xl:pr-12">
         <Image
           src="/assets/checkout-success.jpg"
@@ -71,7 +69,7 @@ const Content = ({ sessionId }: { sessionId: string }) => {
                 >
                   {lineItems?.data ? (
                     lineItems.data.map((product) => (
-                      <OrderItem
+                      <CheckoutItem
                         key={product?.price?.product as string}
                         quantity={product?.quantity as number}
                         price={product.amount_total / 100}

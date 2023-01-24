@@ -8,7 +8,7 @@ interface ChildProps {
   productId?: string;
 }
 
-const OrderItem: React.FC<ChildProps> = ({ quantity, price, productId }) => {
+const CheckoutItem: React.FC<ChildProps> = ({ quantity, price, productId }) => {
   const { data: productData, isLoading } =
     api.stripe.getProductMetadata.useQuery(productId as string);
 
@@ -46,4 +46,4 @@ const OrderItem: React.FC<ChildProps> = ({ quantity, price, productId }) => {
   );
 };
 
-export default OrderItem;
+export default CheckoutItem;

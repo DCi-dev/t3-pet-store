@@ -22,11 +22,10 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = await ctx.session.user.id;
+      const userId = ctx.session.user.id;
       const address = await ctx.prisma.address.create({
         data: {
           address: input.address,
-          phone: input.phone,
           city: input.city,
           country: input.country,
           postalCode: input.postalCode,
@@ -36,7 +35,7 @@ export const userRouter = createTRPCRouter({
       return address;
     }),
   getAddresses: protectedProcedure.query(async ({ ctx }) => {
-    const userId = await ctx.session.user.id;
+    const userId = ctx.session.user.id;
     const addresses = await ctx.prisma.address.findMany({
       where: {
         userId: userId,
@@ -45,7 +44,7 @@ export const userRouter = createTRPCRouter({
     return addresses;
   }),
   getOrders: protectedProcedure.query(async ({ ctx }) => {
-    const userId = await ctx.session.user.id;
+    const userId = ctx.session.user.id;
     const orders = await ctx.prisma.order.findMany({
       where: {
         userId: userId,
