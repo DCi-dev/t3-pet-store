@@ -59,7 +59,7 @@ const Content = ({ sessionId }: { sessionId: string }) => {
               <>
                 <dl className="mt-16 text-sm font-medium">
                   <dt className="text-neutral-100">Tracking</dt>
-                  <dd className="mt-2 text-yellow-400">
+                  <dd className="mt-2 break-all text-yellow-400">
                     {sessionId.replace("cs_test_", "")}
                   </dd>
                 </dl>
