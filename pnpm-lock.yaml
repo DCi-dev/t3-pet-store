@@ -2247,8 +2247,8 @@ packages:
       next: 13.2.4_biqbaboplfbrettd7655fr4n2y
       oauth: 0.9.15
       openid-client: 5.4.0
-      preact: 10.13.1
-      preact-render-to-string: 5.2.6_preact@10.13.1
+      preact: 10.13.2
+      preact-render-to-string: 5.2.6_preact@10.13.2
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       uuid: 8.3.2
@@ -2602,17 +2602,17 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
-  /preact-render-to-string/5.2.6_preact@10.13.1:
+  /preact-render-to-string/5.2.6_preact@10.13.2:
     resolution: {integrity: sha512-JyhErpYOvBV1hEPwIxc/fHWXPfnEGdRKxc8gFdAZ7XV4tlzyzG847XAyEZqoDnynP88akM4eaHcSOzNcLWFguw==}
     peerDependencies:
       preact: '>=10'
     dependencies:
-      preact: 10.13.1
+      preact: 10.13.2
       pretty-format: 3.8.0
     dev: false
 
-  /preact/10.13.1:
-    resolution: {integrity: sha512-KyoXVDU5OqTpG9LXlB3+y639JAGzl8JSBXLn1J9HTSB3gbKcuInga7bZnXLlxmK94ntTs1EFeZp0lrja2AuBYQ==}
+  /preact/10.13.2:
+    resolution: {integrity: sha512-q44QFLhOhty2Bd0Y46fnYW0gD/cbVM9dUVtNTDKPcdXSMA7jfY+Jpd6rk3GB0lcQss0z5s/6CmVP0Z/hV+g6pw==}
     dev: false
 
   /prelude-ls/1.2.1:
