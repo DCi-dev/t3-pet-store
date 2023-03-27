@@ -37,7 +37,7 @@ const ProductFeatures: React.FC = () => {
           </p>
         </div>
 
-        <div className="mt-16 space-y-16">  
+        <div className="mt-16 space-y-16">
           {features.map((feature, featureIdx) => (
             <div
               key={feature.name}

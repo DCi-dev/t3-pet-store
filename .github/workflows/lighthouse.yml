@@ -1,0 +1,69 @@
+name: Vercel Preview URL Lighthouse Audit
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  generate_lighthouse_audit:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for 30 seconds
+        run: sleep 30
+        
+      - name: Waiting for 200 from the Vercel Preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
+        id: waitFor200
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 120
+          check_interval: 5
+
+      - name: Checkout repository
+        if: ${{ steps.waitFor200.outputs.url != '' }}
+        uses: actions/checkout@v3
+
+      - name: Audit preview URL with Lighthouse
+        if: ${{ steps.waitFor200.outputs.url != '' }}
+        id: lighthouse_audit
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            ${{ steps.waitFor200.outputs.url }}
+          configPath: ".github/lighthouse/lighthouserc.json"
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Format lighthouse score and add comment
+        if: ${{ steps.waitFor200.outputs.url != '' }}
+        id: format_lighthouse_score
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const result = ${{ steps.lighthouse_audit.outputs.manifest }}[0].summary
+            const links = ${{ steps.lighthouse_audit.outputs.links }}
+            const formatResult = (res) => Math.round((res * 100))
+            Object.keys(result).forEach(key => result[key] = formatResult(result[key]))
+            const score = res => res >= 90 ? '🟢' : res >= 50 ? '🟠' : '🔴'
+            const comment = [
+                `⚡️ [Lighthouse report](${Object.values(links)[0]}) for the changes in this commit:`,
+                '| Category | Score |',
+                '| --- | --- |',
+                `| ${score(result.performance)} Performance | ${result.performance} |`,
+                `| ${score(result.accessibility)} Accessibility | ${result.accessibility} |`,
+                `| ${score(result['best-practices'])} Best practices | ${result['best-practices']} |`,
+                `| ${score(result.seo)} SEO | ${result.seo} |`,
+                `| ${score(result.pwa)} PWA | ${result.pwa} |`,
+                ' ',
+                `*Lighthouse ran on [${Object.keys(links)[0]}](${Object.keys(links)[0]})*`
+            ].join('\n')
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: comment
+            })

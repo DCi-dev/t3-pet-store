@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+env:
+  DATABASE_URL: "https://fakeSendgridApiKey"
+  NEXTAUTH_SECRET: "fakeNextAuthSecret"
+  NEXTAUTH_URL: "http://localhost:3000"
+  DISCORD_CLIENT_ID: "fakeDiscordClientId"
+  DISCORD_CLIENT_SECRET: "fakeDiscordClientSecret"
+  GITHUB_ID: "fakeGithubId"
+  GITHUB_SECRET: "fakeGithubSecret"
+  NEXT_PUBLIC_SANITY_PROJECT_ID: "fakeSanityProjectId"
+  NEXT_PUBLIC_SANITY_TOKEN: "fakeSanityToken"
+  NEXT_PUBLIC_SANITY_API_VERSION: "fakeSanityApiVersion"
+  NEXT_PUBLIC_SANITY_DATASET: "fakeSanityDataset"
+  NEXT_PUBLIC_STRIPE_PK: "fakeStripePk"
+  STRIPE_SK: "fakeStripeSk"
+  STRIPE_WEBHOOK_SECRET: "fakeStripeWebhookSecret"
+  BASE_URL: "http://localhost:3000"
+
+jobs:
+  tsc:
+    runs-on: ubuntu-latest
+    name: Run Typechecker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2.2.4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+          
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - run: pnpm typecheck
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Run ESLint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2.2.4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      
+      - name: Install dependencies
+        run: pnpm install
+
+      - run: pnpm lint
+
+  prettier:
+    runs-on: ubuntu-latest
+    name: Run Prettier
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2.2.4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      
+      - name: Install dependencies
+        run: pnpm install
+
+      - run: pnpm format:check

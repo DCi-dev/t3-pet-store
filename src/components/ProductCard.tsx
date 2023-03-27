@@ -1,6 +1,4 @@
-import {
-  useNextSanityImage,
-} from "next-sanity-image";
+import { useNextSanityImage } from "next-sanity-image";
 
 import { Listbox, Transition } from "@headlessui/react";
 import {
@@ -22,10 +20,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     useShopContext() as ShopContextProps;
 
   // Product Image
-  const productImageProps = useNextSanityImage(
-    client,
-    product.image[0] as any
-  );
+  const productImageProps = useNextSanityImage(client, product.image[0] as any);
 
   // Product Options
   const [selectedSize, setSelectedSize] = useState<SizeOption>(
