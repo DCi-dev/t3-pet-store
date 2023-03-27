@@ -1,4 +1,7 @@
-import { useNextSanityImage, type UseNextSanityImageProps } from "next-sanity-image";
+import {
+  useNextSanityImage,
+  type UseNextSanityImageProps,
+} from "next-sanity-image";
 
 import { Listbox, Transition } from "@headlessui/react";
 import {
@@ -82,7 +85,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 
           <div className="relative h-72 w-full overflow-hidden rounded-lg">
             <Image
-              {...(productImageProps)}
+              {...productImageProps}
               style={{ width: "100%", height: "100%" }} // layout="responsive" prior to Next 13.0.0
               alt={product.name}
               className="object-cover object-center"
@@ -223,7 +226,6 @@ const ProductCard = ({ product }: { product: ProductType }) => {
                 </Listbox>
               </div>
             </div>
-            
           </div>
           <div className="absolute inset-x-0 top-0 flex h-72 items-end justify-end overflow-hidden rounded-lg p-4">
             <div

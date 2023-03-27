@@ -36,8 +36,8 @@ const Content = ({ sessionId }: { sessionId: string }) => {
           src="/assets/checkout-success.jpg"
           alt="Pet Store"
           className="h-full w-full object-cover object-center lg:object-left"
-          width={200}
-          height={200}
+          width={885}
+          height={1184}
         />
       </div>
 

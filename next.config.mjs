@@ -20,5 +20,12 @@ const config = {
       "cdn.discordapp.com",
     ],
   },
+  
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 export default config;

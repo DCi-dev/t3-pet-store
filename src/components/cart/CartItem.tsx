@@ -4,7 +4,10 @@ import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
-import { type UseNextSanityImageProps, useNextSanityImage } from "next-sanity-image";
+import {
+  type UseNextSanityImageProps,
+  useNextSanityImage,
+} from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -53,7 +56,7 @@ const CartItem: React.FC<ChildProps> = ({ product }) => {
       <div className="flex-shrink-0">
         <div className="relative h-24 w-24 overflow-hidden rounded-md sm:h-48 sm:w-48">
           <Image
-            {...(productImageProps)}
+            {...productImageProps}
             style={{ width: "100%", height: "100%" }} // layout="responsive" prior to Next 13.0.0
             alt={product.name}
             className="object-cover object-center"

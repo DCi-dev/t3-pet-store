@@ -15,11 +15,13 @@ import {
 } from "@heroicons/react/24/outline";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
-import { useNextSanityImage, type UseNextSanityImageProps } from "next-sanity-image";
+import {
+  useNextSanityImage,
+  type UseNextSanityImageProps,
+} from "next-sanity-image";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
-
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -77,7 +79,6 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
     }
   };
 
-  
   // Product Image
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
@@ -122,7 +123,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
 
             <div>
               <Image
-                {...(productImageProps)}
+                {...productImageProps}
                 alt={product.name}
                 className="rounded-lg lg:col-span-2 lg:row-span-2 "
               />
