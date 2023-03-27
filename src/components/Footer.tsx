@@ -2,8 +2,6 @@ import { type NextComponentType } from "next";
 import Link from "next/link";
 import type { SVGProps } from "react";
 
-// import { trpc } from "../utils/trpc";
-
 type Props = JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>;
 
 const navigation = [
@@ -51,7 +49,7 @@ const navigation = [
 
 const Footer: NextComponentType = () => {
   return (
-    <footer className=" bg-neutral-900">
+    <div className="bg-neutral-900">
       <div className="mx-auto max-w-7xl py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
         <div className="flex justify-center space-x-6 md:order-2">
           {navigation.map((item) => (
@@ -75,7 +73,7 @@ const Footer: NextComponentType = () => {
           </p>
         </div>
       </div>
-    </footer>
+    </div>
   );
 };
 
