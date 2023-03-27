@@ -29,7 +29,7 @@ specifiers:
   micro: ^10.0.1
   next: 13.2.4
   next-auth: ^4.19.2
-  next-sanity-image: ^5.0.0
+  next-sanity-image: ^6.0.0
   postcss: ^8.4.21
   prettier: ^2.8.4
   prettier-plugin-tailwindcss: ^0.2.3
@@ -60,7 +60,7 @@ dependencies:
   micro: 10.0.1
   next: 13.2.4_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.19.2_ld2jel3hspngo3u5lti2kgl2sq
-  next-sanity-image: 5.0.0_efh2ts4fex47dhbmiui3tdxxoi
+  next-sanity-image: 6.0.0_efh2ts4fex47dhbmiui3tdxxoi
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
@@ -2246,12 +2246,12 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /next-sanity-image/5.0.0_efh2ts4fex47dhbmiui3tdxxoi:
-    resolution: {integrity: sha512-mVnybxCEcy3l4mi/Ob+0RhPw6W1b9RcCNfx4PyUCP67+R/Cs75o0x6UEZ2Xk7Vxg9Ms4YAaEXO7GJ5mF5zL0rQ==}
+  /next-sanity-image/6.0.0_efh2ts4fex47dhbmiui3tdxxoi:
+    resolution: {integrity: sha512-U4fl8CfJRgsUh3sJGoxgVrJ4bovCZDmWsjwowzDYbf66ci97j1mjdB+i3pz2CGFz//qbfmG8v2XL6dsYx1xFBg==}
     peerDependencies:
-      '@sanity/client': ^3.0.0
-      next: ^11.0.0 || ^12.0.0 || ^13.0.0
-      react: ^17.0.0 || ^18.0.0
+      '@sanity/client': ^5.0.0
+      next: ^13.0.0
+      react: ^18.0.0
     dependencies:
       '@sanity/client': 5.3.2
       '@sanity/image-url': 1.0.2
