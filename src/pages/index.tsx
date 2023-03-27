@@ -29,7 +29,6 @@ const Home: NextPage = ({
 
   return (
     <>
-      <div className="">
         <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
         <div className="bg-neutral-800">
           <div className="mx-auto max-w-2xl py-16 px-4 text-center sm:py-24 sm:px-6 lg:max-w-7xl lg:py-6 lg:px-8">
@@ -47,7 +46,6 @@ const Home: NextPage = ({
         </div>
         <Incentives />
         <Promo />
-      </div>
     </>
   );
 };
