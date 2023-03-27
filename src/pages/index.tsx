@@ -29,23 +29,23 @@ const Home: NextPage = ({
 
   return (
     <>
-        <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
-        <div className="bg-neutral-800">
-          <div className="mx-auto max-w-2xl py-16 px-4 text-center sm:py-24 sm:px-6 lg:max-w-7xl lg:py-6 lg:px-8">
-            <h2 className="text-2xl font-bold tracking-tight text-white sm:mt-5 sm:text-6xl  xl:text-4xl">
-              Best Selling Products
-            </h2>
-          </div>
-          <div className="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:pb-24 lg:max-w-7xl lg:px-8">
-            <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-              {firstFourProducts.map((product: ProductType) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </div>
+      <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
+      <div className="bg-neutral-800">
+        <div className="mx-auto max-w-2xl py-16 px-4 text-center sm:py-24 sm:px-6 lg:max-w-7xl lg:py-6 lg:px-8">
+          <h2 className="text-2xl font-bold tracking-tight text-white sm:mt-5 sm:text-6xl  xl:text-4xl">
+            Best Selling Products
+          </h2>
+        </div>
+        <div className="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:pb-24 lg:max-w-7xl lg:px-8">
+          <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+            {firstFourProducts.map((product: ProductType) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
           </div>
         </div>
-        <Incentives />
-        <Promo />
+      </div>
+      <Incentives />
+      <Promo />
     </>
   );
 };
