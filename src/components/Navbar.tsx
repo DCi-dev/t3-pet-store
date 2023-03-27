@@ -44,15 +44,15 @@ export default function NavBar() {
                     className="block h-12 w-auto lg:hidden"
                     src="/assets/pet-store-logo.png"
                     alt="Your Company"
-                    width={30}
-                    height={30}
+                    width={48}
+                    height={48}
                   />
                   <Image
                     className="hidden h-12 w-auto lg:block"
                     src="/assets/pet-store-logo.png"
                     alt="Your Company"
-                    width={30}
-                    height={30}
+                    width={48}
+                    height={48}
                   />
                 </Link>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
