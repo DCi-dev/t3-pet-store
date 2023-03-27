@@ -1,4 +1,4 @@
-import { useNextSanityImage } from "next-sanity-image";
+import { useNextSanityImage, type UseNextSanityImageProps } from "next-sanity-image";
 
 import { Listbox, Transition } from "@headlessui/react";
 import {
@@ -14,13 +14,17 @@ import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 
 import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   const { removeFromWishlist, addToWishlist, handleAddToCart } =
     useShopContext() as ShopContextProps;
 
   // Product Image
-  const productImageProps = useNextSanityImage(client, product.image[0] as any);
+  const productImageProps: UseNextSanityImageProps = useNextSanityImage(
+    client,
+    product.image[0] as SanityImageSource
+  );
 
   // Product Options
   const [selectedSize, setSelectedSize] = useState<SizeOption>(
@@ -78,7 +82,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 
           <div className="relative h-72 w-full overflow-hidden rounded-lg">
             <Image
-              {...(productImageProps as any)}
+              {...(productImageProps)}
               style={{ width: "100%", height: "100%" }} // layout="responsive" prior to Next 13.0.0
               alt={product.name}
               className="object-cover object-center"
@@ -119,9 +123,9 @@ const ProductCard = ({ product }: { product: ProductType }) => {
                       leaveTo="opacity-0"
                     >
                       <Listbox.Options className="absolute z-40 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base capitalize shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {product.sizeOptions.map((option, index: number) => (
+                        {product.sizeOptions.map((option) => (
                           <Listbox.Option
-                            key={index}
+                            key={option._key}
                             className={({ active }) =>
                               `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                 active
@@ -180,9 +184,9 @@ const ProductCard = ({ product }: { product: ProductType }) => {
                       leaveTo="opacity-0"
                     >
                       <Listbox.Options className="absolute z-40 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base capitalize shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {product.flavor.map((option, index: number) => (
+                        {product.flavor.map((option) => (
                           <Listbox.Option
-                            key={index}
+                            key={option}
                             className={({ active }) =>
                               `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                 active
@@ -219,7 +223,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
                 </Listbox>
               </div>
             </div>
-            ;
+            
           </div>
           <div className="absolute inset-x-0 top-0 flex h-72 items-end justify-end overflow-hidden rounded-lg p-4">
             <div

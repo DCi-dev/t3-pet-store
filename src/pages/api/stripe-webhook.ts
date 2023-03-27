@@ -25,7 +25,7 @@ export default async function handler(
       await createGuestCheckoutSession(req.body);
       res.json({ received: true });
     } catch (err) {
-      res.status(400).send(`Webhook Error: ${(err as any).message}`);
+      res.status(400).send(err);
       return;
     }
   } else {
@@ -40,7 +40,7 @@ export default async function handler(
       await getStripePaymentMethod(req.body);
       res.json({ received: true });
     } catch (err) {
-      res.status(400).send(`Webhook Error: ${(err as any).message}`);
+      res.status(400).send(err);
       return;
     }
   }

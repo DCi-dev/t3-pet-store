@@ -3,7 +3,8 @@ import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
 import type { ProductType } from "@/types/product";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useNextSanityImage } from "next-sanity-image";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { type UseNextSanityImageProps, useNextSanityImage } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -42,14 +43,17 @@ const CartItem: React.FC<ChildProps> = ({ product }) => {
   }, [product._id, handleQuantityChange]);
 
   // Images
-  const productImageProps = useNextSanityImage(client, product.image[0] as any);
+  const productImageProps: UseNextSanityImageProps = useNextSanityImage(
+    client,
+    product.image[0] as SanityImageSource
+  );
 
   return (
     <li key={product._id} className="flex py-6 sm:py-10">
       <div className="flex-shrink-0">
         <div className="relative h-24 w-24 overflow-hidden rounded-md sm:h-48 sm:w-48">
           <Image
-            {...(productImageProps as any)}
+            {...(productImageProps)}
             style={{ width: "100%", height: "100%" }} // layout="responsive" prior to Next 13.0.0
             alt={product.name}
             className="object-cover object-center"

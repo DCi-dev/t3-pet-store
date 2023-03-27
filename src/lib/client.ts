@@ -1,7 +1,7 @@
 import { env } from "@env/client.mjs";
-import sanityClient from "@sanity/client";
+import { createClient } from "@sanity/client";
 
-export const client = sanityClient({
+export const client = createClient({
   projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: env.NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: env.NEXT_PUBLIC_SANITY_API_VERSION,
