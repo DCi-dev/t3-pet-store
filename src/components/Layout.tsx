@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Script from "next/script";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
@@ -29,12 +30,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#171717" />
-        <script
-          async
-          defer
-          data-website-id="0faf8398-dbc4-415a-ac04-dab6b3f28bea"
-          src="https://umami.cdi.dev/umami.js"
-        ></script>
+        <Script
+        async
+        defer
+        data-website-id="0faf8398-dbc4-415a-ac04-dab6b3f28bea"
+        src="https://umami.cdi.dev/cdi-uuumamy.js"
+      />
       </Head>
       <div className="flex min-h-screen flex-col justify-start bg-neutral-900">
         <header>
