@@ -31,7 +31,7 @@ const Home: NextPage = ({
     <>
       <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
       <div className="bg-neutral-800">
-        <div className="mx-auto max-w-2xl py-16 px-4 text-center sm:py-24 sm:px-6 lg:max-w-7xl lg:py-6 lg:px-8">
+        <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8 lg:py-6">
           <h2 className="text-2xl font-bold tracking-tight text-white sm:mt-5 sm:text-6xl  xl:text-4xl">
             Best Selling Products
           </h2>

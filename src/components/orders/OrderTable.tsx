@@ -27,7 +27,7 @@ const OrdersTable: React.FC<ChildProps> = ({ orderId, orderNr }) => {
   return (
     <div
       key={orderNr}
-      className="border-t border-b border-neutral-600 bg-neutral-700 shadow-sm sm:rounded-lg sm:border"
+      className="border-b border-t border-neutral-600 bg-neutral-700 shadow-sm sm:rounded-lg sm:border"
     >
       <h3 className="sr-only">
         Order placed on <time dateTime={formattedDate}>{formattedDate}</time>
@@ -113,14 +113,14 @@ const OrdersTable: React.FC<ChildProps> = ({ orderId, orderNr }) => {
         <div className="hidden lg:col-span-2 lg:flex lg:items-center lg:justify-end lg:space-x-4">
           <a
             href="#"
-            className="flex items-center justify-center rounded-md border border-neutral-700 bg-neutral-600 py-2 px-2.5 text-sm font-medium text-neutral-200 shadow-sm hover:bg-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            className="flex items-center justify-center rounded-md border border-neutral-700 bg-neutral-600 px-2.5 py-2 text-sm font-medium text-neutral-200 shadow-sm hover:bg-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
           >
             <span>View Order</span>
             <span className="sr-only">{orderNr}</span>
           </a>
           <a
             href="#"
-            className="flex items-center justify-center rounded-md border border-neutral-700 bg-neutral-600 py-2 px-2.5 text-sm font-medium text-neutral-200 shadow-sm hover:bg-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            className="flex items-center justify-center rounded-md border border-neutral-700 bg-neutral-600 px-2.5 py-2 text-sm font-medium text-neutral-200 shadow-sm hover:bg-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
           >
             <span>View Invoice</span>
             <span className="sr-only">for order {orderNr}</span>

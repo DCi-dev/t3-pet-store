@@ -80,7 +80,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
             id={`wishlist-button-${product.name}`}
             aria-label="wishlist button"
             type="button"
-            className="absolute top-3 right-3 z-10 rounded-full bg-white p-2"
+            className="absolute right-3 top-3 z-10 rounded-full bg-white p-2"
             onClick={handleWishButton}
           >
             <HeartIcon className={wishlistClass} />
@@ -254,7 +254,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
             onClick={() =>
               handleAddToCart(product, selectedFlavor, selectedSize)
             }
-            className="text-md relative flex items-center justify-center rounded-md border border-transparent bg-yellow-500 py-2 px-8 font-medium text-neutral-900 hover:bg-yellow-400"
+            className="text-md relative flex items-center justify-center rounded-md border border-transparent bg-yellow-500 px-8 py-2 font-medium text-neutral-900 hover:bg-yellow-400"
           >
             Add to bag<span className="sr-only">, {product.name}</span>
           </button>

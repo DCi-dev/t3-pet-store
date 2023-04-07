@@ -7,7 +7,7 @@ const Promo: React.FC = () => {
       <div className="overflow-hidden pt-32 sm:pt-14">
         <div className="bg-yellow-400">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="relative pt-48 pb-16 sm:pb-24">
+            <div className="relative pb-16 pt-48 sm:pb-24">
               <div>
                 <h2
                   id="sale-heading"

@@ -63,7 +63,7 @@ const CartPage: NextPage = () => {
 
   return (
     <main className="bg-neutral-800">
-      <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
         <h1 className="text-3xl font-bold tracking-tight text-neutral-100 sm:text-4xl">
           Shopping Cart
         </h1>
@@ -75,7 +75,7 @@ const CartPage: NextPage = () => {
 
             <ul
               role="list"
-              className="divide-y divide-neutral-200 border-t border-b border-neutral-700"
+              className="divide-y divide-neutral-200 border-b border-t border-neutral-700"
             >
               <CartList />
             </ul>
@@ -130,7 +130,7 @@ const CartPage: NextPage = () => {
               <button
                 type="button"
                 onClick={handleCheckout}
-                className="w-full rounded-md border border-transparent bg-yellow-400 py-3 px-4 text-base font-medium text-neutral-900 shadow-sm hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-neutral-800"
+                className="w-full rounded-md border border-transparent bg-yellow-400 px-4 py-3 text-base font-medium text-neutral-900 shadow-sm hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-neutral-800"
               >
                 Checkout
               </button>

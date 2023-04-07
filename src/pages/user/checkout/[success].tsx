@@ -42,7 +42,7 @@ const Content = ({ sessionId }: { sessionId: string }) => {
       </div>
 
       <div>
-        <div className="mx-auto max-w-2xl py-16 px-4 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
+        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
           <div className="lg:col-start-2">
             <h1 className="text-sm font-medium text-yellow-400">
               Payment successful
@@ -170,7 +170,7 @@ const PaymentInfo = ({ paymentInfo }: { paymentInfo: string }) => {
   return (
     <>
       <dt className="font-medium text-neutral-100">Payment Information</dt>
-      <dd className="mt-2 space-y-2 sm:flex sm:space-y-0 sm:space-x-4">
+      <dd className="mt-2 space-y-2 sm:flex sm:space-x-4 sm:space-y-0">
         <div className="flex-none">
           <svg
             aria-hidden="true"

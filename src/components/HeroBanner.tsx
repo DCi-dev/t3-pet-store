@@ -16,7 +16,7 @@ const HeroBanner = ({ heroBanner }: { heroBanner: Banner }) => {
 
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-neutral-900 pt-10 sm:pt-16 lg:overflow-hidden lg:pt-8 lg:pb-14">
+      <div className="flex min-h-screen items-center justify-center bg-neutral-900 pt-10 sm:pt-16 lg:overflow-hidden lg:pb-14 lg:pt-8">
         <div className="mx-auto  lg:px-28">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8">
             <div className="mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 sm:text-center lg:flex lg:items-center lg:px-0 lg:text-left">
@@ -32,12 +32,12 @@ const HeroBanner = ({ heroBanner }: { heroBanner: Banner }) => {
                 </p>
                 <div className="mt-10 max-w-fit sm:mt-12">
                   <Link
-                    className="mt-3 sm:mt-0 sm:ml-3"
+                    className="mt-3 sm:ml-3 sm:mt-0"
                     href={`/shop/${heroBanner.product}`}
                   >
                     <button
                       type="submit"
-                      className="block w-full rounded-md bg-yellow-400 py-3 px-4 font-bold text-neutral-900 shadow hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                      className="block w-full rounded-md bg-yellow-400 px-4 py-3 font-bold text-neutral-900 shadow hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 focus:ring-offset-neutral-900"
                     >
                       {heroBanner.buttonText}
                     </button>

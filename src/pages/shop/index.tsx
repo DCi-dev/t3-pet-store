@@ -124,7 +124,7 @@ const Shop: NextPage = ({
                       <Disclosure
                         as="div"
                         key={section.name}
-                        className="border-t border-neutral-200 pt-4 pb-4"
+                        className="border-t border-neutral-200 pb-4 pt-4"
                       >
                         {({ open }) => (
                           <fieldset>
@@ -144,7 +144,7 @@ const Shop: NextPage = ({
                                 </span>
                               </Disclosure.Button>
                             </legend>
-                            <Disclosure.Panel className="px-4 pt-4 pb-2">
+                            <Disclosure.Panel className="px-4 pb-2 pt-4">
                               <div className="space-y-6">
                                 {section.options.map((option, optionIdx) => (
                                   <div
@@ -181,7 +181,7 @@ const Shop: NextPage = ({
         </Transition.Root>
 
         <main className="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
-          <div className="border-b border-neutral-200 pt-24 pb-10">
+          <div className="border-b border-neutral-200 pb-10 pt-24">
             <h1 className="text-4xl font-bold tracking-tight text-neutral-100">
               New Arrivals
             </h1>
@@ -192,7 +192,7 @@ const Shop: NextPage = ({
             </p>
           </div>
 
-          <div className="pt-12 pb-24 lg:grid lg:grid-cols-3 lg:gap-x-8 xl:grid-cols-4">
+          <div className="pb-24 pt-12 lg:grid lg:grid-cols-3 lg:gap-x-8 xl:grid-cols-4">
             <aside>
               <h2 className="sr-only">Filters</h2>
 

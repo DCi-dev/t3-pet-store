@@ -99,7 +99,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
 
   return (
     <main className="bg-neutral-800">
-      <div className="max-w-2x mx-auto px-4 pt-8 pb-16 sm:px-6 sm:pb-24 lg:min-h-screen lg:max-w-7xl lg:px-8 lg:pt-16">
+      <div className="max-w-2x mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pb-24 lg:min-h-screen lg:max-w-7xl lg:px-8 lg:pt-16">
         <div className="lg:grid lg:auto-rows-min lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-5 lg:col-start-8">
             <div className="flex justify-between">
@@ -161,7 +161,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                             checked
                               ? "border-transparent bg-yellow-400  text-neutral-900 hover:bg-yellow-300"
                               : "border-neutral-200 bg-neutral-700 text-neutral-100 hover:bg-neutral-600",
-                            "flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase sm:flex-1"
+                            "flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase sm:flex-1"
                           )
                         }
                       >
@@ -205,7 +205,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                             checked
                               ? "border-transparent bg-yellow-400 font-bold text-neutral-900 hover:bg-yellow-300"
                               : "border-neutral-200 bg-neutral-700 text-neutral-100 hover:bg-neutral-600",
-                            "flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase sm:flex-1"
+                            "flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase sm:flex-1"
                           )
                         }
                       >
@@ -221,7 +221,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                 onClick={() =>
                   handleAddToCart(product, selectedFlavor, selectedSize)
                 }
-                className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-yellow-400 py-3 px-8 text-base font-bold text-neutral-900 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-yellow-400 px-8 py-3 text-base font-bold text-neutral-900 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
               >
                 Add to cart
               </button>
@@ -247,7 +247,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                         } h-5 w-5 text-neutral-500`}
                       />
                     </Disclosure.Button>
-                    <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-500">
+                    <Disclosure.Panel className="px-4 pb-2 pt-4 text-sm text-gray-500">
                       <div
                         className="prose prose-sm mt-4 text-neutral-300"
                         dangerouslySetInnerHTML={{
@@ -293,7 +293,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
       </div>
       <ProductFeatures />
       <section aria-labelledby="related-heading" className="mt-16 sm:mt-24">
-        <div className="max-w-2x mx-auto px-4 pt-8 pb-16 sm:px-6 sm:pb-24 lg:max-w-7xl  lg:px-8">
+        <div className="max-w-2x mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pb-24 lg:max-w-7xl  lg:px-8">
           <h2
             id="related-heading"
             className="text-lg font-medium text-neutral-100"
@@ -301,7 +301,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
             Customers also purchased
           </h2>
 
-          <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
             {products.map((relatedProduct: ProductType) => (
               <ProductCard key={relatedProduct._id} product={relatedProduct} />
             ))}

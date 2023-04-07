@@ -56,7 +56,7 @@ const OrderItem: React.FC<ChildProps> = ({
           </p>
         </div>
 
-        <div className="mt-6 flex items-center space-x-4 divide-x divide-neutral-800 border-t border-neutral-800 pt-4 text-sm font-medium sm:mt-0 sm:ml-4 sm:border-none sm:pt-0">
+        <div className="mt-6 flex items-center space-x-4 divide-x divide-neutral-800 border-t border-neutral-800 pt-4 text-sm font-medium sm:ml-4 sm:mt-0 sm:border-none sm:pt-0">
           <div className="flex flex-1 justify-center">
             <a
               href={`/shop/${product?.metadata?.slug}`}

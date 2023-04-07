@@ -23,7 +23,7 @@ const features = [
 const ProductFeatures: React.FC = () => {
   return (
     <div className="bg-neutral-900">
-      <div className="mx-auto max-w-2xl py-24 px-4 sm:px-6 sm:py-32 lg:max-w-7xl lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-neutral-100 sm:text-4xl">
             Protect your loved ones
@@ -66,7 +66,7 @@ const ProductFeatures: React.FC = () => {
                   "flex-auto lg:col-span-7 lg:row-start-1 xl:col-span-8"
                 )}
               >
-                <div className="aspect-w-5 aspect-h-2 overflow-hidden rounded-lg bg-neutral-800">
+                <div className="aspect-h-2 aspect-w-5 overflow-hidden rounded-lg bg-neutral-800">
                   <Image
                     width={1000}
                     height={500}

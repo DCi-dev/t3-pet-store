@@ -185,7 +185,7 @@ export default function NavBar() {
           </div>
 
           <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 pt-2 pb-4">
+            <div className="space-y-1 pb-4 pt-2">
               <Disclosure.Button
                 as={Link}
                 href="/"

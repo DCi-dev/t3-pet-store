@@ -111,7 +111,7 @@ const CartItem: React.FC<ChildProps> = ({ product }) => {
               <option value={8}>8</option>
             </select>
 
-            <div className="absolute top-0 right-0">
+            <div className="absolute right-0 top-0">
               <button
                 onClick={() => handleRemoveFromCart(product._id)}
                 type="button"
