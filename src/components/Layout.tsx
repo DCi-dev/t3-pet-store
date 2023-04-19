@@ -35,7 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         async
         defer
         data-website-id="0faf8398-dbc4-415a-ac04-dab6b3f28bea"
-        src="https://umami.cdi.dev/cdi-uuumamy.js"
+        src="https://umami.cdi.dev/script.js"
       />
       <div className="flex min-h-screen flex-col justify-start bg-neutral-900">
         <header>
