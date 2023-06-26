@@ -34,7 +34,7 @@
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.1",
     "stripe": "^12.9.0",
-    "superjson": "1.12.3",
+    "superjson": "1.12.4",
     "zod": "^3.21.4"
   },
   "devDependencies": {
