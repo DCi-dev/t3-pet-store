@@ -9,11 +9,11 @@ interface ChildProps {
 }
 
 const CheckoutItem: React.FC<ChildProps> = ({ quantity, price, productId }) => {
+  // Query the product metadata from Stripe tprc route using the productId
   const { data: productData, isLoading } =
     api.stripe.getProductMetadata.useQuery(productId as string);
 
-  // console.log(productData);
-
+    // If the data is still loading, return an empty div
   if (isLoading) return <div></div>;
 
   return (

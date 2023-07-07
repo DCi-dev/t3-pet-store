@@ -1,3 +1,4 @@
+// This component is used in CartList to display each item in the cart as a table row
 import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
@@ -5,8 +6,8 @@ import type { ProductType } from "@/types/product";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import {
-  type UseNextSanityImageProps,
   useNextSanityImage,
+  type UseNextSanityImageProps,
 } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +17,7 @@ interface ChildProps {
   product: ProductType;
 }
 
-interface selectedData {
+interface SelectedData {
   productId: string;
   sizeOption: {
     size: string;
@@ -28,24 +29,26 @@ interface selectedData {
 }
 
 const CartItem: React.FC<ChildProps> = ({ product }) => {
+  // Get the handleRemoveFromCart and handleQuantityChange functions from the ShopContext
   const { handleRemoveFromCart, handleQuantityChange } =
     useShopContext() as ShopContextProps;
 
-  const [selectedData, setSelectedData] = useState<selectedData>();
+  // Set the selected data and quantity from the cart in state
+  const [selectedData, setSelectedData] = useState<SelectedData>();
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
 
   useEffect(() => {
-    const storageCart = JSON.parse(localStorage.getItem("cart") || "[]"); // Put storageCartWithImages in local storage under Order key
+    const storageCart = JSON.parse(localStorage.getItem("cart") ?? "[]"); // Put storageCartWithImages in local storage under Order key
     localStorage.setItem("order", JSON.stringify(storageCart));
 
     const selectedData = storageCart.find(
-      (item: selectedData) => item.productId === product._id
+      (item: SelectedData) => item.productId === product._id
     );
     setSelectedData(selectedData);
     setSelectedQuantity(selectedData?.quantity || 1);
   }, [product._id, handleQuantityChange]);
 
-  // Images
+  // Images for the products are stored in Sanity, so we need to use the useNextSanityImage hook to get the image URL
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0] as SanityImageSource
@@ -91,6 +94,7 @@ const CartItem: React.FC<ChildProps> = ({ product }) => {
             <label htmlFor={`quantity-${product._id}`} className="sr-only">
               Quantity, {product.name}
             </label>
+            {/* Give the user the posibility to modify the quantity for each product */}
             <select
               onChange={(e) => {
                 handleQuantityChange(product._id, Number(e.target.value));

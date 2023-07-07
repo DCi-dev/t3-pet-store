@@ -1,3 +1,5 @@
+// This component is used on the wishlist page to display the items in the wishlist
+
 import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { env } from "@/env/client.mjs";
@@ -10,6 +12,7 @@ const WishlistTable: React.FC = () => {
   const { removeFromWishlist, localWishIds } =
     useShopContext() as ShopContextProps;
 
+  // Fetch data from Sanity CMS for the products in the wishlist
   const fetchWishlistItems = async () => {
     const input = encodeURIComponent(
       `*[_type == "product" && _id in [${localWishIds
@@ -30,11 +33,13 @@ const WishlistTable: React.FC = () => {
     return res.json();
   };
 
+  // Query the wishlist items
   const { data, status } = useQuery({
     queryKey: ["wishlist", localWishIds],
     queryFn: fetchWishlistItems,
   });
 
+  // While the data is loading, display a loading indicator
   if (status === "loading")
     return (
       <tbody className="divide-y divide-neutral-900 bg-neutral-700">

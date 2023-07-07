@@ -1,3 +1,5 @@
+// This will display each item in the cart as a table row
+// inside the cart page
 import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { env } from "@/env/client.mjs";
@@ -8,6 +10,7 @@ import CartItem from "./CartItem";
 const CartList: React.FC = () => {
   const { cartIds } = useShopContext() as ShopContextProps;
 
+  // Fetch the products from Sanity using the cartIds
   const fetchCartItems = async () => {
     const input = encodeURIComponent(
       `*[_type == "product" && _id in [${cartIds
@@ -28,12 +31,14 @@ const CartList: React.FC = () => {
     return res.json();
   };
 
+  // Use react-query to fetch the products inside the cart
   const { data, status } = useQuery({
     queryKey: ["cart", cartIds],
     queryFn: fetchCartItems,
     enabled: cartIds.length > 0,
   });
 
+  // If the data is still loading, return an empty div
   if (status === "loading") return <div></div>;
 
   return (

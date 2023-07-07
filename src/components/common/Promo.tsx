@@ -1,3 +1,6 @@
+// TODO: Replace the hardcoded data with the data from an API call
+// or from the CMS (Sanity), or atleast using a config file
+
 import Image from "next/image";
 import Link from "next/link";
 

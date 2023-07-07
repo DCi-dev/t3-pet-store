@@ -1,9 +1,12 @@
+// This displays each item in the wishlist as a table row
+// inside the WishlistTable component
+
 import { client } from "@/lib/client";
 import { type ProductType } from "@/types/product";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import {
-  type UseNextSanityImageProps,
   useNextSanityImage,
+  type UseNextSanityImageProps,
 } from "next-sanity-image";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +20,7 @@ const WishlistItem: React.FC<ChildProps> = ({
   removeFromWishlist,
   product,
 }) => {
-  // Images
+  // Images are stored in Sanity.io, so we need to use the next-sanity-image package to get the image URL
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
     product.image[0] as SanityImageSource

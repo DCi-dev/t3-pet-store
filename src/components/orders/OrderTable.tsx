@@ -1,3 +1,5 @@
+// This component is used on the orders page to display the items in the order
+
 import { api } from "@/utils/api";
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
@@ -13,14 +15,17 @@ interface ChildProps {
 }
 
 const OrdersTable: React.FC<ChildProps> = ({ orderId, orderNr }) => {
+  // Get the checkout session data from Stripe
   const { data: session } = api.stripe.getCheckoutSession.useQuery(
     orderId as string
   );
 
+  // Get the products from the checkout session data
   const { data: products } = api.stripe.getCheckoutSessionItems.useQuery(
     orderId as string
   );
 
+  // Format the date
   const orderDate = session && new Date(session.created * 1000);
   const formattedDate = orderDate && orderDate.toDateString();
 

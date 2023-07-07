@@ -1,3 +1,6 @@
+// This component is used on the orders page to display the items in the order
+// inside the OrdersTable component
+
 import { api } from "@/utils/api";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
@@ -15,6 +18,7 @@ const OrderItem: React.FC<ChildProps> = ({
   productId,
   date,
 }) => {
+  // Get the product metadata from Stripe
   const { data: product } = api.stripe.getProductMetadata.useQuery(
     productId as string
   );
