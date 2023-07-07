@@ -4,6 +4,7 @@ import type { SVGProps } from "react";
 
 type Props = JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>;
 
+// TODO: Replace the hardcoded navigation with data from a config file
 const navigation = [
   {
     name: "GitHub",

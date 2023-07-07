@@ -4,6 +4,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+// TODO: Replace the hardcoded features with data from the CMS
 const features = [
   {
     name: "Nano-Nutrient Formula",

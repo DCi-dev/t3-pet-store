@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+// TODO: Replace hardcoded incentives with data from the CMS
 const incentives = [
   {
     name: "Free Shipping",

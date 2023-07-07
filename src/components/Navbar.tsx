@@ -17,6 +17,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function NavBar() {
+  // Get the user's profile image from the session
   const { data: sessionData } = useSession();
 
   const userProfileImageUrl = sessionData?.user?.image as string;

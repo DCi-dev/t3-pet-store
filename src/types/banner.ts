@@ -1,3 +1,5 @@
+// Type for banner data from Sanity CMS
+// the banner is used on the homepage hero section
 export type Banner = {
   image: {
     hotspot: boolean;

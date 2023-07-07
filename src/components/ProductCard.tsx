@@ -20,6 +20,12 @@ import { useShopContext, type ShopContextProps } from "@/context/ShopContext";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
+  // Shop Context for Wishlist and Cart
+  // Wishlist button should be able to add/remove from wishlist
+  // Cart button should be able to add to cart
+  
+  // TODO: Add to cart button should be able to add to cart multiple
+  // times with different options (size, flavor, etc.)
   const { removeFromWishlist, addToWishlist, handleAddToCart } =
     useShopContext() as ShopContextProps;
 
@@ -49,14 +55,17 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     }
   };
 
+  // Check if product is in wishlist
   useEffect(() => {
     isInWishlistHandler(product);
   }, [product]);
 
+  // Wishlist button class based on isInWishlist
   const wishlistClass = `h-5 w-5 fill-current ${
     isInWishlist ? "text-red-500" : "text-neutral-500"
   }`;
 
+  // Wishlist button handler
   const handleWishButton = (
     event:
       | React.MouseEvent<HTMLButtonElement, MouseEvent>
