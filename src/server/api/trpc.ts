@@ -1,5 +1,5 @@
 /**
- * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
+ * ONLY EDIT THIS FILE IF:
  * 1. You want to modify request context (see Part 1)
  * 2. You want to create a new middleware or type of procedure (see Part 3)
  *

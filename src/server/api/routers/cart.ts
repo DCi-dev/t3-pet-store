@@ -1,8 +1,14 @@
+// Use zod to validate input types
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+/**
+ * If the procedure should be accessible to logged in users only, use
+ * `protectedProcedure` instead of `publicProcedure`
+ */
 
 export const cartRouter = createTRPCRouter({
+  // Add item to cart mutation
   addItem: protectedProcedure
     .input(
       z.object({
@@ -20,8 +26,10 @@ export const cartRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Get the user id from the session
       const userId = ctx.session?.user?.id;
 
+      // Add item to the user's cart based on the input and user id
       const cart = await ctx.prisma.cartItem.create({
         data: {
           productId: input._id,
@@ -48,6 +56,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
+    // Update quantity mutation
   updateQuantity: protectedProcedure
     .input(
       z.object({
@@ -56,12 +65,10 @@ export const cartRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Get the user id from the session
       const userId = ctx.session?.user?.id;
-      if (!userId) {
-        // If user is not authenticated, return empty array
-        return [];
-      }
-      // If user is authenticated, return items from the server
+      
+      // Update quantity for the selected product based on the input and user id
       const cart = await ctx.prisma.cartItem.updateMany({
         where: {
           productId: input.productId,
@@ -74,6 +81,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
+    // Update flavor mutation
   updateFlavor: protectedProcedure
     .input(
       z.object({
@@ -82,12 +90,10 @@ export const cartRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Get the user id from the session
       const userId = ctx.session?.user?.id;
-      if (!userId) {
-        // If user is not authenticated, return empty array
-        return [];
-      }
-      // If user is authenticated, return items from the server
+      
+      // Update flavor for the selected product based on the input and user id
       const cart = await ctx.prisma.cartItem.updateMany({
         where: {
           productId: input.productId,
@@ -100,6 +106,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
+    // Update size mutation
   updateSize: protectedProcedure
     .input(
       z.object({
@@ -113,11 +120,16 @@ export const cartRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session?.user?.id;
-      if (!userId) {
-        // If user is not authenticated, return empty array
-        return [];
-      }
+      /**
+       * Update size for the selected product based on the input
+       * 
+       * cartItemId is used to find the sizeOption that needs to be updated
+       * 
+       * Size has multiple fields, such as size, price, key,
+       * and it has a relation to the cartItem, which has a relation to the user
+       * that's why we are using cartItemId to find the sizeOption
+       * and not product and user Ids
+       */
       const sizeOptions = await ctx.prisma.sizeOption.updateMany({
         where: {
           cartItemId: input.cartItemId,
@@ -132,6 +144,7 @@ export const cartRouter = createTRPCRouter({
       return sizeOptions;
     }),
 
+    // Remove item from cart mutation
   removeItem: protectedProcedure
     .input(
       z.object({
@@ -139,13 +152,10 @@ export const cartRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Get the user id from the session
       const userId = ctx.session?.user?.id;
 
-      if (!userId) {
-        // If user is not authenticated, return empty array
-        return 0;
-      }
-
+      // Remove item from the user's cart based on the input and user id
       const cart = await ctx.prisma.cartItem.deleteMany({
         where: {
           productId: input.productId,
@@ -155,6 +165,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
+    // Get items from cart query
   getItems: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user?.id;
 
@@ -164,7 +175,9 @@ export const cartRouter = createTRPCRouter({
         userId: userId,
       },
     });
+    // Check if items list is not empty
     if (items.length > 0) {
+      // If not empty, get sizes for each item
       const sizes = await ctx.prisma.sizeOption.findMany({
         where: {
           CartItem: {
@@ -175,6 +188,7 @@ export const cartRouter = createTRPCRouter({
         },
       });
 
+      // Combine items and sizes into one array
       const itemsWithSizes = items.map((item) => {
         const sizeOption = sizes.find((size) => size.cartItemId === item.id);
         return {
@@ -185,10 +199,12 @@ export const cartRouter = createTRPCRouter({
 
       return itemsWithSizes;
     } else {
+      // If items list is empty, return empty array
       return [];
     }
   }),
 
+  // Synchronize cart mutation
   synchronizeCart: protectedProcedure
     .input(
       z.object({
@@ -206,19 +222,22 @@ export const cartRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Get the user id from the session
       const userId = ctx.session?.user?.id;
-      if (!userId) {
-        // If user is not authenticated, return empty array
-        return;
-      } else {
+     
+      // Check what items are already in the cart
         const existingItem = await ctx.prisma.cartItem.findMany({
           where: {
             productId: input._id,
             userId: userId,
           },
         });
+        // Get the ids of the existing items
         const itemsIds = existingItem.map((item) => item.productId);
+
+        // Check if the local cart item is already in the database cart
         if (itemsIds.includes(input._id)) {
+          // If it is, update the quantity
           const sizeOptions = await ctx.prisma.sizeOption.updateMany({
             where: {
               id: existingItem[0]?.id,
@@ -229,6 +248,8 @@ export const cartRouter = createTRPCRouter({
               key: input.sizeOption._key,
             },
           });
+
+          // Update the cart
           const cart = await ctx.prisma.cartItem.updateMany({
             where: {
               productId: input._id,
@@ -241,6 +262,7 @@ export const cartRouter = createTRPCRouter({
           });
           return [cart, sizeOptions];
         } else {
+          // If the local cart item is not in the database cart, add it
           const cart = await ctx.prisma.cartItem.create({
             data: {
               productId: input._id,
@@ -265,6 +287,6 @@ export const cartRouter = createTRPCRouter({
           });
           return cart;
         }
-      }
+      
     }),
 });
