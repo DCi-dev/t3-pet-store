@@ -1,13 +1,15 @@
+// Hooks for the cart context
+import type { CartProduct, ProductType, SizeOption } from "@/types/product";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import type { CartProduct, ProductType, SizeOption } from "@/types/product";
 
 export const useCart = () => {
   const { data: sessionData } = useSession();
   const [cartIds, setCartIds] = useState<string[]>([""]);
 
+  // Cart trpc queries and mutations
   const cart = api.cart.getItems.useQuery();
   const addCartProduct = api.cart.addItem.useMutation();
   const updateCartProductSize = api.cart.updateSize.useMutation();
@@ -16,12 +18,13 @@ export const useCart = () => {
   const removeCartProduct = api.cart.removeItem.useMutation();
   const syncCart = api.cart.synchronizeCart.useMutation();
 
+  // Add to local storage cart
   async function addToLocalStorageCart(
     product: ProductType,
     selectedFlavor: string,
     selectedSize: SizeOption
   ) {
-    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const localCart = JSON.parse(localStorage.getItem("cart") ?? "[]");
 
     // filter the cart by product id and selected size and flavor
     const existingItem = localCart.filter(
@@ -48,6 +51,7 @@ export const useCart = () => {
     localStorage.setItem("cart", JSON.stringify(localCart));
   }
 
+  // Add to database cart
   async function addToDatabaseCart(
     product: ProductType,
     selectedFlavor: string,
@@ -89,7 +93,9 @@ export const useCart = () => {
     }
   }
 
-  // Add to cart
+  // Add to cart function that adds to both local storage and database cart
+  // If the user is logged in, it will add to the database cart
+  // If the user is not logged in, it will add to the local storage cart
   async function handleAddToCart(
     product: ProductType,
     selectedFlavor: string,
@@ -109,7 +115,9 @@ export const useCart = () => {
     toast.success("Product added to cart");
   }
 
-  // Remove from cart
+  // Remove from cart function that removes from both local storage and database cart
+  // If the user is logged in, it will remove from the database cart and local storage cart
+  // If the user is not logged in, it will remove from the local storage cart
   const handleRemoveFromCart = (productId: string) => {
     if (sessionData && cart.data) {
       removeCartProduct.mutate({
@@ -118,7 +126,7 @@ export const useCart = () => {
       localStorage.setItem(
         "cart",
         JSON.stringify(
-          JSON.parse(localStorage.getItem("cart") || "[]").filter(
+          JSON.parse(localStorage.getItem("cart") ?? "[]").filter(
             (product: CartProduct) => product.productId !== productId
           )
         )
@@ -129,7 +137,7 @@ export const useCart = () => {
       localStorage.setItem(
         "cart",
         JSON.stringify(
-          JSON.parse(localStorage.getItem("cart") || "[]").filter(
+          JSON.parse(localStorage.getItem("cart") ?? "[]").filter(
             (product: CartProduct) => product.productId !== productId
           )
         )
@@ -139,14 +147,13 @@ export const useCart = () => {
     toast.success(`Product removed from cart`);
   };
 
-  // Sync cart
-
+  // Sync cart function that syncs the local storage cart with the database cart
   const processedCart = new Set();
 
   const mergeCart = async () => {
     // Get the cart from local storage
     const storageCart: CartProduct[] = JSON.parse(
-      localStorage.getItem("cart") || "[]"
+      localStorage.getItem("cart") ?? "[]"
     );
     //  Sync the local storage cart with the server cart
     const serverCart = cart.data?.map((item) => ({
@@ -194,7 +201,7 @@ export const useCart = () => {
 
   const handleCartSync = async () => {
     // Get the cart from local storage
-    const storageCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const storageCart = JSON.parse(localStorage.getItem("cart") ?? "[]");
 
     if (sessionData?.user && cart.data) {
       mergeCart();
@@ -208,7 +215,7 @@ export const useCart = () => {
 
   // Quantity change
   const handleQuantityChange = (productId: string, qty: number) => {
-    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const localCart = JSON.parse(localStorage.getItem("cart") ?? "[]");
     const product = localCart.find(
       (item: { productId: string }) => item.productId === productId
     );
@@ -236,7 +243,7 @@ export const useCart = () => {
   const [totalQuantity, setTotalQuantity] = useState(1);
 
   const handleCartDetails = async () => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cart = JSON.parse(localStorage.getItem("cart") ?? "[]");
     const cartTotal = cart.reduce((acc: number, item: CartProduct) => {
       return acc + item.sizeOption.price * item.quantity;
     }, 0);

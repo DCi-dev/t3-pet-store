@@ -4,6 +4,7 @@ import { createContext } from "react";
 import { useCart } from "./hooks/cart";
 import { useWishlist } from "./hooks/wishlist";
 
+// Shop Context Types
 export interface ShopContextProps {
   localWishIds: string[];
   setWishIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -28,6 +29,7 @@ export interface ShopContextProps {
   handleCartDetails: () => void;
 }
 
+// Shop Context
 export const ShopContext = createContext<ShopContextProps | undefined>(
   undefined
 );
@@ -36,8 +38,9 @@ interface Props {
   children: React.ReactNode;
 }
 
+// Shop Provider
 export const ShopProvider: React.FC<Props> = ({ children }) => {
-  // Wishlist
+  // Wishlist Context
   const {
     localWishIds,
     setWishIds,
@@ -46,7 +49,7 @@ export const ShopProvider: React.FC<Props> = ({ children }) => {
     syncWishlist,
   } = useWishlist();
 
-  // Cart
+  // Cart Context
   const {
     handleAddToCart,
     cartIds,
