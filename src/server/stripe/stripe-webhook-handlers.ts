@@ -49,6 +49,8 @@ export const getOrCreateStripeCustomerIdForUser = async ({
   }
 };
 
+
+// creates a Stripe checkout session
 export const createStripeCheckoutSession = async ({
   stripe,
   prisma,
@@ -72,12 +74,14 @@ export const createStripeCheckoutSession = async ({
     quantity: number;
   }[];
 }) => {
+  // create a Stripe customer if one doesn't exist
   const customerId = await getOrCreateStripeCustomerIdForUser({
     stripe,
     prisma,
     userId,
   });
 
+  // create a Stripe checkout session
   const stripeSession = await stripe.checkout.sessions.create({
     customer: customerId,
     submit_type: "pay",
@@ -153,6 +157,7 @@ export const createStripeCheckoutSession = async ({
   return stripeSession;
 };
 
+// creates a Stripe checkout session for a guest
 export const createGuestCheckoutSession = async ({
   stripe,
   items,
@@ -246,6 +251,7 @@ export const createGuestCheckoutSession = async ({
   return stripeSession;
 };
 
+// Retrieves a Stripe session using the session id
 export const getStripeSession = async ({
   stripe,
   sessionId,
@@ -257,6 +263,7 @@ export const getStripeSession = async ({
   return session;
 };
 
+// Retrieves a Stripe session items using the session id
 export const getStripeSessionItems = async ({
   stripe,
   sessionId,
@@ -270,6 +277,7 @@ export const getStripeSessionItems = async ({
   return sessionItems;
 };
 
+// Retrieves a Stripe session product metadata using the product id
 export const getProductMetadata = async ({
   stripe,
   productId,
@@ -281,6 +289,7 @@ export const getProductMetadata = async ({
   return product.metadata;
 };
 
+// Retrieves a Stripe session payment method using the payment intent id
 export const getStripePaymentMethod = async ({
   stripe,
   paymentIntentId,
