@@ -15,9 +15,9 @@ export const useWishlist = () => {
   const syncWishlistProducts = api.wishlist.synchronizeWishlist.useMutation();
   const processedWishlistIds = new Set();
 
-// Add to wishlist function that checks if the user is authenticated
-// if not, add the product to the wishlist on the client side
-// if the user is authenticated, send the product id to the server
+  // Add to wishlist function that checks if the user is authenticated
+  // if not, add the product to the wishlist on the client side
+  // if the user is authenticated, send the product id to the server
   const addToWishlist = (productId: string) => {
     // Check if the user is authenticated
     if (!sessionData?.user) {

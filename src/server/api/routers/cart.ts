@@ -56,7 +56,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-    // Update quantity mutation
+  // Update quantity mutation
   updateQuantity: protectedProcedure
     .input(
       z.object({
@@ -67,7 +67,7 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
       const userId = ctx.session?.user?.id;
-      
+
       // Update quantity for the selected product based on the input and user id
       const cart = await ctx.prisma.cartItem.updateMany({
         where: {
@@ -81,7 +81,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-    // Update flavor mutation
+  // Update flavor mutation
   updateFlavor: protectedProcedure
     .input(
       z.object({
@@ -92,7 +92,7 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
       const userId = ctx.session?.user?.id;
-      
+
       // Update flavor for the selected product based on the input and user id
       const cart = await ctx.prisma.cartItem.updateMany({
         where: {
@@ -106,7 +106,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-    // Update size mutation
+  // Update size mutation
   updateSize: protectedProcedure
     .input(
       z.object({
@@ -122,9 +122,9 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       /**
        * Update size for the selected product based on the input
-       * 
+       *
        * cartItemId is used to find the sizeOption that needs to be updated
-       * 
+       *
        * Size has multiple fields, such as size, price, key,
        * and it has a relation to the cartItem, which has a relation to the user
        * that's why we are using cartItemId to find the sizeOption
@@ -144,7 +144,7 @@ export const cartRouter = createTRPCRouter({
       return sizeOptions;
     }),
 
-    // Remove item from cart mutation
+  // Remove item from cart mutation
   removeItem: protectedProcedure
     .input(
       z.object({
@@ -165,7 +165,7 @@ export const cartRouter = createTRPCRouter({
       return cart;
     }),
 
-    // Get items from cart query
+  // Get items from cart query
   getItems: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user?.id;
 
@@ -224,69 +224,68 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
       const userId = ctx.session?.user?.id;
-     
+
       // Check what items are already in the cart
-        const existingItem = await ctx.prisma.cartItem.findMany({
+      const existingItem = await ctx.prisma.cartItem.findMany({
+        where: {
+          productId: input._id,
+          userId: userId,
+        },
+      });
+      // Get the ids of the existing items
+      const itemsIds = existingItem.map((item) => item.productId);
+
+      // Check if the local cart item is already in the database cart
+      if (itemsIds.includes(input._id)) {
+        // If it is, update the quantity
+        const sizeOptions = await ctx.prisma.sizeOption.updateMany({
+          where: {
+            id: existingItem[0]?.id,
+          },
+          data: {
+            size: input.sizeOption.size,
+            price: input.sizeOption.price,
+            key: input.sizeOption._key,
+          },
+        });
+
+        // Update the cart
+        const cart = await ctx.prisma.cartItem.updateMany({
           where: {
             productId: input._id,
             userId: userId,
           },
+          data: {
+            quantity: input.quantity,
+            flavor: input.flavor,
+          },
         });
-        // Get the ids of the existing items
-        const itemsIds = existingItem.map((item) => item.productId);
-
-        // Check if the local cart item is already in the database cart
-        if (itemsIds.includes(input._id)) {
-          // If it is, update the quantity
-          const sizeOptions = await ctx.prisma.sizeOption.updateMany({
-            where: {
-              id: existingItem[0]?.id,
-            },
-            data: {
-              size: input.sizeOption.size,
-              price: input.sizeOption.price,
-              key: input.sizeOption._key,
-            },
-          });
-
-          // Update the cart
-          const cart = await ctx.prisma.cartItem.updateMany({
-            where: {
-              productId: input._id,
-              userId: userId,
-            },
-            data: {
-              quantity: input.quantity,
-              flavor: input.flavor,
-            },
-          });
-          return [cart, sizeOptions];
-        } else {
-          // If the local cart item is not in the database cart, add it
-          const cart = await ctx.prisma.cartItem.create({
-            data: {
-              productId: input._id,
-              productName: input.name,
-              image: input.image,
-              quantity: input.quantity,
-              flavor: input.flavor,
-              slug: input.slug,
-              size: {
-                create: {
-                  size: input.sizeOption.size,
-                  price: input.sizeOption.price,
-                  key: input.sizeOption._key,
-                },
-              },
-              user: {
-                connect: {
-                  id: userId,
-                },
+        return [cart, sizeOptions];
+      } else {
+        // If the local cart item is not in the database cart, add it
+        const cart = await ctx.prisma.cartItem.create({
+          data: {
+            productId: input._id,
+            productName: input.name,
+            image: input.image,
+            quantity: input.quantity,
+            flavor: input.flavor,
+            slug: input.slug,
+            size: {
+              create: {
+                size: input.sizeOption.size,
+                price: input.sizeOption.price,
+                key: input.sizeOption._key,
               },
             },
-          });
-          return cart;
-        }
-      
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
+          },
+        });
+        return cart;
+      }
     }),
 });

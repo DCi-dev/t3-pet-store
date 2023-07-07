@@ -23,7 +23,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   // Shop Context for Wishlist and Cart
   // Wishlist button should be able to add/remove from wishlist
   // Cart button should be able to add to cart
-  
+
   // TODO: Add to cart button should be able to add to cart multiple
   // times with different options (size, flavor, etc.)
   const { removeFromWishlist, addToWishlist, handleAddToCart } =

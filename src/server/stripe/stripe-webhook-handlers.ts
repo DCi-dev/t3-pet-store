@@ -49,7 +49,6 @@ export const getOrCreateStripeCustomerIdForUser = async ({
   }
 };
 
-
 // creates a Stripe checkout session
 export const createStripeCheckoutSession = async ({
   stripe,

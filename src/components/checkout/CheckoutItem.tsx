@@ -13,7 +13,7 @@ const CheckoutItem: React.FC<ChildProps> = ({ quantity, price, productId }) => {
   const { data: productData, isLoading } =
     api.stripe.getProductMetadata.useQuery(productId as string);
 
-    // If the data is still loading, return an empty div
+  // If the data is still loading, return an empty div
   if (isLoading) return <div></div>;
 
   return (

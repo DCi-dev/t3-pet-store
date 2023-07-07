@@ -31,7 +31,7 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
       const userId = ctx.session.user.id;
-    
+
       // Add address to the user's database based on the input and user id
       const address = await ctx.prisma.address.create({
         data: {
@@ -44,12 +44,12 @@ export const userRouter = createTRPCRouter({
       });
       return address;
     }),
-  
+
   // Get addresses query
   getAddresses: protectedProcedure.query(async ({ ctx }) => {
     // Get the user id from the session
     const userId = ctx.session.user.id;
-    
+
     // Get addresses based on the user id
     const addresses = await ctx.prisma.address.findMany({
       where: {

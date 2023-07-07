@@ -26,15 +26,12 @@ const CheckoutSuccess = () => {
 const Content = ({ sessionId }: { sessionId: string }) => {
   // Get the checkout session and line items from TRPC
   // based on the sessionID
-  const { data: session } = api.stripe.getCheckoutSession.useQuery(
-    sessionId 
-  );
+  const { data: session } = api.stripe.getCheckoutSession.useQuery(sessionId);
 
   // Get the checkout session items from TRPC
   // based on the sessionID
-  const { data: lineItems } = api.stripe.getCheckoutSessionItems.useQuery(
-    sessionId 
-  );
+  const { data: lineItems } =
+    api.stripe.getCheckoutSessionItems.useQuery(sessionId);
 
   return (
     <main className="relative min-h-screen bg-neutral-800">
@@ -172,7 +169,6 @@ const Content = ({ sessionId }: { sessionId: string }) => {
 
 // Display the payment information from Stripe
 const PaymentInfo = ({ paymentInfo }: { paymentInfo: string }) => {
-
   // Get the payment details using TRPC from Stripe
   const { data: paymentMethod } =
     api.stripe.getStripePaymentMethod.useQuery(paymentInfo);

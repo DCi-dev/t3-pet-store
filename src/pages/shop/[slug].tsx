@@ -29,7 +29,6 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-
 // TODO: Replace hardcoded policies with data from Sanity CMS or a config file
 const policies = [
   {
@@ -103,7 +102,6 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   const [selectedFlavor, setSelectedFlavor] = useState<string>(
     product.flavor[0] as string
   );
-
 
   // Sync wishlist on user login
   useEffect(() => {

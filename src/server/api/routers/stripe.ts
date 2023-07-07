@@ -13,7 +13,6 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
  * `protectedProcedure` instead of `publicProcedure`
  */
 
-
 export const stripeRouter = createTRPCRouter({
   // Create checkout session
   createCheckoutSession: protectedProcedure
@@ -262,7 +261,6 @@ export const stripeRouter = createTRPCRouter({
       };
     }),
 
-
   // Get checkout session
   getCheckoutSession: publicProcedure
     .input(z.string())
@@ -282,7 +280,7 @@ export const stripeRouter = createTRPCRouter({
       return session;
     }),
 
-    // Get checkout session items
+  // Get checkout session items
   getCheckoutSessionItems: publicProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
@@ -327,7 +325,7 @@ export const stripeRouter = createTRPCRouter({
       // Else return the product
       return product;
     }),
-  
+
   // Get the prayment details
   getStripePaymentMethod: publicProcedure
     .input(z.string())

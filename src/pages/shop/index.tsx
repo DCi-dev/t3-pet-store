@@ -19,7 +19,6 @@ import {
 // Sanity client
 import { client } from "@lib/client";
 
-
 import { useSession } from "next-auth/react";
 import { Fragment, useEffect, useState } from "react";
 
@@ -42,7 +41,6 @@ const filters = [
 const Shop: NextPage = ({
   products,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-
   // State variables for filters
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [selectedCategoryOptions, setSelectedCategoryOptions] = useState<
