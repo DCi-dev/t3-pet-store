@@ -1,4 +1,7 @@
 // @ts-check
+/**
+ * This will be used to validate the client-side environment variables.
+ */
 import { clientEnv, clientSchema } from "./schema.mjs";
 
 const _clientEnv = clientSchema.safeParse(clientEnv);
