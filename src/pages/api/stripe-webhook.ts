@@ -1,4 +1,8 @@
+// Stripe API Endpoint
+
 import type { NextApiRequest, NextApiResponse } from "next";
+
+// Stripe functions that the server can call
 import {
   createGuestCheckoutSession,
   createStripeCheckoutSession,

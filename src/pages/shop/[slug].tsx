@@ -1,6 +1,8 @@
+// This is the product page
+
 import { Incentives, ProductCard } from "@/components";
-import Promo from "@/components/common/Promo";
 import ProductFeatures from "@/components/ProductFeatures";
+import Promo from "@/components/common/Promo";
 import type { ShopContextProps } from "@/context/ShopContext";
 import { useShopContext } from "@/context/ShopContext";
 import { client } from "@/lib/client";
@@ -13,6 +15,7 @@ import {
   GlobeAmericasIcon,
   HeartIcon,
 } from "@heroicons/react/24/outline";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
 import {
@@ -21,12 +24,13 @@ import {
 } from "next-sanity-image";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+
+// TODO: Replace hardcoded policies with data from Sanity CMS or a config file
 const policies = [
   {
     name: "International delivery",
@@ -41,10 +45,14 @@ const policies = [
 ];
 
 const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
+  // Get user session data
   const { data: sessionData } = useSession();
+
+  // Shop context functions
   const { syncWishlist, handleAddToCart, addToWishlist, removeFromWishlist } =
     useShopContext() as ShopContextProps;
 
+  // Check if the product is in the wishlist
   const [isInWishlist, setIsInWishlist] = useState<boolean>(false);
 
   const isInWishlistHandler = (product: ProductType) => {
@@ -56,6 +64,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
     }
   };
 
+  // If it is in the wishlist, set the wishlist icon to red
   const wishlistClass = `h-12 w-12 fill-current ${
     isInWishlist ? "text-red-500" : "text-neutral-500"
   }`;
@@ -64,6 +73,8 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
     isInWishlistHandler(product);
   }, [product]);
 
+  // Wishlist button handler function (add or remove from wishlist)
+  // It also updates the wishlist icon
   const handleWishButton = (
     event:
       | React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -93,6 +104,8 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
     product.flavor[0] as string
   );
 
+
+  // Sync wishlist on user login
   useEffect(() => {
     syncWishlist();
   }, [sessionData?.user]);

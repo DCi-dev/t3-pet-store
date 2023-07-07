@@ -4,18 +4,22 @@ import { useShopContext } from "@/context/ShopContext";
 import { type ProductType } from "@/types/product";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 
+import type {
+  GetServerSideProps,
+  InferGetServerSidePropsType,
+  NextPage,
+} from "next";
+
 import {
   ChevronDownIcon,
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 
+// Sanity client
 import { client } from "@lib/client";
-import type {
-  GetServerSideProps,
-  InferGetServerSidePropsType,
-  NextPage,
-} from "next";
+
+
 import { useSession } from "next-auth/react";
 import { Fragment, useEffect, useState } from "react";
 
@@ -23,6 +27,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+// TODO: Replace hardcoded filters with dynamic filters from Sanity
 const filters = [
   {
     id: "pet",
@@ -37,11 +42,14 @@ const filters = [
 const Shop: NextPage = ({
   products,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+  // State variables for filters
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [selectedCategoryOptions, setSelectedCategoryOptions] = useState<
     string[]
   >([]);
 
+  // Sync wishlist when user logs in
   const { data: sessionData } = useSession();
   const { syncWishlist } = useShopContext() as ShopContextProps;
 
