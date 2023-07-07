@@ -165,7 +165,7 @@
 
 * **Website (Hosting):** [Vercel](https://vercel.com) - A popular and easy-to-use platform for deploying, scaling, and monitoring modern web applications. Vercel provides a seamless integration with Next.js, allowing for fast and efficient deployment.
 
-* **Database:** [PlanetScale](https://planetscale.com) - PlanetScale is a fully managed database service that provides a global, multi-cloud database for your applications.
+* **Database:** [Cockroach DB](https://www.cockroachlabs.com/) - CockroachDB is a distributed SQL database built on a transactional and strongly-consistent key-value store.
 
 * **CMS** [Sanity](https://www.sanity.io) - Sanity is a headless CMS that provides a powerful and flexible content editing experience. It is built on top of a powerful document store, which allows you to create content models that fit your needs.
 
