@@ -1,6 +1,6 @@
 {
   "name": "ecom-website",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -9,8 +9,8 @@
     "lint": "next lint",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
     "@headlessui/react": "^1.7.15",
@@ -51,7 +51,7 @@
     "eslint": "^8.43.0",
     "eslint-config-next": "13.4.9",
     "postcss": "^8.4.24",
-    "prettier": "^3.0.0",
+    "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "prisma": "^4.15.0",
     "tailwindcss": "^3.3.2",
