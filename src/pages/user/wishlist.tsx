@@ -6,9 +6,15 @@ import { useShopContext } from "@/context/ShopContext";
 import { useEffect } from "react";
 
 const WishlistPage: NextPage = () => {
+  // Get the setWishIds and syncWishlist functions from the ShopContext
   const { setWishIds, syncWishlist } = useShopContext() as ShopContextProps;
+
+  // Set the wishIds in state from local storage
+  // This will be used to display the wishlist
   useEffect(() => {
-    setWishIds(JSON.parse(localStorage.getItem("productList") || "[]"));
+    setWishIds(JSON.parse(localStorage.getItem("productList") ?? "[]"));
+    // Sync the wishlist from the local storage with the user's wishlist in the database
+    // when the user is logged in and it visits the wishlist page
     syncWishlist();
   }, []);
   return (

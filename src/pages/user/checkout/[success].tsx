@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 const CheckoutSuccess = () => {
+  // Get the sessionID from the URL
+  // This is the sessionID from Stripe
   const router = useRouter();
   const sessionID = router.query.session_id;
 
@@ -22,11 +24,16 @@ const CheckoutSuccess = () => {
 };
 
 const Content = ({ sessionId }: { sessionId: string }) => {
+  // Get the checkout session and line items from TRPC
+  // based on the sessionID
   const { data: session } = api.stripe.getCheckoutSession.useQuery(
-    sessionId as string
+    sessionId 
   );
+
+  // Get the checkout session items from TRPC
+  // based on the sessionID
   const { data: lineItems } = api.stripe.getCheckoutSessionItems.useQuery(
-    sessionId as string
+    sessionId 
   );
 
   return (
@@ -163,7 +170,10 @@ const Content = ({ sessionId }: { sessionId: string }) => {
   );
 };
 
+// Display the payment information from Stripe
 const PaymentInfo = ({ paymentInfo }: { paymentInfo: string }) => {
+
+  // Get the payment details using TRPC from Stripe
   const { data: paymentMethod } =
     api.stripe.getStripePaymentMethod.useQuery(paymentInfo);
 

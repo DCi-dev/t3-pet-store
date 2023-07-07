@@ -9,7 +9,10 @@ import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 
 const CartPage: NextPage = () => {
+  // Get the user's session data
   const { data: session } = useSession();
+
+  // Shop context functions and state
   const {
     syncWishlist,
     handleCartSync,
@@ -24,24 +27,35 @@ const CartPage: NextPage = () => {
   } = useShopContext() as ShopContextProps;
 
   useEffect(() => {
+    // Sync the wishlist from the local storage with the user's wishlist in the database
     syncWishlist();
+    // Sync the cart from the local storage with the user's cart in the database
     handleCartSync();
+
+    // Get the cartIds from local storage
     const localCart = JSON.parse(localStorage.getItem("cart") as string);
+    // If there is no cart in local storage, return
     if (!localCart) return;
+    // Get the productIds from the cart in local storage
     const localCartIds = localCart.map((item: CartProduct) => item.productId);
+    // Set the cartIds in state
     setCartIds(localCartIds);
   }, []);
 
+  // Get the cart details
   useEffect(() => {
     handleCartDetails();
   }, [totalQuantity, cartIds, orderTotal]);
 
+  // Checkout session mutations from TRPC
+  // based on whether the user is logged in or not
   const { mutateAsync: createCheckoutSession } =
     api.stripe.createCheckoutSession.useMutation();
   const { mutateAsync: createGuestCheckoutSession } =
     api.stripe.createGuestCheckoutSession.useMutation();
   const { push } = useRouter();
 
+  // Handle the checkout process
   const handleCheckout = async () => {
     // Ger orderItems from local storage key "order"
     const orderItems = JSON.parse(localStorage.getItem("order") as string);

@@ -18,14 +18,22 @@ const Home: NextPage = ({
   products,
   bannerData,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  // Get the user's session data
   const { data: sessionData } = useSession();
+
+  // Get the syncWishlist function from the ShopContext
   const { syncWishlist } = useShopContext() as ShopContextProps;
 
+  // Get the first four products to display on the home page
   const firstFourProducts = products.slice(0, 4);
 
+  // Sync the wishlist with the user's wishlist in the database when the user logs in
   useEffect(() => {
     syncWishlist();
   }, [sessionData?.user]);
+  // useEffect will run when the user logs in if the sessionData.user changes
+  // This will sync the wishlist with the user's wishlist in the database
+  // if you add syncWishList to the dependency array, it will go into an infinite loop
 
   return (
     <>

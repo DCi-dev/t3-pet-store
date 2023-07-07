@@ -17,7 +17,9 @@ const MyApp: AppType<{
   banner: Banner;
 }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
+    // Wrap the app in the SessionProvider to get the user's session data
     <SessionProvider session={session}>
+      {/* Wrap the app in the Shop Context to access the state globaly */}
       <ShopProvider>
         <Layout>
           <Toaster position="bottom-center" />
