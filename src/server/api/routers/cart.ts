@@ -169,6 +169,11 @@ export const cartRouter = createTRPCRouter({
   getItems: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user?.id;
 
+    // For guests, return empty array
+    if (!userId) {
+      return [];
+    }
+
     // If user is authenticated, return items from the server
     const items = await ctx.prisma.cartItem.findMany({
       where: {
