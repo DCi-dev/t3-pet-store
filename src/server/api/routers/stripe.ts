@@ -2,10 +2,10 @@
 import z from "zod";
 
 // Load environment variables for server-side use
-import { env } from "../../../env/server.mjs";
+import { env } from "@env/server.mjs";
 
 // Import stripe webhook handler
-import { getOrCreateStripeCustomerIdForUser } from "../../stripe/stripe-webhook-handlers";
+import { getOrCreateStripeCustomerIdForUser } from "@server/stripe/stripe-webhook-handlers";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 /**

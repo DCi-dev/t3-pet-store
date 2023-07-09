@@ -16,6 +16,7 @@ const config = {
   },
   moduleNameMapper: {
     "~/(.*)": ["<rootDir>/src/$1"],
+    "@server/(.*)": ["<rootDir>/src/server/$1"],
   },
 };
 
