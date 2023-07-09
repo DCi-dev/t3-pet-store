@@ -503,3 +503,78 @@ describe("Cart Router - Get Items", () => {
     expect(items).toEqual([]);
   });
 });
+
+/**
+ * Tests for synchronizeCart
+ */
+
+describe("Cart Router - Synchronize Cart", () => {
+  const syncItemInput: RouterInputs["cart"]["synchronizeCart"] = {
+    _id: "test-product-id",
+    name: "test-product-name",
+    image: "test-product-image",
+    quantity: 1,
+    slug: "test-product-slug",
+    sizeOption: {
+      size: "test-size",
+      price: 1,
+      _key: "test-key",
+    },
+    flavor: "test-flavor",
+  };
+
+  test("synchronizeCart should throw error for guests", async () => {
+    // expect the guest caller to throw an error
+    await expect(
+      guestCaller.cart.synchronizeCart(syncItemInput)
+    ).rejects.toThrowError();
+  });
+
+  test("synchronizeCart should synchronize cart for users", async () => {
+    // mock output of synchronizeCart
+    const mockOutput = {
+      flavor: "test-flavor",
+      id: "test-cart-item-id",
+      image: "test-product-image",
+      productId: "test-product-id",
+      productName: "test-product-name",
+      quantity: 1,
+      size: { create: { key: "test-key", price: 1, size: "test-size" } },
+      slug: "test-product-slug",
+      userId: "test-user-id",
+    };
+
+    // Call the synchronizeCart procedure.
+    const cart = await caller.cart.synchronizeCart(syncItemInput);
+
+    // Expect it to return the mockOutput.
+    expect(cart).toEqual(mockOutput);
+  });
+
+  test("synchronizeCart should synchronize cart for existing cart items", async () => {
+    // Mock prisma.cartItem.findMany to return a cart item
+    prisma.cartItem.findMany.mockResolvedValue([
+      {
+        id: "test-cart-item-id",
+        userId: "test-user-id",
+        productId: "test-product-id",
+        productName: "test-product-name",
+        image: "test-product-image",
+        quantity: 1,
+        flavor: "test-flavor",
+        slug: "test-product-slug",
+      },
+    ]);
+
+    // Call the synchronizeCart procedure.
+    await caller.cart.synchronizeCart(syncItemInput);
+
+    // Check that findMany was called with the correct parameters
+    expect(prisma.cartItem.findMany).toHaveBeenCalledWith({
+      where: {
+        productId: "test-product-id",
+        userId: userSession.user.id,
+      },
+    });
+  });
+});
