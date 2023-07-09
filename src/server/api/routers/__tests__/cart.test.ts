@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import type { CartItem, PrismaClient, SizeOption } from "@prisma/client";
 import { appRouter } from "@server/api/root";
 import { createInnerTRPCContext } from "@server/api/trpc";

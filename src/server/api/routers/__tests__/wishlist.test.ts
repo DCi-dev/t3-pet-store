@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import type { Prisma, PrismaClient, WishlistItem } from "@prisma/client";
 import { appRouter } from "@server/api/root";
 import { createInnerTRPCContext } from "@server/api/trpc";

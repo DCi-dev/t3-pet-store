@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import type { PrismaClient } from "@prisma/client";
 import { appRouter } from "@server/api/root";
 import { createInnerTRPCContext } from "@server/api/trpc";

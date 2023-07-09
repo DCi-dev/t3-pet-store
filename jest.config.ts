@@ -17,7 +17,12 @@ const config = {
   moduleNameMapper: {
     "~/(.*)": ["<rootDir>/src/$1"],
     "@server/(.*)": ["<rootDir>/src/server/$1"],
+    "@utils/(.*)": ["<rootDir>/src/utils/$1"],
+    "@context/(.*)": ["<rootDir>/src/context/$1"],
+    "@components/(.*)": ["<rootDir>/src/components/$1"],
   },
+
+  testEnvironment: "jsdom",
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

@@ -109,7 +109,7 @@ export const useCart = () => {
       : [null, addToLocalStorageCart(product, selectedFlavor, selectedSize)];
 
     await Promise.all([serverPromise, localPromise]).catch((err) => {
-      console.log(err);
+      return err;
     });
 
     toast.success("Product added to cart");

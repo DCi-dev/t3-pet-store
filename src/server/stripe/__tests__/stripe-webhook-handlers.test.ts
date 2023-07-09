@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import type { PrismaClient, User } from "@prisma/client";
 import { mockDeep } from "jest-mock-extended";
 import type Stripe from "stripe";
