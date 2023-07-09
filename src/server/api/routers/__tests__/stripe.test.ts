@@ -5,7 +5,6 @@ import { getOrCreateStripeCustomerIdForUser } from "@server/stripe/stripe-webhoo
 import { type RouterInputs } from "@utils/api";
 import { mockDeep } from "jest-mock-extended";
 import type { Stripe } from "stripe";
-import { unknown } from "zod";
 
 // Mock Stripe and Prisma clients
 const prisma = mockDeep<PrismaClient>();
