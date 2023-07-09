@@ -26,6 +26,7 @@ import { stripe } from "../stripe/client";
 type CreateContextOptions = {
   session: Session | null;
   prisma?: PrismaClient;
+  stripe?: Stripe;
 };
 
 /**
@@ -41,7 +42,7 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma: opts.prisma ?? prisma,
-    stripe,
+    stripe: opts.stripe ?? stripe,
   };
 };
 
@@ -69,6 +70,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import type { PrismaClient } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
+import type Stripe from "stripe";
 import superjson from "superjson";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
