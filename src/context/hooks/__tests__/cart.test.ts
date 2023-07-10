@@ -212,33 +212,33 @@ describe("Cart Context Hooks", () => {
     expect(storedCart[0].quantity).toEqual(2);
   });
 
-  // it("Remove from Cart - in Local Storage", async () => {
-  //   // Mock local storage cart with test data
-  //   localStorageMock.setItem(
-  //     "cart",
-  //     JSON.stringify([
-  //       {
-  //         productId: "test-product-id",
-  //         productName: "test-product-name",
-  //         image: "test-image-ref",
-  //         sizeOption: {
-  //           size: "test-size-name",
-  //           price: 10,
-  //           _key: "test-size-key",
-  //         },
-  //         flavor: "test-product-flavor",
-  //         slug: "test-product-slug",
-  //         quantity: 1,
-  //       },
-  //     ])
-  //   );
+  it("Remove from Cart - in Local Storage", async () => {
+    // Mock local storage cart with test data
+    localStorageMock.setItem(
+      "cart",
+      JSON.stringify([
+        {
+          productId: "test-product-id",
+          productName: "test-product-name",
+          image: "test-image-ref",
+          sizeOption: {
+            size: "test-size-name",
+            price: 10,
+            _key: "test-size-key",
+          },
+          flavor: "test-product-flavor",
+          slug: "test-product-slug",
+          quantity: 1,
+        },
+      ])
+    );
 
-  //   // Call the removeFromLocalStorageCart function with test data
-  //   await act(async () => {
-  //     result.current.handleRemoveFromCart("test-product-id");
-  //   });
+    // Call the removeFromLocalStorageCart function with test data
+    await act(async () => {
+      result.current.handleRemoveFromCart("test-product-id");
+    });
 
-  //   // Test that it removed the item from the local storage cart
-  //   expect(localStorageMock.getItem("cart")).toEqual(JSON.stringify([]));
-  // });
+    // Test that it removed the item from the local storage cart
+    expect(localStorageMock.getItem("cart")).toEqual(JSON.stringify([]));
+  });
 });
