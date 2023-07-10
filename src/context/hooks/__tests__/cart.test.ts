@@ -5,9 +5,13 @@ import { useCart } from "../cart";
 import {
   localStorageMock,
   mockProduct,
+  mockProductTwo,
   mockSelectedFlavor,
+  mockSelectedFlavorTwo,
   mockSelectedSize,
+  mockSelectedSizeTwo,
   mockSession,
+  mockTwoProducts,
 } from "../helpers/cart-test";
 
 // Mock the next-auth react hooks
@@ -33,22 +37,34 @@ jest.mock("@utils/api", () => ({
         useQuery: jest.fn(),
       },
       addItem: {
-        useMutation: jest.fn(),
+        useMutation: jest.fn(() => ({
+          mutate: jest.fn(),
+        })),
       },
       updateSize: {
-        useMutation: jest.fn(),
+        useMutation: jest.fn(() => ({
+          mutate: jest.fn(),
+        })),
       },
       updateFlavor: {
-        useMutation: jest.fn(),
+        useMutation: jest.fn(() => ({
+          mutate: jest.fn(),
+        })),
       },
       updateQuantity: {
-        useMutation: jest.fn(),
+        useMutation: jest.fn(() => ({
+          mutate: jest.fn(),
+        })),
       },
       removeItem: {
-        useMutation: jest.fn(),
+        useMutation: jest.fn(() => ({
+          mutate: jest.fn(),
+        })),
       },
       synchronizeCart: {
-        useMutation: jest.fn(),
+        useMutation: jest.fn(() => ({
+          mutate: jest.fn(),
+        })),
       },
     },
   },
@@ -81,18 +97,14 @@ jest.mock("react-hot-toast", () => ({
   },
 }));
 
-beforeAll(() => {
-  // reset mocks
-  jest.clearAllMocks();
-});
-
 // Mock the localStorage
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
 describe("Cart Context Hooks", () => {
-  it("Add to Cart - in Local Storage", async () => {
+  const { result } = renderHook(() => useCart());
+
+  it("Adds to Cart - in Local Storage", async () => {
     // Render the hook
-    const { result } = renderHook(() => useCart());
 
     // Call the addToLocalStorageCart function with test data
     await act(async () => {
@@ -123,5 +135,110 @@ describe("Cart Context Hooks", () => {
     );
   });
 
-  it("Remove from Cart - in Local Storage", async () => {});
+  it("Adds two different products to Cart - in Local Storage", async () => {
+    // Call the addToLocalStorageCart function with first test product
+    await act(async () => {
+      await result.current.handleAddToCart(
+        mockProduct,
+        mockSelectedFlavor,
+        mockSelectedSize
+      );
+    });
+
+    // Call the addToLocalStorageCart function with second test product
+    await act(async () => {
+      await result.current.handleAddToCart(
+        mockProductTwo,
+        "test-product-flavor-2",
+        {
+          size: "test-size-name-2",
+          price: 20,
+          _key: "test-size-key-2",
+        }
+      );
+    });
+
+    // Assert the expected changes in the local storage cart
+    // Two products should be present now
+    expect(localStorageMock.getItem("cart")).toEqual(
+      JSON.stringify([
+        {
+          productId: "test-product-id",
+          productName: "test-product-name",
+          image: "test-image-ref",
+          sizeOption: {
+            size: "test-size-name",
+            price: 10,
+            _key: "test-size-key",
+          },
+          flavor: "test-product-flavor",
+          slug: "test-product-slug",
+          quantity: 1,
+        },
+        {
+          productId: "test-product-id-2",
+          productName: "test-product-name-2",
+          image: "test-image-ref-2",
+          sizeOption: {
+            size: "test-size-name-2",
+            price: 20,
+            _key: "test-size-key-2",
+          },
+          flavor: "test-product-flavor-2",
+          slug: "test-product-slug-2",
+          quantity: 1,
+        },
+      ])
+    );
+  });
+
+  it("Updates quantity of a product in the Cart - in Local Storage", async () => {
+    // Setup: Add a product to the cart
+    await act(async () => {
+      await result.current.handleAddToCart(
+        mockProduct,
+        mockSelectedFlavor,
+        mockSelectedSize
+      );
+    });
+
+    // Call the handleUpdateQuantity function
+    await act(async () => {
+      result.current.handleQuantityChange("test-product-id", 2);
+    });
+
+    // Test that it updated the quantity in the local storage cart
+    const storedCart = JSON.parse(localStorageMock.getItem("cart") as string);
+    expect(storedCart[0].quantity).toEqual(2);
+  });
+
+  // it("Remove from Cart - in Local Storage", async () => {
+  //   // Mock local storage cart with test data
+  //   localStorageMock.setItem(
+  //     "cart",
+  //     JSON.stringify([
+  //       {
+  //         productId: "test-product-id",
+  //         productName: "test-product-name",
+  //         image: "test-image-ref",
+  //         sizeOption: {
+  //           size: "test-size-name",
+  //           price: 10,
+  //           _key: "test-size-key",
+  //         },
+  //         flavor: "test-product-flavor",
+  //         slug: "test-product-slug",
+  //         quantity: 1,
+  //       },
+  //     ])
+  //   );
+
+  //   // Call the removeFromLocalStorageCart function with test data
+  //   await act(async () => {
+  //     result.current.handleRemoveFromCart("test-product-id");
+  //   });
+
+  //   // Test that it removed the item from the local storage cart
+  //   expect(localStorageMock.getItem("cart")).toEqual(JSON.stringify([]));
+  // });
 });
