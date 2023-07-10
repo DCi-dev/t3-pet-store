@@ -1,5 +1,5 @@
 import type { ProductType } from "@/types/product";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 
 // Mock the localStorage
 export const localStorageMock = (() => {
@@ -90,3 +90,71 @@ export const mockSession: Session = {
   },
   expires: new Date().toISOString(),
 };
+
+// Mock second product data
+export const mockProductTwo: ProductType = {
+  _id: "test-product-id-2",
+  _createdAt: "test-product-created-at",
+  _rev: "test-product-rev",
+  _type: "product",
+  _updatedAt: "test-product-updated-at",
+  name: "test-product-name-2",
+  slug: {
+    current: "test-product-slug-2",
+    _type: "slug",
+  },
+  image: [
+    {
+      _key: "test-image-key-2",
+      _type: "image",
+      _upload: {
+        createdAt: "test-image-created-at",
+        file: {
+          name: "test-image-name-2",
+          type: "test-image-type",
+        },
+        previewImage: "test-image-preview-image-2",
+      },
+      asset: {
+        _ref: "test-image-ref-2",
+        _type: "reference",
+      },
+    },
+  ],
+  description: "test-product-description-2",
+  category: "test-product-category-2",
+  flavor: ["test-product-flavor-2"],
+  sizeOptions: [
+    {
+      size: "test-size-name-2",
+      price: 20,
+      _key: "test-size-key-2",
+    },
+  ],
+};
+
+// Mock the selected flavor for the second product
+export const mockSelectedFlavorTwo = "test-product-flavor-2";
+
+// Mock the selected size for the second product
+export const mockSelectedSizeTwo = {
+  size: "test-size-name-2",
+  price: 20,
+  _key: "test-size-key-2",
+};
+
+// Mock two products data in one using the spread operator
+export const mockTwoProducts = [
+  {
+    ...mockProduct,
+    sizeOption: mockSelectedSize,
+    flavor: mockSelectedFlavor,
+    quantity: 1,
+  },
+  {
+    ...mockProductTwo,
+    sizeOption: mockSelectedSizeTwo,
+    flavor: mockSelectedFlavorTwo,
+    quantity: 1,
+  },
+];
