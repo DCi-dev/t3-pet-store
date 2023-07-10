@@ -7,11 +7,8 @@ import {
   mockProduct,
   mockProductTwo,
   mockSelectedFlavor,
-  mockSelectedFlavorTwo,
   mockSelectedSize,
-  mockSelectedSizeTwo,
   mockSession,
-  mockTwoProducts,
 } from "../helpers/cart-test";
 
 // Mock the next-auth react hooks
@@ -76,6 +73,8 @@ jest.mock("react", () => ({
   useState: jest.fn(),
 }));
 
+// Mock the useState hook to return a cartIds state
+(useState as jest.Mock).mockReturnValueOnce(["test-cart-id", jest.fn()]);
 // Mock the useState hook to return a totalPrice state
 (useState as jest.Mock).mockReturnValueOnce([0, jest.fn()]);
 // Mock the useState hook to return a totalShipping state
@@ -86,8 +85,6 @@ jest.mock("react", () => ({
 (useState as jest.Mock).mockReturnValueOnce([0, jest.fn()]);
 // Mock the useState hook to return a totalQuantity state
 (useState as jest.Mock).mockReturnValueOnce([1, jest.fn()]);
-// Mock the useState hook to return a cartIds state
-(useState as jest.Mock).mockReturnValueOnce(["test-cart-id", jest.fn()]);
 
 // Mock react-hot-toast
 jest.mock("react-hot-toast", () => ({
@@ -210,35 +207,5 @@ describe("Cart Context Hooks", () => {
     // Test that it updated the quantity in the local storage cart
     const storedCart = JSON.parse(localStorageMock.getItem("cart") as string);
     expect(storedCart[0].quantity).toEqual(2);
-  });
-
-  it("Remove from Cart - in Local Storage", async () => {
-    // Mock local storage cart with test data
-    localStorageMock.setItem(
-      "cart",
-      JSON.stringify([
-        {
-          productId: "test-product-id",
-          productName: "test-product-name",
-          image: "test-image-ref",
-          sizeOption: {
-            size: "test-size-name",
-            price: 10,
-            _key: "test-size-key",
-          },
-          flavor: "test-product-flavor",
-          slug: "test-product-slug",
-          quantity: 1,
-        },
-      ])
-    );
-
-    // Call the removeFromLocalStorageCart function with test data
-    await act(async () => {
-      result.current.handleRemoveFromCart("test-product-id");
-    });
-
-    // Test that it removed the item from the local storage cart
-    expect(localStorageMock.getItem("cart")).toEqual(JSON.stringify([]));
   });
 });

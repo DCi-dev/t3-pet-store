@@ -1,6 +1,17 @@
 import type { ProductType } from "@/types/product";
 import type { Session } from "next-auth";
 
+// Mock the useSession hook to return a data: sessionData object
+export const mockSession: Session = {
+  user: {
+    id: "test-user-id",
+    name: "test-user-name",
+    email: "test-user-email",
+    image: "test-user-image",
+  },
+  expires: new Date().toISOString(),
+};
+
 // Mock the localStorage
 export const localStorageMock = (() => {
   let store: { [key: string]: unknown } = {};
@@ -78,17 +89,6 @@ export const mockSelectedSize = {
   size: "test-size-name",
   price: 10,
   _key: "test-size-key",
-};
-
-// Mock the useSession hook to return a data: sessionData object
-export const mockSession: Session = {
-  user: {
-    id: "test-user-id",
-    name: "test-user-name",
-    email: "test-user-email",
-    image: "test-user-image",
-  },
-  expires: new Date().toISOString(),
 };
 
 // Mock second product data
