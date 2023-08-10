@@ -24,8 +24,8 @@ dependencies:
     specifier: ^1.0.2
     version: 1.0.2
   '@stripe/stripe-js':
-    specifier: ^1.54.0
-    version: 1.54.0
+    specifier: ^2.0.0
+    version: 2.0.0
   '@tanstack/react-query':
     specifier: ^4.29.14
     version: 4.29.14(react-dom@18.2.0)(react@18.2.0)
@@ -1048,8 +1048,8 @@ packages:
       '@sinonjs/commons': 3.0.0
     dev: true
 
-  /@stripe/stripe-js@1.54.0:
-    resolution: {integrity: sha512-nElTXkS+nMfDNMkWfLmyeqHQfMGJ1JjrjAVMibV61Oc/rYdUv0cKRYCi1l4ivZ5SySB3vQLcLolxbKBkbNznZA==}
+  /@stripe/stripe-js@2.0.0:
+    resolution: {integrity: sha512-SxZnf192En0uAfgbigUIj7oJYaXgGc5AI1aos59YXvO8DPeLI0AtT4oMg/Wuk17wbpquEv73+akyCe7xdEjGlA==}
     dev: false
 
   /@swc/helpers@0.5.1:
