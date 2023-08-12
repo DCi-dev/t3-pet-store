@@ -141,7 +141,7 @@ export default function NavBar() {
                                 href="/user/orders"
                                 className={classNames(
                                   active ? "bg-neutral-700" : "",
-                                  "block px-4 py-2 text-sm text-neutral-100"
+                                  "block px-4 py-2 text-sm text-neutral-100",
                                 )}
                               >
                                 Orders
@@ -153,7 +153,7 @@ export default function NavBar() {
                               <div
                                 className={classNames(
                                   active ? "bg-neutral-700" : "",
-                                  "block cursor-pointer px-4 py-2 text-sm text-neutral-100"
+                                  "block cursor-pointer px-4 py-2 text-sm text-neutral-100",
                                 )}
                                 onClick={() => signOut()}
                               >
@@ -169,7 +169,7 @@ export default function NavBar() {
                             <div
                               className={classNames(
                                 active ? "bg-neutral-700" : "",
-                                "block cursor-pointer px-4 py-2 text-sm text-neutral-100"
+                                "block cursor-pointer px-4 py-2 text-sm text-neutral-100",
                               )}
                               onClick={() => signIn()}
                             >

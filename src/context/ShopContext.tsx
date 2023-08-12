@@ -14,7 +14,7 @@ export interface ShopContextProps {
   handleAddToCart: (
     product: ProductType,
     selectedFlavor: string,
-    selectedSize: SizeOption
+    selectedSize: SizeOption,
   ) => void;
   cartIds: string[];
   setCartIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -31,7 +31,7 @@ export interface ShopContextProps {
 
 // Shop Context
 export const ShopContext = createContext<ShopContextProps | undefined>(
-  undefined
+  undefined,
 );
 
 interface Props {

@@ -26,7 +26,7 @@ export const userRouter = createTRPCRouter({
         city: z.string(),
         country: z.string(),
         postalCode: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session

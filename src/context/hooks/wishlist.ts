@@ -23,7 +23,7 @@ export const useWishlist = () => {
     if (!sessionData?.user) {
       // if not, add the product to the wishlist on the client side
       const productIds = JSON.parse(
-        localStorage.getItem("productList") ?? "[]"
+        localStorage.getItem("productList") ?? "[]",
       );
       // Check if the product id is already in the local storage if not add it
       if (!productIds.includes(productId)) {
@@ -35,7 +35,7 @@ export const useWishlist = () => {
       // if the user is authenticated, send the product id to the server
       // using TRPC call
       const productIds = JSON.parse(
-        localStorage.getItem("productList") ?? "[]"
+        localStorage.getItem("productList") ?? "[]",
       );
       setWishIds([...localWishIds, productId]);
       // Check if the product id is already in the local storage if not add it

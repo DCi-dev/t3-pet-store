@@ -17,12 +17,12 @@ interface ChildProps {
 const OrdersTable: React.FC<ChildProps> = ({ orderId, orderNr }) => {
   // Get the checkout session data from Stripe
   const { data: session } = api.stripe.getCheckoutSession.useQuery(
-    orderId as string
+    orderId as string,
   );
 
   // Get the products from the checkout session data
   const { data: products } = api.stripe.getCheckoutSessionItems.useQuery(
-    orderId as string
+    orderId as string,
   );
 
   // Format the date
@@ -88,7 +88,7 @@ const OrdersTable: React.FC<ChildProps> = ({ orderId, orderNr }) => {
                         active
                           ? "bg-neutral-700 text-neutral-100"
                           : "text-neutral-200",
-                        "block px-4 py-2 text-sm"
+                        "block px-4 py-2 text-sm",
                       )}
                     >
                       View
@@ -103,7 +103,7 @@ const OrdersTable: React.FC<ChildProps> = ({ orderId, orderNr }) => {
                         active
                           ? "bg-neutral-700 text-neutral-100"
                           : "text-neutral-200",
-                        "block px-4 py-2 text-sm"
+                        "block px-4 py-2 text-sm",
                       )}
                     >
                       Invoice

@@ -218,7 +218,7 @@ describe("wishlistRouter", () => {
 
     // expect the caller to throw an error
     await expect(
-      caller.wishlist.synchronizeWishlist(input)
+      caller.wishlist.synchronizeWishlist(input),
     ).rejects.toThrowError();
   });
 

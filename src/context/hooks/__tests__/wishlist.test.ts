@@ -123,7 +123,7 @@ describe("Wishlist Context Hooks", () => {
       expect(mockSetWishIds).toHaveBeenCalledWith(["", "test-product-id"]);
       // Expect the localStorage to return the same product id
       expect(localStorage.getItem("productList")).toEqual(
-        JSON.stringify(["test-product-id"])
+        JSON.stringify(["test-product-id"]),
       );
     });
 

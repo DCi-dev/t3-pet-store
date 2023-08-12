@@ -23,7 +23,7 @@ const WishlistItem: React.FC<ChildProps> = ({
   // Images are stored in Sanity.io, so we need to use the next-sanity-image package to get the image URL
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
-    product.image[0] as SanityImageSource
+    product.image[0] as SanityImageSource,
   );
 
   return (

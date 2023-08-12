@@ -77,7 +77,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   const handleWishButton = (
     event:
       | React.MouseEvent<HTMLButtonElement, MouseEvent>
-      | React.MouseEvent<HTMLDivElement, MouseEvent>
+      | React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     event.preventDefault();
     if (isInWishlist) {
@@ -92,15 +92,15 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
   // Product Image
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
-    product.image[0] as SanityImageSource
+    product.image[0] as SanityImageSource,
   );
 
   // Product Options
   const [selectedSize, setSelectedSize] = useState<SizeOption>(
-    product.sizeOptions[0] as SizeOption
+    product.sizeOptions[0] as SizeOption,
   );
   const [selectedFlavor, setSelectedFlavor] = useState<string>(
-    product.flavor[0] as string
+    product.flavor[0] as string,
   );
 
   // Sync wishlist on user login
@@ -121,7 +121,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                 $
                 {
                   product.sizeOptions.find(
-                    (option: SizeOption) => option.size === selectedSize?.size
+                    (option: SizeOption) => option.size === selectedSize?.size,
                   )?.price
                 }
               </p>
@@ -172,7 +172,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                             checked
                               ? "border-transparent bg-yellow-400  text-neutral-900 hover:bg-yellow-300"
                               : "border-neutral-200 bg-neutral-700 text-neutral-100 hover:bg-neutral-600",
-                            "flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase sm:flex-1"
+                            "flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase sm:flex-1",
                           )
                         }
                       >
@@ -216,7 +216,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product, products }) => {
                             checked
                               ? "border-transparent bg-yellow-400 font-bold text-neutral-900 hover:bg-yellow-300"
                               : "border-neutral-200 bg-neutral-700 text-neutral-100 hover:bg-neutral-600",
-                            "flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase sm:flex-1"
+                            "flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase sm:flex-1",
                           )
                         }
                       >

@@ -108,7 +108,7 @@ describe("Cart Router - Update quantity", () => {
   test("updateQuantity should throw error for guests", async () => {
     // expect the guest caller to throw an error
     await expect(
-      guestCaller.cart.updateQuantity(updateQuantityInput)
+      guestCaller.cart.updateQuantity(updateQuantityInput),
     ).rejects.toThrowError();
   });
 
@@ -192,7 +192,7 @@ describe("Cart Router - Update flavor", () => {
   test("updateFlavor should throw error for guests", async () => {
     // expect the guest caller to throw an error
     await expect(
-      guestCaller.cart.updateFlavor(updateFlavorInput)
+      guestCaller.cart.updateFlavor(updateFlavorInput),
     ).rejects.toThrowError();
   });
 
@@ -298,7 +298,7 @@ describe("Cart Router - Update size", () => {
   test("updateSize should throw error for guests", async () => {
     // expect the guest caller to throw an error
     await expect(
-      guestCaller.cart.updateSize(updateSizeInput)
+      guestCaller.cart.updateSize(updateSizeInput),
     ).rejects.toThrowError();
   });
 
@@ -362,7 +362,7 @@ describe("Cart Router - Remove item", () => {
   test("removeItem should throw error for guests", async () => {
     // expect the guest caller to throw an error
     await expect(
-      guestCaller.cart.removeItem(removeItemInput)
+      guestCaller.cart.removeItem(removeItemInput),
     ).rejects.toThrowError();
   });
 
@@ -470,7 +470,7 @@ describe("Cart Router - Get Items", () => {
   const expectedItemsForUser = mockCartItems.map((item) => ({
     ...item,
     sizeOption: mockSizeOptions.find(
-      (sizeOption) => sizeOption.cartItemId === item.id
+      (sizeOption) => sizeOption.cartItemId === item.id,
     ),
   }));
 
@@ -529,7 +529,7 @@ describe("Cart Router - Synchronize Cart", () => {
   test("synchronizeCart should throw error for guests", async () => {
     // expect the guest caller to throw an error
     await expect(
-      guestCaller.cart.synchronizeCart(syncItemInput)
+      guestCaller.cart.synchronizeCart(syncItemInput),
     ).rejects.toThrowError();
   });
 

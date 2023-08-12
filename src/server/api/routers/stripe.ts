@@ -30,8 +30,8 @@ export const stripeRouter = createTRPCRouter({
           flavor: z.string(),
           quantity: z.number(),
           slug: z.string(),
-        })
-      )
+        }),
+      ),
     )
     .mutation(async ({ ctx, input }) => {
       // Load stripe, session, and prisma from the context
@@ -101,7 +101,7 @@ export const stripeRouter = createTRPCRouter({
             const newImage = img
               .replace(
                 "image-",
-                `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`
+                `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`,
               )
               .replace("-jpg", ".jpg");
             return {
@@ -125,7 +125,7 @@ export const stripeRouter = createTRPCRouter({
               },
               quantity: item.quantity,
             };
-          }
+          },
         ),
         // Add success and cancel urls to the checkout session
         success_url: `${baseUrl}/user/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -173,8 +173,8 @@ export const stripeRouter = createTRPCRouter({
           flavor: z.string(),
           quantity: z.number(),
           slug: z.string(),
-        })
-      )
+        }),
+      ),
     )
     .mutation(async ({ ctx, input }) => {
       const { stripe } = ctx;
@@ -222,7 +222,7 @@ export const stripeRouter = createTRPCRouter({
             const newImage = img
               .replace(
                 "image-",
-                `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`
+                `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`,
               )
               .replace("-jpg", ".jpg");
             return {
@@ -246,7 +246,7 @@ export const stripeRouter = createTRPCRouter({
               },
               quantity: item.quantity,
             };
-          }
+          },
         ),
         success_url: `${baseUrl}/user/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/user/cart`,
@@ -342,7 +342,7 @@ export const stripeRouter = createTRPCRouter({
       }
       // Else get the payment method from the payment intent
       const paymentMethod = await stripe.paymentMethods.retrieve(
-        paymentIntent.payment_method as string
+        paymentIntent.payment_method as string,
       );
 
       // If the payment method is not found, throw an error

@@ -123,7 +123,7 @@ export const createStripeCheckoutSession = async ({
         const newImage = img
           .replace(
             "image-",
-            `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`
+            `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`,
           )
           .replace("-jpg", ".jpg");
         return {
@@ -147,7 +147,7 @@ export const createStripeCheckoutSession = async ({
           },
           quantity: item.quantity,
         };
-      }
+      },
     ),
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/user/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
@@ -217,7 +217,7 @@ export const createGuestCheckoutSession = async ({
         const newImage = img
           .replace(
             "image-",
-            `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`
+            `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/`,
           )
           .replace("-jpg", ".jpg");
         return {
@@ -241,7 +241,7 @@ export const createGuestCheckoutSession = async ({
           },
           quantity: item.quantity,
         };
-      }
+      },
     ),
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/user/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
@@ -298,7 +298,7 @@ export const getStripePaymentMethod = async ({
 }) => {
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
   const paymentMethod = await stripe.paymentMethods.retrieve(
-    paymentIntent.payment_method as string
+    paymentIntent.payment_method as string,
   );
   return paymentMethod;
 };

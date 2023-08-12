@@ -57,14 +57,14 @@ const Shop: NextPage = ({
 
   // Add event handler to update the selected category options state variable when the input is changed
   const handleCategoryOptionChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { value } = event.target;
     if (event.target.checked) {
       setSelectedCategoryOptions((prevOptions) => [...prevOptions, value]);
     } else {
       setSelectedCategoryOptions((prevOptions) =>
-        prevOptions.filter((option) => option !== value)
+        prevOptions.filter((option) => option !== value),
       );
     }
   };
@@ -143,7 +143,7 @@ const Shop: NextPage = ({
                                   <ChevronDownIcon
                                     className={classNames(
                                       open ? "-rotate-180" : "rotate-0",
-                                      "h-5 w-5 transform"
+                                      "h-5 w-5 transform",
                                     )}
                                     aria-hidden="true"
                                   />

@@ -32,15 +32,15 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   // Product Image
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
-    product.image[0] as SanityImageSource
+    product.image[0] as SanityImageSource,
   );
 
   // Product Options
   const [selectedSize, setSelectedSize] = useState<SizeOption>(
-    product.sizeOptions[0] as SizeOption
+    product.sizeOptions[0] as SizeOption,
   );
   const [selectedFlavor, setSelectedFlavor] = useState<string>(
-    product.flavor[0] as string
+    product.flavor[0] as string,
   );
 
   // Wishlist button
@@ -69,7 +69,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const handleWishButton = (
     event:
       | React.MouseEvent<HTMLButtonElement, MouseEvent>
-      | React.MouseEvent<HTMLDivElement, MouseEvent>
+      | React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     event.preventDefault();
     if (isInWishlist) {
@@ -248,7 +248,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
               $
               {
                 product.sizeOptions.find(
-                  (option) => option.size === selectedSize?.size
+                  (option) => option.size === selectedSize?.size,
                 )?.price
               }
             </p>

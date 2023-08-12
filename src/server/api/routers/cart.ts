@@ -23,7 +23,7 @@ export const cartRouter = createTRPCRouter({
           _key: z.string(),
         }),
         flavor: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
@@ -62,7 +62,7 @@ export const cartRouter = createTRPCRouter({
       z.object({
         productId: z.string(),
         quantity: z.number(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
@@ -87,7 +87,7 @@ export const cartRouter = createTRPCRouter({
       z.object({
         productId: z.string(),
         flavor: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
@@ -117,7 +117,7 @@ export const cartRouter = createTRPCRouter({
           price: z.number(),
           _key: z.string(),
         }),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       /**
@@ -149,7 +149,7 @@ export const cartRouter = createTRPCRouter({
     .input(
       z.object({
         productId: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session
@@ -224,7 +224,7 @@ export const cartRouter = createTRPCRouter({
           _key: z.string(),
         }),
         flavor: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Get the user id from the session

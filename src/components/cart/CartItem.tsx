@@ -42,7 +42,7 @@ const CartItem: React.FC<ChildProps> = ({ product }) => {
     localStorage.setItem("order", JSON.stringify(storageCart));
 
     const selectedData = storageCart.find(
-      (item: SelectedData) => item.productId === product._id
+      (item: SelectedData) => item.productId === product._id,
     );
     setSelectedData(selectedData);
     setSelectedQuantity(selectedData?.quantity || 1);
@@ -51,7 +51,7 @@ const CartItem: React.FC<ChildProps> = ({ product }) => {
   // Images for the products are stored in Sanity, so we need to use the useNextSanityImage hook to get the image URL
   const productImageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
-    product.image[0] as SanityImageSource
+    product.image[0] as SanityImageSource,
   );
 
   return (

@@ -20,7 +20,7 @@ const OrderItem: React.FC<ChildProps> = ({
 }) => {
   // Get the product metadata from Stripe
   const { data: product } = api.stripe.getProductMetadata.useQuery(
-    productId as string
+    productId as string,
   );
 
   return (

@@ -118,7 +118,7 @@ describe("Stripe Hooks - getOrCreateStripeCustomerIdForUser", () => {
         stripe: stripe,
         prisma: prisma,
         userId: "nonexistent",
-      })
+      }),
     ).rejects.toThrow("User not found");
 
     expect(prisma.user.findUnique).toHaveBeenCalledWith({

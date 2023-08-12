@@ -11,7 +11,7 @@ import Image from "next/image";
 const HeroBanner = ({ heroBanner }: { heroBanner: Banner }) => {
   const imageProps: UseNextSanityImageProps = useNextSanityImage(
     client,
-    heroBanner.image
+    heroBanner.image,
   );
 
   return (

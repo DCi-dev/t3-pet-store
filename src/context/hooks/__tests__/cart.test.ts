@@ -108,7 +108,7 @@ describe("Cart Context Hooks", () => {
       await result.current.handleAddToCart(
         mockProduct,
         mockSelectedFlavor,
-        mockSelectedSize
+        mockSelectedSize,
       );
     });
 
@@ -128,7 +128,7 @@ describe("Cart Context Hooks", () => {
           slug: "test-product-slug",
           quantity: 1,
         },
-      ])
+      ]),
     );
   });
 
@@ -138,7 +138,7 @@ describe("Cart Context Hooks", () => {
       await result.current.handleAddToCart(
         mockProduct,
         mockSelectedFlavor,
-        mockSelectedSize
+        mockSelectedSize,
       );
     });
 
@@ -151,7 +151,7 @@ describe("Cart Context Hooks", () => {
           size: "test-size-name-2",
           price: 20,
           _key: "test-size-key-2",
-        }
+        },
       );
     });
 
@@ -185,7 +185,7 @@ describe("Cart Context Hooks", () => {
           slug: "test-product-slug-2",
           quantity: 1,
         },
-      ])
+      ]),
     );
   });
 
@@ -195,7 +195,7 @@ describe("Cart Context Hooks", () => {
       await result.current.handleAddToCart(
         mockProduct,
         mockSelectedFlavor,
-        mockSelectedSize
+        mockSelectedSize,
       );
     });
 

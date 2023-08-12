@@ -15,7 +15,7 @@ const CartList: React.FC = () => {
     const input = encodeURIComponent(
       `*[_type == "product" && _id in [${cartIds
         .map((id: string) => `"${id}"`)
-        .join(",")}] ]`
+        .join(",")}] ]`,
     );
     const res = await fetch(
       `https://${env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v${env.NEXT_PUBLIC_SANITY_API_VERSION}/data/query/${env.NEXT_PUBLIC_SANITY_DATASET}?query=${input}`,
@@ -26,7 +26,7 @@ const CartList: React.FC = () => {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-      }
+      },
     );
     return res.json();
   };

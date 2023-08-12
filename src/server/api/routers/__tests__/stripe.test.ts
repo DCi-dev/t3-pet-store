@@ -164,7 +164,7 @@ describe("Stripe Route - createCheckoutSession", () => {
   test("successfuly creates a checkout session", async () => {
     // Mock the getOrCreateStripeCustomerIdForUser function to return a customer id
     (getOrCreateStripeCustomerIdForUser as jest.Mock).mockResolvedValue(
-      "customer-id"
+      "customer-id",
     );
 
     // Mock the Stripe checkout.sessions.create function to return the mock checkout session
@@ -432,7 +432,7 @@ describe("Stripe Route - getCheckoutSession", () => {
 
     // Expect the getCheckoutSession procedure to throw an error
     await expect(guestCaller.stripe.getCheckoutSession(input)).rejects.toThrow(
-      "Could not retrieve checkout session"
+      "Could not retrieve checkout session",
     );
 
     // Check the parameters sent to the stripe checkout sessions retrieve method
@@ -522,7 +522,7 @@ describe("Stripe Route - getCheckoutSessionItems", () => {
 
     // Expect the getCheckoutSessionItems procedure to throw an error
     await expect(
-      guestCaller.stripe.getCheckoutSessionItems(input)
+      guestCaller.stripe.getCheckoutSessionItems(input),
     ).rejects.toThrow("Could not retrieve line items");
 
     // Check the parameters sent to the stripe checkout sessions listLineItems method
@@ -589,7 +589,7 @@ describe("Stripe Route - getProductMetadata", () => {
 
     // Expect the getProductMetadata procedure to throw an error
     await expect(guestCaller.stripe.getProductMetadata(input)).rejects.toThrow(
-      "Could not retrieve product"
+      "Could not retrieve product",
     );
 
     // Check the parameters sent to the stripe products retrieve method
@@ -719,12 +719,12 @@ describe("Stripe Route - getStripePaymentMethod", () => {
     stripe.paymentMethods.retrieve.mockResolvedValueOnce(paymentMethodObj);
 
     const result = await guestCaller.stripe.getStripePaymentMethod(
-      "test-payment-intent-id"
+      "test-payment-intent-id",
     );
 
     expect(result).toEqual(paymentMethodObj);
     expect(stripe.paymentIntents.retrieve).toHaveBeenCalledWith(
-      "test-payment-intent-id"
+      "test-payment-intent-id",
     );
   });
 
@@ -732,11 +732,11 @@ describe("Stripe Route - getStripePaymentMethod", () => {
     stripe.paymentIntents.retrieve.mockRejectedValueOnce(new Error());
 
     await expect(
-      guestCaller.stripe.getStripePaymentMethod("test-payment-intent-id")
+      guestCaller.stripe.getStripePaymentMethod("test-payment-intent-id"),
     ).rejects.toThrow();
 
     expect(stripe.paymentIntents.retrieve).toHaveBeenCalledWith(
-      "test-payment-intent-id"
+      "test-payment-intent-id",
     );
   });
 
@@ -802,15 +802,15 @@ describe("Stripe Route - getStripePaymentMethod", () => {
 
     stripe.paymentIntents.retrieve.mockResolvedValueOnce(paymentIntentObj);
     stripe.paymentMethods.retrieve.mockRejectedValueOnce(
-      new Error("Could not retrieve payment method")
+      new Error("Could not retrieve payment method"),
     );
 
     await expect(
-      guestCaller.stripe.getStripePaymentMethod("test-payment-intent-id")
+      guestCaller.stripe.getStripePaymentMethod("test-payment-intent-id"),
     ).rejects.toThrow("Could not retrieve payment method");
 
     expect(stripe.paymentIntents.retrieve).toHaveBeenCalledWith(
-      "test-payment-intent-id"
+      "test-payment-intent-id",
     );
   });
 });

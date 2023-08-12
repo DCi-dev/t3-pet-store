@@ -22,13 +22,13 @@ export const useCart = () => {
   async function addToLocalStorageCart(
     product: ProductType,
     selectedFlavor: string,
-    selectedSize: SizeOption
+    selectedSize: SizeOption,
   ) {
     const localCart = JSON.parse(localStorage.getItem("cart") ?? "[]");
 
     // filter the cart by product id and selected size and flavor
     const existingItem = localCart.filter(
-      (item: { productId: string }) => item.productId === product._id
+      (item: { productId: string }) => item.productId === product._id,
     );
     if (existingItem.length > 0) {
       // update the sizeOption and flavor of the existing item
@@ -55,14 +55,14 @@ export const useCart = () => {
   async function addToDatabaseCart(
     product: ProductType,
     selectedFlavor: string,
-    selectedSize: SizeOption
+    selectedSize: SizeOption,
   ) {
     // Wait for server cart data to be fetched
     await cart.refetch();
 
     // Update the product if it exists
     const serverItems = cart.data?.find(
-      (item: { productId: string }) => item.productId === product._id
+      (item: { productId: string }) => item.productId === product._id,
     );
     if (serverItems) {
       updateCartProductSize.mutate({
@@ -99,7 +99,7 @@ export const useCart = () => {
   async function handleAddToCart(
     product: ProductType,
     selectedFlavor: string,
-    selectedSize: SizeOption
+    selectedSize: SizeOption,
   ) {
     const [serverPromise, localPromise] = sessionData
       ? [
@@ -127,9 +127,9 @@ export const useCart = () => {
         "cart",
         JSON.stringify(
           JSON.parse(localStorage.getItem("cart") ?? "[]").filter(
-            (product: CartProduct) => product.productId !== productId
-          )
-        )
+            (product: CartProduct) => product.productId !== productId,
+          ),
+        ),
       );
 
       setCartIds(cartIds.filter((id) => id !== productId));
@@ -138,9 +138,9 @@ export const useCart = () => {
         "cart",
         JSON.stringify(
           JSON.parse(localStorage.getItem("cart") ?? "[]").filter(
-            (product: CartProduct) => product.productId !== productId
-          )
-        )
+            (product: CartProduct) => product.productId !== productId,
+          ),
+        ),
       );
       setCartIds(cartIds.filter((id) => id !== productId));
     }
@@ -153,7 +153,7 @@ export const useCart = () => {
   const mergeCart = async () => {
     // Get the cart from local storage
     const storageCart: CartProduct[] = JSON.parse(
-      localStorage.getItem("cart") ?? "[]"
+      localStorage.getItem("cart") ?? "[]",
     );
     //  Sync the local storage cart with the server cart
     const serverCart = cart.data?.map((item) => ({
@@ -174,8 +174,8 @@ export const useCart = () => {
       ...new Set(
         [...storageCart, ...serverCart].filter(
           (item, index, self) =>
-            self.findIndex((i) => i.productId === item.productId) === index
-        )
+            self.findIndex((i) => i.productId === item.productId) === index,
+        ),
       ),
     ];
 
@@ -209,7 +209,7 @@ export const useCart = () => {
     setCartIds(
       storageCart.map((item: CartProduct) => {
         return item.productId;
-      })
+      }),
     );
   };
 
@@ -217,7 +217,7 @@ export const useCart = () => {
   const handleQuantityChange = (productId: string, qty: number) => {
     const localCart = JSON.parse(localStorage.getItem("cart") ?? "[]");
     const product = localCart.find(
-      (item: { productId: string }) => item.productId === productId
+      (item: { productId: string }) => item.productId === productId,
     );
     product.quantity = qty;
     localStorage.setItem("cart", JSON.stringify(localCart));
@@ -231,7 +231,7 @@ export const useCart = () => {
     setTotalQuantity(
       localCart.reduce((acc: number, item: CartProduct) => {
         return acc + item.quantity;
-      }, 0)
+      }, 0),
     );
   };
 
