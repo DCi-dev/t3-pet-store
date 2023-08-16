@@ -66,8 +66,8 @@ dependencies:
     specifier: ^2.4.1
     version: 2.4.1(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
   stripe:
-    specifier: ^12.18.0
-    version: 12.18.0
+    specifier: ^13.0.0
+    version: 13.0.0
   superjson:
     specifier: 1.13.1
     version: 1.13.1
@@ -5181,8 +5181,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /stripe@12.18.0:
-    resolution: {integrity: sha512-cYjgBM2SY/dTm8Lr6eMyyONaHTZHA/QjHxFUIW5WH8FevSRIGAVtXEmBkUXF1fsqe7QvvRgQSGSJZmjDacegGg==}
+  /stripe@13.0.0:
+    resolution: {integrity: sha512-b840YPFBqeOO3Gd3FPXx0WoE9r4hb4CvMaJZhSYsgbmAETCsdomXcMvmSYWoHt3OrnFXmwW/Ix17DbZ+zTVGZw==}
     engines: {node: '>=12.*'}
     dependencies:
       '@types/node': 18.17.5
