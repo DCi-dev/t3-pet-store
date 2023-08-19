@@ -34,7 +34,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.1",
-    "stripe": "^12.18.0",
+    "stripe": "^13.0.0",
     "superjson": "1.13.1",
     "zod": "^3.22.0"
   },
